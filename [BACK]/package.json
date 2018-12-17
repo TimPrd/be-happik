@@ -2,7 +2,9 @@
   "name": "node-docker",
   "version": "0.0.0",
   "private": true,
-  "scripts": {},
+  "scripts": {
+    "test": "jshint hello.js"
+  },
   "dependencies": {
       "lodash":"4.17.5",
       "deep-extend":"0.6.0",
@@ -17,6 +19,7 @@
       "pg": "^6.4.2",
       "pg-hstore": "^2.3.2",
       "sequelize": "~4.28.6",
-      "serve-favicon": "~2.4.5"
+      "serve-favicon": "~2.4.5",
+      "jshint": "^2.6.0"
     }
 }
