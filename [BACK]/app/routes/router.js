@@ -12,8 +12,20 @@ router.route("/").all(function (req, res) {
 
 router.get("/users", async function(req, res, next) {
 	const users = await models.User.findAll();
-	console.log(users[0].name);
-	res.send('Fetch : ' + users.length + ' users.') 
+    /*User.findAll({
+        where:  {
+            id: 2
+        },
+        include: [
+            { model: models.Role, as: 'role'  }, // load all pictures
+        ]
+    })*/
+	console.log(users[0]);
+    res.send('Fetch : ' + users[0].firstname);//users.length + ' users.')
+})
+
+router.post("/signup", async function(req,res,next) {
+
 })
 
 /********************************************

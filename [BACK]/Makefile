@@ -8,6 +8,9 @@ db-migrations: ## Execute migrations
 db-seeds: ## Import seeds
 	docker exec -it bh_postgres psql admin admin -f sql/seeds.sql
 
+db-drop: ## Drop seeds
+	docker exec -it bh_postgres psql admin admin -f sql/drop.sql
+
 
 # DEFAULT
 .DEFAULT_GOAL := help
