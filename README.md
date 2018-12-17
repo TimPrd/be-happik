@@ -39,6 +39,3 @@ make db-seed
 ```
 docker exec -i -t name_from_docker_ps bash
 ```
-
-
-
