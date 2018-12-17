@@ -1,0 +1,25 @@
+version: "3.7"
+services:
+  node:
+    container_name: bh_node
+    hostname: bh_node
+    working_dir: /home/node/app
+    build: './docker/node'
+    volumes:
+      - './:/home/node/app'
+    ports:
+      - '3000:3000'
+  postgres:
+    container_name: bh_postgres
+    hostname: bh_postgres
+    build: './docker/postgres'
+    working_dir: /home/psql
+    volumes:
+      - './sql:/home/psql/sql'
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+    ports:
+      - '5432:5432'
+    links:
+      - 'node:node' 
