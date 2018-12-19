@@ -1,4 +1,4 @@
-version: "3.7"
+version: "2"
 services:
   node:
     container_name: bh_node
@@ -17,6 +17,7 @@ services:
     volumes:
       - './sql:/home/psql/sql'
     environment:
+      - POSTGRES_DB=dev
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=admin
     ports:
