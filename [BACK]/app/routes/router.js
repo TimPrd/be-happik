@@ -20,7 +20,26 @@ router.get("/users", async function(req, res, next) {
             { model: models.Role, as: 'role'  }, // load all pictures
         ]
     })*/
-	console.log(users[0]);
+    const role = models.Role.build({roleName: 'Admin'});
+    const usr  = models.User.build({ firstName: 'John',
+        lastName: 'Doe',
+        email: 'demo@demo.com',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        password: "password"
+	});
+
+    usr.setRole([role]).then(() => {
+        console.log(usr);
+        /*usr.getRoles().then(associatedTasks => {
+        	console.log("ASSOCIATED", associatedTasks)
+            // associatedTasks is an array of tasks
+        })*/
+    })
+
+    console.log(usr)
+
+    //console.log(users[0]);
     res.send('Fetch : ' + users[0].firstName);//users.length + ' users.')
 })
 

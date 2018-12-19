@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
     password: DataTypes.STRING
   }, {});
   User.associate = function(models) {
-      //User.belongsTo(models.Role);
+      User.belongsTo(models.Role);
   };
   return User;
 };
