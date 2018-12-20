@@ -24,5 +24,3 @@ services:
       - POSTGRES_PASSWORD=admin
     ports:
       - '5432:5432'
-    links:
-      - 'node:node' 
