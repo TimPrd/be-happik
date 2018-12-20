@@ -1,3 +1,39 @@
+# blacklist
+branches:
+ except:
+  - DB_SETUP
+
+# whitelist
+branches:
+ only:
+  - master
+  - DEV
+
 language: node_js
-node_js:
- - "node"
+
+sudo: required
+
+services:
+ - docker
+
+env:
+ DOCKER_COMPOSE_VERSION: 1.11.2
+
+before_install:
+ - sudo rm /usr/local/bin/docker-compose
+ - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+ - chmod +x docker-compose
+ - sudo mv docker-compose /usr/local/bin
+
+before_script:
+ - docker-compose up --build -d
+# docker-compose run users-service knex migrate:latest --env development --knexfile app/knexfile.js
+#   - docker-compose run users-service knex seed:run --env development --knexfile app/knexfile.js
+#   - docker-compose run locations-service knex migrate:latest --env development --knexfile app/knexfile.js
+#   - docker-compose run locations-service knex seed:run --env development --knexfile app/knexfile.js
+
+script:
+ - docker-compose run node npm test
+
+after_script:
+ - docker-compose down

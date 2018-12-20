@@ -8,8 +8,9 @@ db-migrations: ## Execute migrations
 db-seeds: ## Import seeds
 	docker exec -it bh_postgres psql admin admin -f sql/seeds.sql
 
-db-drop: ## Drop seeds
-	docker exec -it bh_postgres psql admin admin -f sql/drop.sql
+db-install: ## Drop seeds
+	docker exec -it bh_node node_modules/.bin/sequelize db:migrate
+	docker exec -it bh_node node_modules/.bin/sequelize db:seed:all
 
 
 # DEFAULT

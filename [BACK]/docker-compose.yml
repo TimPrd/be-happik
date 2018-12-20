@@ -9,6 +9,8 @@ services:
       - './:/home/node/app'
     ports:
       - '3000:3000'
+    links:
+      - 'postgres:postgres'
   postgres:
     container_name: bh_postgres
     hostname: bh_postgres
@@ -22,5 +24,3 @@ services:
       - POSTGRES_PASSWORD=admin
     ports:
       - '5432:5432'
-    links:
-      - 'node:node' 
