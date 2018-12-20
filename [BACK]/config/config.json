@@ -3,7 +3,7 @@
     "username": "admin",
     "password": "admin",
     "database": "dev",
-    "host": "172.18.0.3",
+    "host": "bh_postgres",
     "port": "5432",
     "dialect": "postgres"
   },
