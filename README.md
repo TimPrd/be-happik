@@ -1,3 +1,5 @@
+[![](https://img.shields.io/github/issues/badges/shields/service-badge.svg)](https://github.com/TimPrd/Be-Happik)
+
 # Be-Happik
 
 Run the app : 
