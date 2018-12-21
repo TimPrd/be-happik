@@ -28,8 +28,8 @@ before_install:
 before_script:
   - cd [BACK]
   - docker-compose up --build -d
-  - docker-compose run node sequelize db:migrate
-  - docker exec -it bh_node ./node_modules/sequelize-cli/bin/sequelize db:migrate
+#  - docker-compose run node sequelize db:migrate
+#  - docker exec -it bh_node ./node_modules/sequelize-cli/bin/sequelize db:migrate
 # - docker exec -it bh_node node_modules/.bin/sequelize db:seed:all
   
 # - docker-compose run users-service knex seed:run --env development --knexfile app/knexfile.js
@@ -37,8 +37,11 @@ before_script:
 #   - docker-compose run locations-service knex seed:run --env development --knexfile app/knexfile.js
 
 script:
-#  - docker exec -it bh_node node_modules/.bin/sequelize db:migrate
+# - docker exec -it bh_node node_modules/.bin/sequelize db:migrate
   - docker exec -it bh_node npm test
 
 after_script:
   - docker-compose down
+  
+after_success:
+  - docker exec -it bh_node npm run coveralls
