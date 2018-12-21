@@ -1,13 +1,12 @@
 var express = require("express");
 var router = express.Router();
-var path = require("path");
 
 const models = require('../../models/');
-
+const controller = require('../controllers/');
 
 //HOME
 router.route("/").all(function (req, res) {
-	res.send('Welcome on board ! '); 
+	res.send('Welcome on board ! ');
 });
 
 router.get("/users", async function(req, res, next) {
@@ -17,9 +16,9 @@ router.get("/users", async function(req, res, next) {
             id: 2
         },
         include: [
-            { model: models.Role, as: 'role'  }, // load all pictures
+            { model: controllers.Role, as: 'role'  }, // load all pictures
         ]
-    })*/
+    })
     const role = models.Role.build({roleName: 'Admin'});
     const usr  = models.User.build({ firstName: 'John',
         lastName: 'Doe',
@@ -35,17 +34,12 @@ router.get("/users", async function(req, res, next) {
         	console.log("ASSOCIATED", associatedTasks)
             // associatedTasks is an array of tasks
         })*/
-    })
-
-    console.log(usr)
-
     //console.log(users[0]);
-    res.send('Fetch : ' + users[0].firstName);//users.length + ' users.')
-})
+    res.send('Fetch : ' + JSON.stringify(users));//users.length + ' users.')
+});
 
-router.post("/signup", async function(req,res,next) {
-
-})
+router.post("/signup", controller.User.signup);
+router.get("/secret", controller.User.secret)
 
 /********************************************
  *             ROADS : Users                *
@@ -117,7 +111,7 @@ module.exports = (sequelize, DataTypes) => {
         avatar: DataTypes.STRING,
         password: DataTypes.STRING
     }, {});
-    User.associate = function (models) {
+    User.associate = function (controllers) {
         User.belongsTo('roles'); // Adds fk_company to User
     };
     return User;
