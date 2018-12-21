@@ -1,5 +1,8 @@
 const express = require('express');
+const passport    = require('passport');
+require('./passport');
 const path = require('path');
+require('dotenv').config()
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
@@ -33,7 +36,7 @@ app.use(function(err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  res.json({error:err});
 });
 
 module.exports = app;

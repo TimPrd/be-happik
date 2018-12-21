@@ -1,4 +1,4 @@
-version: "3.7"
+version: "2"
 services:
   node:
     container_name: bh_node
@@ -9,6 +9,8 @@ services:
       - './:/home/node/app'
     ports:
       - '3000:3000'
+    links:
+      - 'postgres:postgres'
   postgres:
     container_name: bh_postgres
     hostname: bh_postgres
@@ -17,9 +19,8 @@ services:
     volumes:
       - './sql:/home/psql/sql'
     environment:
+      - POSTGRES_DB=dev
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=admin
     ports:
       - '5432:5432'
-    links:
-      - 'node:node' 
