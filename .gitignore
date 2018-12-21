@@ -1,3 +1,5 @@
+*.travis*
+*.coveralls*
 # Logs
 logs
 *.log
