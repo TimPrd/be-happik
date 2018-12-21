@@ -2,7 +2,11 @@
     "name": "node-docker",
     "version": "0.0.0",
     "private": true,
-    "scripts": {},
+    "scripts": {
+        "test": "mocha",
+        "cover": "./node_modules/.bin/istanbul cover node_modules/mocha/bin/_mocha test/index.js",
+        "coveralls": "npm run cover --report lcovonly && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
+    },
     "dependencies": {
         "body-parser": "~1.18.2",
         "cookie-parser": "~1.4.3",
@@ -24,5 +28,12 @@
         "sequelize": "~4.28.6",
         "sequelize-cli": "^5.4.0",
         "serve-favicon": "~2.4.5"
+    },
+    "devDependencies": {
+        "chai": "^4.2.0",
+        "chai-http": "^4.2.0",
+        "coveralls": "^3.0.2",
+        "istanbul": "^0.4.5",
+        "mocha": "^5.2.0"
     }
 }
