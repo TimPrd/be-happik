@@ -39,7 +39,7 @@ before_script:
 script:
 # - docker exec -it bh_node node_modules/.bin/sequelize db:migrate
   - docker exec -it bh_node npm test
-
+  
 after_script:
   - docker-compose down
   
