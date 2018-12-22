@@ -9,6 +9,8 @@ router.route("/").all(function (req, res) {
 	res.send('Welcome on board ! ');
 });
 
+router.post("/user/subscribe", controller.User.subscribe);
+
 router.get("/users", async function(req, res, next) {
 	const users = await models.User.findAll({});
     /*User.findAll({
@@ -35,7 +37,8 @@ router.get("/users", async function(req, res, next) {
             // associatedTasks is an array of tasks
         })*/
     //console.log(users[0]);
-    res.send('Fetch : ' + JSON.stringify(users));//users.length + ' users.')
+	res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify(users));//users.length + ' users.')
 });
 
 router.post("/signup", controller.User.signup);

@@ -5,9 +5,9 @@ FROM node:9
 WORKDIR /src
 
 # Install packages using NPM 5 (bundled with the node:9 image)
-#COPY ./package.json /src/package.json
-#COPY ./package-lock.json /src/package-lock.json
-#RUN npm install 
+COPY ./package.json /src/package.json
+COPY ./package-lock.json /src/package-lock.json
+RUN npm install
 
 # Add application code
 
