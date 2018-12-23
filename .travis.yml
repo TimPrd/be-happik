@@ -28,6 +28,7 @@ before_install:
 before_script:
   - cd [BACK]
   - docker-compose up --build -d
+  - docker-compose run node npm test
 #  - docker-compose run node sequelize db:migrate
 #  - docker exec -it bh_node ./node_modules/sequelize-cli/bin/sequelize db:migrate
 # - docker exec -it bh_node node_modules/.bin/sequelize db:seed:all
@@ -38,7 +39,7 @@ before_script:
 
 script:
 # - docker exec -it bh_node node_modules/.bin/sequelize db:migrate
-  - npm run travis 
+# - npm run travis 
   
 after_script:
   - docker-compose down
