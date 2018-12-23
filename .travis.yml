@@ -17,7 +17,7 @@ services:
   - docker
 
 env:
-  DOCKER_COMPOSE_VERSION: 1.11.2
+  - DOCKER_COMPOSE_VERSION=1.4.2
 
 before_install:
   - sudo rm /usr/local/bin/docker-compose
@@ -27,8 +27,9 @@ before_install:
 
 before_script:
   - cd [BACK]
+  - npm install
   - docker-compose up --build -d
-  - docker-compose run node npm run travis
+  - docker exec -it bh_node npm install
 #  - docker-compose run node sequelize db:migrate
 #  - docker exec -it bh_node ./node_modules/sequelize-cli/bin/sequelize db:migrate
 # - docker exec -it bh_node node_modules/.bin/sequelize db:seed:all
@@ -40,6 +41,7 @@ before_script:
 script:
 # - docker exec -it bh_node node_modules/.bin/sequelize db:migrate
 # - npm run travis 
+  - docker ps
   
 after_script:
   - docker-compose down
