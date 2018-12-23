@@ -42,7 +42,7 @@ before_script:
 script:
 # - docker exec -it bh_node node_modules/.bin/sequelize db:migrate
 # - npm run travis 
-  - docker ps
+  - docker ps 
   
 after_script:
   - docker-compose down
