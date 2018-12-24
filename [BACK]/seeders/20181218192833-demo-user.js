@@ -1,15 +1,46 @@
 'use strict';
 
 module.exports = {
-    up: (queryInterface, Sequelize) => {
-        return queryInterface.bulkInsert('Users', [{
-            firstName: 'John',
-            lastName: 'Doe',
-            email: 'demo@demo.com',
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            password: "password",
-        }], {});
+    up: async (queryInterface, Sequelize) => {
+        await queryInterface.bulkInsert('Roles', [
+            {
+                roleName: 'Manager',
+                id:0,
+                createdAt: new Date(),
+                updatedAt: new Date()
+            }
+        ], {});
+
+
+        return await queryInterface.bulkInsert('Users', [
+            {
+                firstName: 'Harry',
+                lastName: 'Potter',
+                email: 'harry@potter.com',
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                password: "horcrux",
+            },
+            {
+                firstName: 'Hermione',
+                lastName: 'Granger',
+                email: 'hermione@granger.com',
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                password: "polynectar",
+            },
+            {
+                id: 0,
+                firstName: 'Rogue',
+                lastName: 'Severus',
+                email: 'rogue@severus.com',
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                password: "lilypotter",
+                RoleId: 0
+            }], {});
+
+
     },
 
     down: (queryInterface, Sequelize) => {
