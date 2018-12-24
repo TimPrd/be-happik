@@ -6,11 +6,31 @@ const controller = require('../controllers/');
 
 //HOME
 router.route("/").all(function (req, res) {
-	res.send('Welcome on board ! ');
+    res.send('Welcome on board ! ');
 });
 
-router.get("/users", async function(req, res, next) {
-	const users = await models.User.findAll({});
+router.get('/test', async function (req, res, next) {
+    let team = await models.Team.findOne({where: {teamName: "JKRow"}});
+
+    models.User.create({
+        email: "test",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        password:""
+    }).then(function(created){
+        console.log(created);
+        created.setTeam(team.id);
+        models.Recovery.create({
+            token: "token",
+            destroyable: false,
+        }).then(recovery => {
+            return recovery.setUser(created.id)
+        })
+    });
+});
+
+router.get("/users", async function (req, res, next) {
+    const users = await models.User.findAll({});
     /*User.findAll({
         where:  {
             id: 2
@@ -38,7 +58,11 @@ router.get("/users", async function(req, res, next) {
     res.send('Fetch : ' + JSON.stringify(users));//users.length + ' users.')
 });
 
-router.post("/signup", controller.User.signup);
+router.post("/login", controller.User.login);
+router.post("/register", controller.User.register);
+router.put("/reset/:email", controller.User.reset);
+router.put("/recover/:email", controller.User.recover);
+
 router.get("/secret", controller.User.secret)
 
 /********************************************
