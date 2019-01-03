@@ -19,3 +19,10 @@ exports.checkFormControl = function (user, password, req, res ) {
         return "success";
     }
 };
+
+
+exports.regex = async function (inputRegex, str) {
+    var regex = new RegExp(inputRegex);
+    return regex.test(str);
+};
+

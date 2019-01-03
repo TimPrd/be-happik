@@ -9,6 +9,7 @@ services:
       - './:/home/node/app'
     ports:
       - '3000:3000'
+      - "56745:56745"
     links:
       - 'postgres:postgres'
   postgres:

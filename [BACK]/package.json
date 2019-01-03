@@ -2,19 +2,30 @@
     "name": "node-docker",
     "version": "0.0.0",
     "private": true,
-    "scripts": {},
+    "scripts": {
+        "test": "mocha",
+        "cover": "./node_modules/.bin/istanbul cover node_modules/mocha/bin/_mocha test/index.js",
+        "coveralls": "npm run cover --report lcovonly && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
+    },
     "dependencies": {
         "bcrypt": "^3.0.2",
+        "@sendgrid/mail": "^6.3.1",
         "body-parser": "~1.18.2",
+        "chai": "^4.2.0",
+        "chai-http": "^4.2.0",
         "cookie-parser": "~1.4.3",
+        "coveralls": "^3.0.2",
         "debug": "~2.6.9",
         "deep-extend": "0.6.0",
         "dotenv": "^6.2.0",
         "express": "~4.16.2",
         "hbs": "~4.0.1",
+        "istanbul": "^0.4.5",
         "jsonwebtoken": "^8.4.0",
         "lodash": "4.17.5",
+        "mocha": "^5.2.0",
         "morgan": "~1.9.0",
+        "nodemailer": "^4.7.0",
         "nodemon": "^1.13.3",
         "passport": "^0.4.0",
         "passport-jwt": "^4.0.0",
@@ -25,5 +36,6 @@
         "sequelize": "~4.28.6",
         "sequelize-cli": "^5.4.0",
         "serve-favicon": "~2.4.5"
-    }
+    },
+    "devDependencies": {}
 }

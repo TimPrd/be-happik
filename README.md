@@ -25,15 +25,11 @@ Using just make, it will prompt all the possible operations :
 ```
 make 
 ```
-- [x] Install tables:
 
-```
-make db-migrations
-```
 - [x] Install datas:
 
 ```
-make db-seed
+make db-install
 ```
 
 - [ ] You can go in the containers if needed :
