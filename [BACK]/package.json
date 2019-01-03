@@ -8,6 +8,7 @@
         "coveralls": "npm run cover --report lcovonly && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
     },
     "dependencies": {
+        "bcrypt": "^3.0.2",
         "@sendgrid/mail": "^6.3.1",
         "body-parser": "~1.18.2",
         "chai": "^4.2.0",

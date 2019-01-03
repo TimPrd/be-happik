@@ -1,8 +1,10 @@
 const jwt = require('jsonwebtoken');
 const passport = require('passport');
 const models = require('../../models/');
-const Mailer = require('./Mailer');
 const Utils = require('./Utils');
+const bcrypt = require('bcrypt');
+const Mailer = require('./Mailer');
+
 
 exports.register = async function (req, res) {
     const rawEmails = req.body.email;
@@ -131,6 +133,7 @@ exports.login = function (req, res) {
 };
 
 exports.secret = function (req, res) {
+    res.setHeader('Content-Type', 'application/json');
     console.log('secret')
     passport.authenticate('jwt', {session: false}, (err, user, info) => {
         if (err) {
@@ -141,5 +144,45 @@ exports.secret = function (req, res) {
         else
             return res.json({msg: "You are not authorize"});
     })(req, res);
+};
+
+exports.subscribe =  async function (req, res, next) {
+
+    const password = req.body.password;
+    const tempPassword = req.body.tempPassword;
+    const email = req.body.email;
+    const user =  await models.User.findOne({
+        where: {
+            email: email,
+            password: tempPassword,
+        }
+    });
+
+    if (user === null) {
+        return res.send(JSON.stringify({
+            error: "Identifiant ou mot de passe temporaire incorrect",
+        }));
+    }
+
+    const checkPassword = Utils.checkFormControl(user,password,req,res);
+
+    if (checkPassword !== "success") {
+        return res.send(JSON.stringify({
+            checkPassword
+        }));
+    } else {
+        bcrypt.hash(password, 10, function(err, hash) {
+            models.User.update(
+                {
+                    password: hash
+                },
+                {
+                    where: {
+                        email: email
+                    }
+                });
+            return res.send(JSON.stringify(password));
+        });
+    }
 };
 
