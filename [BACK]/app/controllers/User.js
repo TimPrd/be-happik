@@ -10,52 +10,49 @@ exports.register = async function (req, res) {
     const rawEmails = req.body.email;
     const rawteam = req.body.team;
     const currentUser = req.body.currentUser;
-
-    let sortedEmail = [...new Set(rawEmails)];
+    
+    const sortedEmail = [...new Set(rawEmails.filter(x => /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(x)))];
     let users = [];
     let team = await models.Team.findOne({where: {teamName: rawteam}});
 
     sortedEmail.forEach(async function (mail) {
-            if (Utils.regex('^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,3})+$', mail)) {
-                const token = require('crypto').randomBytes(10).toString('hex');
-                models.User.find({
-                    where: {id: currentUser.id, RoleId: 0}
-                }).then(async currentUsr => {
-                    if (currentUsr) {
-                        await models.User.find({
-                            where: {email: mail, isRegistered: false}
-                        }).then(async user => {
-                            if (!user) {
-                                await models.User.create({
-                                    email: mail,
-                                    createdAt: new Date(),
-                                    updatedAt: new Date(),
-                                }).then(async created => {
-                                    created.setTeam(team.id);
-                                    models.Recovery.create({
-                                        token: token,
-                                        destroyable: false,
-                                    }).then(recovery => {
-                                        return recovery.setUser(created.id)
-                                    })
-                                });
-                            }
-                        }).catch(error => {
-                            console.log(error)// Ooops, do some error-handling
+        const token = require('crypto').randomBytes(10).toString('hex');
+        models.User.find({
+            where: {id: currentUser.id, RoleId: 0}
+        }).then(async currentUsr => {
+            if (currentUsr) {
+                await models.User.find({
+                    where: {email: mail, isRegistered: false}
+                }).then(async user => {
+                    if (!user) {
+                        await models.User.create({
+                            email: mail,
+                            createdAt: new Date(),
+                            updatedAt: new Date(),
+                        }).then(async created => {
+                            created.setTeam(team.id);
+                            models.Recovery.create({
+                                token: token,
+                                destroyable: false,
+                            }).then(recovery => {
+                                return recovery.setUser(created.id)
+                            })
                         });
                     }
+                }).catch(error => {
+                    console.log(error)// Ooops, do some error-handling
                 });
-
-                const datas = {
-                    email: mail,
-                    team: team.teamName,
-                    token: token,
-                    url: "www.behappik.com",
-                };
-                Mailer.send(mail, 'd-3ddc12cac0664916b99d3a2af772d9f1', datas)
             }
-        }
-    );
+        });
+
+        const datas = {
+            email: mail,
+            team: team.teamName,
+            token: token,
+            url: "www.behappik.com",
+        };
+        Mailer.send(mail, 'd-3ddc12cac0664916b99d3a2af772d9f1', datas)
+    });
     res.end();
 };
 
