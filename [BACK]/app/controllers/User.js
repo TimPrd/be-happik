@@ -52,7 +52,7 @@ exports.register = async function (req, res) {
                     token: token,
                     url: "www.behappik.com",
                 };
-                //Mailer.send(mail, 'd-3ddc12cac0664916b99d3a2af772d9f1', datas)
+                Mailer.send(mail, 'd-3ddc12cac0664916b99d3a2af772d9f1', datas)
             }
         }
     );
@@ -76,8 +76,9 @@ exports.recover = async function (req, res) {
                 }).then(recovery => {
                     if (recovery) {
                         recovery.update({destroyable: true});
-                        //todo : bcrypt
-                        user.update({password: password})
+                        bcrypt.hash(password, 10, function(err, hash) {
+                            user.update({password: hash})
+                        }
                     }
                 })
             }
@@ -152,11 +153,14 @@ exports.subscribe =  async function (req, res, next) {
     const tempPassword = req.body.tempPassword;
     const email = req.body.email;
     const user =  await models.User.findOne({
-        where: {
-            email: email,
-            password: tempPassword,
-        }
-    });
+            where: {email: email}
+        }).then(async user => {
+            if (user) {
+                models.Recovery.findOne({
+                    where: {UserId: user.id, token: tempPassword}
+                }).then( recover => return recover) ;
+            }
+        });
 
     if (user === null) {
         return res.send(JSON.stringify({
@@ -177,9 +181,7 @@ exports.subscribe =  async function (req, res, next) {
                     password: hash
                 },
                 {
-                    where: {
-                        email: email
-                    }
+                    where: {email: email}
                 });
             return res.send(JSON.stringify(password));
         });
