@@ -1,59 +1,58 @@
 const jwt = require('jsonwebtoken');
 const passport = require('passport');
 const models = require('../../models/');
-const Mailer = require('./Mailer');
 const Utils = require('./Utils');
+const bcrypt = require('bcrypt');
+const Mailer = require('./Mailer');
+
 
 exports.register = async function (req, res) {
     const rawEmails = req.body.email;
     const rawteam = req.body.team;
     const currentUser = req.body.currentUser;
-
-    let sortedEmail = [...new Set(rawEmails)];
+    
+    const sortedEmail = [...new Set(rawEmails.filter(x => /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(x)))];
     let users = [];
     let team = await models.Team.findOne({where: {teamName: rawteam}});
 
     sortedEmail.forEach(async function (mail) {
-            if (Utils.regex('^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,3})+$', mail)) {
-                const token = require('crypto').randomBytes(10).toString('hex');
-                models.User.find({
-                    where: {id: currentUser.id, RoleId: 0}
-                }).then(async currentUsr => {
-                    if (currentUsr) {
-                        await models.User.find({
-                            where: {email: mail, isRegistered: false}
-                        }).then(async user => {
-                            if (!user) {
-                                await models.User.create({
-                                    email: mail,
-                                    createdAt: new Date(),
-                                    updatedAt: new Date(),
-                                }).then(async created => {
-                                    created.setTeam(team.id);
-                                    models.Recovery.create({
-                                        token: token,
-                                        destroyable: false,
-                                    }).then(recovery => {
-                                        return recovery.setUser(created.id)
-                                    })
-                                });
-                            }
-                        }).catch(error => {
-                            console.log(error)// Ooops, do some error-handling
+        const token = require('crypto').randomBytes(10).toString('hex');
+        models.User.find({
+            where: {id: currentUser.id, RoleId: 0}
+        }).then(async currentUsr => {
+            if (currentUsr) {
+                await models.User.find({
+                    where: {email: mail, isRegistered: false}
+                }).then(async user => {
+                    if (!user) {
+                        await models.User.create({
+                            email: mail,
+                            createdAt: new Date(),
+                            updatedAt: new Date(),
+                        }).then(async created => {
+                            created.setTeam(team.id);
+                            models.Recovery.create({
+                                token: token,
+                                destroyable: false,
+                            }).then(recovery => {
+                                return recovery.setUser(created.id)
+                            })
                         });
                     }
+                }).catch(error => {
+                    console.log(error)// Ooops, do some error-handling
                 });
-
-                const datas = {
-                    email: mail,
-                    team: team.teamName,
-                    token: token,
-                    url: "www.behappik.com",
-                };
-                //Mailer.send(mail, 'd-3ddc12cac0664916b99d3a2af772d9f1', datas)
             }
-        }
-    );
+        });
+
+        const datas = {
+            email: mail,
+            team: team.teamName,
+            token: token,
+            url: "www.behappik.com",
+        };
+        Mailer.send(mail, 'd-3ddc12cac0664916b99d3a2af772d9f1', datas)
+    });
     res.end();
 };
 
@@ -74,8 +73,9 @@ exports.recover = async function (req, res) {
                 }).then(recovery => {
                     if (recovery) {
                         recovery.update({destroyable: true});
-                        //todo : bcrypt
-                        user.update({password: password})
+                        bcrypt.hash(password, 10, function(err, hash) {
+                            user.update({password: hash})
+                        }
                     }
                 })
             }
@@ -131,6 +131,7 @@ exports.login = function (req, res) {
 };
 
 exports.secret = function (req, res) {
+    res.setHeader('Content-Type', 'application/json');
     console.log('secret')
     passport.authenticate('jwt', {session: false}, (err, user, info) => {
         if (err) {
@@ -141,5 +142,46 @@ exports.secret = function (req, res) {
         else
             return res.json({msg: "You are not authorize"});
     })(req, res);
+};
+
+exports.subscribe =  async function (req, res, next) {
+
+    const password = req.body.password;
+    const tempPassword = req.body.tempPassword;
+    const email = req.body.email;
+    const user =  await models.User.findOne({
+            where: {email: email}
+        }).then(async user => {
+            if (user) {
+                models.Recovery.findOne({
+                    where: {UserId: user.id, token: tempPassword}
+                }).then( recover => return recover) ;
+            }
+        });
+
+    if (user === null) {
+        return res.send(JSON.stringify({
+            error: "Identifiant ou mot de passe temporaire incorrect",
+        }));
+    }
+
+    const checkPassword = Utils.checkFormControl(user,password,req,res);
+
+    if (checkPassword !== "success") {
+        return res.send(JSON.stringify({
+            checkPassword
+        }));
+    } else {
+        bcrypt.hash(password, 10, function(err, hash) {
+            models.User.update(
+                {
+                    password: hash
+                },
+                {
+                    where: {email: email}
+                });
+            return res.send(JSON.stringify(password));
+        });
+    }
 };
 

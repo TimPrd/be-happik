@@ -15,17 +15,17 @@ passport.use(new LocalStrategy({
     },
     function (email, password, cb) {
         console.log("test");
-        return models.User.findOne({where: {email: email, password: password}})
+        
+        return models.User.findOne({where: {email: email}})
             .then(user => {
-                if (!user) {
-                    return cb(null, false, {message: 'Incorrect email or password.'});
+                const match = await bcrypt.compare(password, user.password);
+                if(match) {
+                    return cb(null, user, {message: 'Logged In Successfully'});
                 }
-                return cb(null, user, {
-                    message: 'Logged In Successfully'
-                });
+                return cb(null, false, {message: 'Incorrect email or password.'});              
             })
             .catch(err => {
-                console.log('errrr', err)
+                console.log('error', err)
                 return cb(err);
             });
     }
