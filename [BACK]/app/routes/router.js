@@ -37,9 +37,9 @@ router.get('/test', async function (req, res, next) {
 
 
 router.post("/login", controller.User.login);
-router.post("/register", controller.User.register);
-router.put("/reset/:email", controller.User.reset);
-router.put("/recover/:email", controller.User.recover);
+router.post("/user/register", controller.User.register);
+router.post("/user/reset/", controller.User.reset);
+router.post("/user/recover/", controller.User.recover);
 
 router.get("/secret", controller.User.secret)
 

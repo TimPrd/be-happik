@@ -1,5 +1,5 @@
 
-# Be-Happik
+# Be-Happik [![Build Status](https://travis-ci.org/TimPrd/Be-Happik.svg?branch=master)](https://travis-ci.org/TimPrd/Be-Happik)
 
 Run the app : 
 

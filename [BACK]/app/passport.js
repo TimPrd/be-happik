@@ -1,6 +1,6 @@
 const passport = require('passport');
 const passportJWT = require("passport-jwt");
-
+const bcrypt = require('bcrypt-nodejs');
 const ExtractJWT = passportJWT.ExtractJwt;
 
 const LocalStrategy = require('passport-local').Strategy;
@@ -14,10 +14,8 @@ passport.use(new LocalStrategy({
         passwordField: 'password'
     },
     function (email, password, cb) {
-        console.log("test");
-        
         return models.User.findOne({where: {email: email}})
-            .then(user => {
+            .then(async user => {
                 const match = await bcrypt.compare(password, user.password);
                 if(match) {
                     return cb(null, user, {message: 'Logged In Successfully'});
