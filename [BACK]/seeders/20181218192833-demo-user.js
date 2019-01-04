@@ -22,15 +22,6 @@ module.exports = {
                 password: "horcrux",
             },
             {
-                firstName: 'Hermione',
-                lastName: 'Granger',
-                email: 'hermione@granger.com',
-                createdAt: new Date(),
-                updatedAt: new Date(),
-                password: "polynectar",
-            },
-            {
-                id: 0,
                 firstName: 'Rogue',
                 lastName: 'Severus',
                 email: 'rogue@severus.com',
