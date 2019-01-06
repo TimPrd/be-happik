@@ -4,7 +4,9 @@ services:
     container_name: bh_node
     hostname: bh_node
     working_dir: /home/node/app
-    build: './docker/node'
+    build:
+      context: .
+      dockerfile: ./docker/node/Dockerfile
     volumes:
       - './:/home/node/app'
     ports:
