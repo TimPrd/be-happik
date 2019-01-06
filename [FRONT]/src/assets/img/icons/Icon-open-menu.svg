@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 9.592 8.854">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #777;
+      }
+    </style>
+  </defs>
+  <g id="open-menu" transform="translate(-5.533 -5.903)">
+    <path id="Tracé_360" data-name="Tracé 360" class="cls-1" d="M24.223,16H15.369a.369.369,0,1,0,0,.738h8.854a.369.369,0,1,0,0-.738Z" transform="translate(-9.466 -10.097)"/>
+    <path id="Tracé_361" data-name="Tracé 361" class="cls-1" d="M24.223,27H15.369a.369.369,0,0,0,0,.738h8.854a.369.369,0,1,0,0-.738Z" transform="translate(-9.466 -17.039)"/>
+    <path id="Tracé_362" data-name="Tracé 362" class="cls-1" d="M24.223,38H15.369a.369.369,0,1,0,0,.738h8.854a.369.369,0,1,0,0-.738Z" transform="translate(-9.466 -23.981)"/>
+  </g>
+</svg>
