@@ -8,6 +8,7 @@ const Container = styled.div`
   flex-direction: column;
   box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.04);
   padding: 0 10%;
+  box-sizing: border-box;
 `;
 
 const Icon = styled.img`

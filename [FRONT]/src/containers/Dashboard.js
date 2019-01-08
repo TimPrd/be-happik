@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 import ActionButton from '../components/Buttons/DashboardActionBtn';
 import DashboardInfos from '../components/Dashboard/Infos';
+import ChartEmploye from '../components/Dashboard/ChartEmploye';
 import PlusIcon from '../assets/img/icons/Icon-AddPlus.svg';
 import SurveyIcon from '../assets/img/icons/Icon-Survey.svg';
 import UserIcon from '../assets/img/icons/Icon-User.svg';
@@ -42,8 +43,26 @@ const Section = styled.div`
   padding: 0 10px;
 `;
 
+const Row = styled.div`
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  box-sizing: border-box;
+  margin-top: 50px;
+`;
+
 const InfosSection = styled.div`
   width: 30%;
+  box-sizing: border-box;
+`;
+
+const ChartSection = styled.div`
+  width: 65%;
+  box-sizing: border-box;
+  box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.04);
+  padding: 30px;
+  margin-left: 5%;
 `;
 
 const DashboardInformations = [
@@ -111,9 +130,15 @@ const Dashboard = () => (
       </Section>
     </ActionsSection>
 
-    <InfosSection>
-      <DashboardInfos dataInfos={DashboardInformations} />
-    </InfosSection>
+    <Row>
+      <InfosSection>
+        <DashboardInfos dataInfos={DashboardInformations} />
+      </InfosSection>
+
+      <ChartSection>
+        <ChartEmploye />
+      </ChartSection>
+    </Row>
   </Container>
 );
 

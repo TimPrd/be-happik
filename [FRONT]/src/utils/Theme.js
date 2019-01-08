@@ -2,10 +2,14 @@ const theme = {
   colors: {
     white: '#FFFFFF',
     black: '#000000',
+    bluefe: '#56d9fe',
     rose85: '#FC5185',
     greenc9: '#3fc1c9',
+    yellow83: '#ffda83',
+    greybe: '#bebebe',
     greyec: ' #e8e9ec',
     grey5c: '#4d4f5c',
+    orange73: '#ff8373',
   },
   custom: {
     title: 30,

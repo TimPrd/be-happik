@@ -1,11 +1,12 @@
 import React from 'react';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { ThemeProvider } from 'styled-components';
 
 import AddUser from './components/AddUser';
 import Dashboard from './containers/Dashboard';
 import Theme from './utils/Theme';
 import './App.css';
+import NotFoundPage from './containers/404Page';
 
 const App = () => (
   <ThemeProvider theme={Theme}>
@@ -16,8 +17,12 @@ const App = () => (
         </header>
 
         <main>
-          <Route path="/user/create" component={AddUser} />
-          <Route path="/dashboard" component={Dashboard} />
+          <Switch>
+            <Route exact path="/user/create" component={AddUser} />
+            <Route exact path="/dashboard" component={Dashboard} />
+
+            <Route component={NotFoundPage} />
+          </Switch>
         </main>
       </div>
     </Router>
