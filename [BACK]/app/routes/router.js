@@ -41,6 +41,8 @@ router.post("/user/register", controller.User.register);
 router.post("/user/reset/", controller.User.reset);
 router.post("/user/recover/", controller.User.recover);
 
+router.get("/surveys/predefined/", controller.User.recover);
+
 router.get("/secret", controller.User.secret)
 
 /********************************************
