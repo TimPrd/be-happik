@@ -3,9 +3,14 @@ var router = express.Router();
 
 const models = require('../../models/');
 const controller = require('../controllers/');
+var path = require('path');
+var appDir = path.dirname(require.main.filename);
 
 //HOME
 router.route("/").all(function (req, res) {
+    var io = req.app.get('socketio');
+    io.emit('hi!');
+    //res.sendFile(__dirname + '/index.html');
     res.send('Welcome on board ! ');
 });
 
@@ -26,7 +31,7 @@ router.post("/user/recover/", controller.User.recover);
 
 /********************************************
  *             ROADS : Login                *
- ********************************************/s
+ ********************************************/
 
 router.post("/login", controller.User.login);
 router.get("/secret", controller.User.secret)
@@ -35,7 +40,8 @@ router.get("/secret", controller.User.secret)
 /********************************************
  *             ROADS : Survey               *
  ********************************************/
-router.post("/validate", controller.Survey.validate)
+router.post("/survey/validate", controller.Survey.validate);
+
 
 
 module.exports = router;

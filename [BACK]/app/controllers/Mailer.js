@@ -8,6 +8,6 @@ exports.send = async function (mail, templateId, datas) {
         templateId: templateId,
         dynamic_template_data: datas
     };
-    //sgMail.send(msg);
+    sgMail.send(msg);
 
 }
