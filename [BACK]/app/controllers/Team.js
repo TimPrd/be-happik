@@ -6,9 +6,9 @@ exports.getTeamList = async function (req, res) {
         if (err) {
             return res.json({msg: err});
         }
-        //Todo : check manager
-        if (user) {
-            let q = 100;
+
+        if (user && user.RoleId === 0) {
+            let q = null;
             if (typeof req.query.q !== 'undefined') {
                 q = parseInt(req.query.q);
             }
