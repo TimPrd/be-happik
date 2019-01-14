@@ -4,19 +4,25 @@ import { ThemeProvider } from 'styled-components';
 
 import AddUser from './components/AddUser';
 import Dashboard from './containers/Dashboard';
+import NotFoundPage from './containers/404Page';
+import SideBar from './containers/SideBar';
+import NavBar from './containers/NavBar';
 import Theme from './utils/Theme';
 import './App.css';
-import NotFoundPage from './containers/404Page';
 
 const App = () => (
   <ThemeProvider theme={Theme}>
     <Router>
       <div className="App">
-        <header className="app__header">
-          {/* <NavBar /> */}
-        </header>
+        <aside className="app__sideBar">
+          <SideBar />
+        </aside>
 
-        <main>
+        <main className="app__container">
+          <header className="app__header">
+            <NavBar />
+          </header>
+
           <Switch>
             <Route exact path="/user/create" component={AddUser} />
             <Route exact path="/dashboard" component={Dashboard} />

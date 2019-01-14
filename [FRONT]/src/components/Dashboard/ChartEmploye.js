@@ -111,8 +111,6 @@ class ChartEmploye extends React.Component {
               const { data } = chart;
               if (data.labels.length && data.datasets.length) {
                 return data.datasets.map((datasets, i) => {
-                  console.log(chart);
-
                   const ds = data.datasets[0];
                   const { getValueAtIndexOrDefault } = theHelp;
                   const arcOpts = chart.options.elements.arc;

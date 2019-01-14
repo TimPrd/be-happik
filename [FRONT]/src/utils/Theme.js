@@ -9,6 +9,9 @@ const theme = {
     greybe: '#bebebe',
     greyec: ' #e8e9ec',
     grey5c: '#4d4f5c',
+    greyf7: '#f7f7f7',
+    grey4a: '#4a4a4a',
+    greyc1: '#bdbdc1',
     orange73: '#ff8373',
   },
   custom: {

@@ -41,6 +41,10 @@ const Section = styled.div`
   width: 33.33%;
   box-sizing: border-box;
   padding: 0 10px;
+
+  @media screen and (max-width: 640px) {
+    width: 100%;
+  }
 `;
 
 const Row = styled.div`
