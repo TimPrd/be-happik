@@ -27,6 +27,7 @@ router.get("/users", async function(req, res, next) {
 router.post("/user/register", controller.User.register);
 router.post("/user/reset/", controller.User.reset);
 router.post("/user/recover/", controller.User.recover);
+router.get("/user/:id/surveys", controller.Survey.getSurveyByUser);
 
 
 /********************************************
@@ -41,7 +42,7 @@ router.get("/secret", controller.User.secret)
  *             ROADS : Survey               *
  ********************************************/
 router.post("/survey/validate", controller.Survey.validate);
-
+router.get("/surveys", controller.Survey.getAll);
 
 
 module.exports = router;
