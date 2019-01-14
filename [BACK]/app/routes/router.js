@@ -29,6 +29,12 @@ router.post("/user/reset/", controller.User.reset);
 router.post("/user/recover/", controller.User.recover);
 router.get("/user/:id/surveys", controller.Survey.getSurveyByUser);
 
+router.post("/user/register", controller.User.register);
+router.post("/user/reset/", controller.User.reset);
+router.post("/user/recover/", controller.User.recover);
+router.get("/question/predefined/", controller.Question.getPredefined);
+router.get("/team/list/", controller.Team.getTeamList);
+
 
 /********************************************
  *             ROADS : Login                *
