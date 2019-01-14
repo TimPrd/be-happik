@@ -2,8 +2,6 @@
 module.exports = (sequelize, DataTypes) => {
   const Question = sequelize.define('Question', {
     title: DataTypes.STRING,
-    creationDate: DataTypes.DATE,
-    creationUpdate: DataTypes.DATE,
     description: DataTypes.STRING,
     predefined: DataTypes.BOOLEAN
   }, {});

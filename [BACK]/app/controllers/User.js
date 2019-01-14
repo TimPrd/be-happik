@@ -207,8 +207,10 @@ exports.secret = function (req, res) {
         if (err) {
             return res.json({msg: err});
         }
-        if (user)
+        if (user) {
             return res.json({msg: "You are authorized"});
+        }
+
         else
             return res.json({msg: "You are not authorize"});
     })(req, res);

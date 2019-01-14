@@ -3,7 +3,7 @@
     "username": "admin",
     "password": "admin",
     "database": "dev",
-    "host": "dinghy",
+    "host": "192.168.64.2",
     "port": "32768",
     "dialect": "postgres"
   },
