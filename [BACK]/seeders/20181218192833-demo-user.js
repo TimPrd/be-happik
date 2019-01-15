@@ -13,7 +13,7 @@ module.exports = {
 
         await queryInterface.bulkInsert('Teams', [
             {
-                id:3,
+                id:5,
                 teamName: 'JKRow',
                 createdAt: new Date(),
                 updatedAt: new Date()
@@ -37,7 +37,7 @@ module.exports = {
                 updatedAt: new Date(),
                 password: "lilypotter",
                 RoleId: 0,
-                TeamId: 3
+                TeamId: 5
             }], {});
 
 

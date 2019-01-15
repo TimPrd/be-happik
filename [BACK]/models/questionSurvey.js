@@ -1,11 +1,12 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
-  const QuestionSurvey = sequelize.define('QuestionSurvey', {
-  }, {});
-  QuestionSurvey.associate = function(models) {
-    QuestionSurvey.belongsTo(models.Survey);
-    QuestionSurvey.belongsTo(models.Question);
+  const Questionsurvey = sequelize.define('Questionsurvey', {
+    place: DataTypes.INTEGER
+    }, {});
+    Questionsurvey.associate = function(models) {
+      Questionsurvey.belongsTo(models.Survey);
+      Questionsurvey.belongsTo(models.Question);
 
   };
-  return QuestionSurvey;
+  return Questionsurvey;
 };

@@ -3,39 +3,64 @@ const models = require('../../models/');
 
 
 exports.validate = async function (req, res) {
-    const currentUserName = req.body.currentUserName;
+    const author = req.body.author;
     const teams = req.body.teams;
-    const idTeam = await models.Team.findOne({where: {teamName: teams}});
-    const users = await models.User.findAll({where: {TeamId: idTeam.id}});
-    users.forEach(async user => {
+    const questions = req.body.questions;
 
-        const datas = {
-            email: user.email,
-        };
-        //Mailer.send(user.email, 'd-0ea007d61f4a415a8dfc8ebc143e759e', datas);
-        await models.UserSurvey.create({
+
+    let survey = await models.Survey.create({
+        title: req.body.surveyTitle,
+    }).then(survey => {
+        survey.setAuthor(author)
+        return survey;
+    });
+
+    await questions.forEach(async question => {
+        await models.Question.create({
+            title: question.title,
+            description: question.description,
+        }).then(async createdQuestion => {
+            await models.Questionsurvey.create({
+                place: question.place
+            }).then(questionSurvey => {
+                questionSurvey.setSurvey(survey.id);
+                questionSurvey.setQuestion(createdQuestion.id);
+            });
+        });
+    });
+
+    const idTeams = await models.Team.findAll({where: {teamName: teams}});
+    idTeams.forEach(async idTeam => {
+        let users = await models.User.findAll({where: {TeamId: idTeam.id}});
+        users.forEach(async user => {
+            const datas = {
+                email: user.email,
+            };
+            //Mailer.send(user.email, 'd-0ea007d61f4a415a8dfc8ebc143e759e', datas);
+            //await models.UserSurvey.create({
             //generate id survey
             //
-        }).then(usersurvey => {
-            usersurvey.setUser(user.id);
+            //}).then(usersurvey => {
+            //    usersurvey.setUser(user.id);
+            //});
+            await models.Notification.create({
+                title: "New Survey !",
+                body: "A new survey is available",
+                seen: false
+            }).then(notif => {
+                notif.setUser(user.id);
+                notif.setSender(author);
+            });
+
+            //var io = req.app.get('socketio');
+            //var sockets = req.app.get('usersSocket');
+            //sockets[1/*user.id*/]
+            //.emit('hi!', "important notification message");
+
         });
-
-        await models.Notification.create({
-            title: "titre",
-            body: "body",
-            seen: false
-        }).then(notif => {
-            notif.setUser(user.id);
-            notif.setSender(currentUserName);
-        });
-
-        //var io = req.app.get('socketio');
-        //var sockets = req.app.get('usersSocket');
-        //sockets[1/*user.id*/].emit('hi!', "important notification message");
-
     });
-    res.status(200).send(users);
-    //res.sendStatus(200);
+
+    res.sendStatus(201);
 };
 
 
