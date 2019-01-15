@@ -73,7 +73,7 @@ class ChartEmploye extends React.Component {
         scales: {
           xAxes: [{
             stacked: true,
-            barThickness: 50,
+            maxBarThickness: 50,
             gridLines: {
               display: false,
               drawBorder: false,
@@ -101,8 +101,6 @@ class ChartEmploye extends React.Component {
         legend: {
           display: true,
           reverse: true,
-          boxWidth: 100,
-
           labels: {
             fontSize: Theme.custom.bigtext,
             fontColor: Theme.colors.grey5c,

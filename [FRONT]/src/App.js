@@ -18,11 +18,10 @@ const App = () => (
           <SideBar />
         </aside>
 
+        <header className="app__header">
+          <NavBar />
+        </header>
         <main className="app__container">
-          <header className="app__header">
-            <NavBar />
-          </header>
-
           <Switch>
             <Route exact path="/user/create" component={AddUser} />
             <Route exact path="/dashboard" component={Dashboard} />

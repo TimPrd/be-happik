@@ -6,10 +6,11 @@
   display: flex;
   text-align: center;
   flex-wrap: wrap;
+  height: 100vh;
 }
 
 .app__header {
-  flex: 1;
+  width: calc(100VW - 250px);
   height: 70px;
   display: flex;
   flex-direction: column;
@@ -17,15 +18,21 @@
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
+  position: fixed;
+  right: 0;
+  z-index: 0;
 }
 
 .app__sideBar {
   width: 250px;
-  min-height: 100vh;
+  height: 100vh;
   position: relative;
+  z-index: 1;
 }
 .app__container {
-  flex: 1;
+  width: calc(100VW - 250px);
+  height: 100vh;
+  overflow: auto;
 }
 
 .App-link {
@@ -37,5 +44,9 @@
     width: 0;
     min-height: 0;
     position: relative;
+  }
+
+  .app__header, .app__container {
+    width: 100vw;
   }
 }

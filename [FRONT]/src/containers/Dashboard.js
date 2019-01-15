@@ -44,6 +44,7 @@ const Section = styled.div`
 
   @media screen and (max-width: 640px) {
     width: 100%;
+    padding: 0;
   }
 `;
 
@@ -59,14 +60,23 @@ const Row = styled.div`
 const InfosSection = styled.div`
   width: 30%;
   box-sizing: border-box;
+
+  @media screen and (max-width: 640px) {
+    width: 100%;
+  }
 `;
 
 const ChartSection = styled.div`
   width: 65%;
   box-sizing: border-box;
   box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.04);
-  padding: 30px;
+  padding: 15px;
   margin-left: 5%;
+
+  @media screen and (max-width: 640px) {
+    width: 100%;
+    margin-left: 0;
+  }
 `;
 
 const DashboardInformations = [

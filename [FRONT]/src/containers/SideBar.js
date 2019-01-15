@@ -10,11 +10,13 @@ import { ReactComponent as HelpIcon } from '../assets/img/icons/Icon-Support.svg
 import { ReactComponent as SettingsIcon } from '../assets/img/icons/Icon-Setting.svg';
 import { ReactComponent as CloseIcon } from '../assets/img/icons/Icon-Close.svg';
 import { ReactComponent as MenuIcon } from '../assets/img/icons/Icon-open-menu.svg';
+import logo from '../assets/img/icons/logo.svg';
 
 const Container = styled.div`
   width: 250px;
   height: 100vh;
   display: flex;
+  flex-direction: column;
   flex-wrap: wrap;
   padding: 0;
   background-color: ${props => props.theme.colors.greyf7};
@@ -31,6 +33,16 @@ const Container = styled.div`
   }
 `;
 
+const LogoContainer = styled.div`
+  width: 100%;
+  height: 80px;
+  justify-content: center;
+  margin: ${props => props.theme.custom.title}px 0 80px;
+`;
+const Logo = styled.img`
+  width: 80px;
+`;
+
 const ClosePicto = styled.div`
   width: ${props => props.theme.custom.bigtext}px;
   height: ${props => props.theme.custom.bigtext}px;
@@ -43,8 +55,14 @@ const MenuPicto = styled.div`
   width: ${props => props.theme.custom.bigtext}px;
   height: ${props => props.theme.custom.bigtext}px;
   position: absolute;
-  right: -${props => props.theme.custom.bigtext}px;
-  top: ${props => props.theme.custom.bigtext}px;
+  right: -${props => props.theme.custom.title}px;
+  top: 35px;
+  transform: translateY(-50%);
+  display: none;
+
+  @media screen and (max-width: 640px) {
+    display: block;
+  }
 `;
 
 const List = styled.ul`
@@ -147,6 +165,12 @@ class SideBar extends React.Component {
             <MenuIcon fill="#bdbdc1" />
           </MenuPicto>
         ) : null}
+
+        <LogoContainer>
+          <Link to="/">
+            <Logo src={logo} />
+          </Link>
+        </LogoContainer>
 
         <List>
           {MenuMock.map(({ pageName, Icon, url }, index) => (

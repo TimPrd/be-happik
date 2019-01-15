@@ -13,6 +13,11 @@ const Btn = styled.div`
   padding: 15px;
   box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.04);
   border-radius: 2px;
+
+  @media screen and (max-width: 640px) {
+    max-height: 100px;
+    margin-top: 16px;
+  }
 `;
 
 const Icon = styled.img`
