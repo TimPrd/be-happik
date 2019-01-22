@@ -6,11 +6,16 @@ require('dotenv').config()
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
+const socketIo = require("socket.io");
+var cors = require('cors')
 
-const routes = require('./routes/router');
 
 const app = express();
+app.use(cors());
 
+var io           = socketIo();
+app.io           = io;
+app.set('socketio', io);
 
 // Middleware setup
 app.use(logger('dev'));
@@ -18,7 +23,25 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
+var users = [];
+
+app.io.on( "connection", function( socket )
+{
+    console.log( "A user connected" );
+    socket.on('setUserId', function (userId) {
+        users[userId]=socket;
+        app.set('usersSocket', users);
+    });
+    socket.on('send notification', function (userId) { //=> /survey/validate/
+        users[userId].emit('notification', "important notification message");
+    });
+
+});
+
+const routes = require('./routes/router');
+
 app.use('/', routes);
+
 
 
 // catch 404 and forward to error handler
@@ -36,8 +59,12 @@ app.use(function(err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.json({error:err});
+  res.json(err);
 });
+
+
+
+
 
 module.exports = app;
 
