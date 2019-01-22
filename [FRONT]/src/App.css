@@ -9,28 +9,8 @@
   height: 100vh;
 }
 
-.app__header {
-  width: calc(100VW - 250px);
-  height: 70px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-  position: fixed;
-  right: 0;
-  z-index: 0;
-}
-
-.app__sideBar {
-  width: 250px;
-  height: 100vh;
-  position: relative;
-  z-index: 1;
-}
 .app__container {
-  width: calc(100VW - 250px);
+  width: 100%;
   height: 100vh;
   overflow: auto;
 }

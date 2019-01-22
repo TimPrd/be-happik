@@ -1,19 +1,17 @@
 import React from 'react';
-import styled from 'styled-components';
+import { Grid } from 'react-flexbox-grid';
 
-const Container = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  padding: 0 10%;
-`;
+import Layout from './Layout';
 
 const NotFoundPage = () => (
-  <Container>
-    <h1>
-      404 PAGE NOT FOUND
-      <span role="img" aria-label=""> 😢 </span>
-    </h1>
-  </Container>
+  <Layout>
+    <Grid fluid>
+      <h1>
+        404 PAGE NOT FOUND
+        <span role="img" aria-label=""> 😢 </span>
+      </h1>
+    </Grid>
+  </Layout>
 );
 
 export default NotFoundPage;

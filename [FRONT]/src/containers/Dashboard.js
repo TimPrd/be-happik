@@ -1,9 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
+import { Grid, Row, Col } from 'react-flexbox-grid';
 
 import ActionButton from '../components/Buttons/DashboardActionBtn';
 import DashboardInfos from '../components/Dashboard/Infos';
 import ChartEmploye from '../components/Dashboard/ChartEmploye';
+import Layout from './Layout';
 import PlusIcon from '../assets/img/icons/Icon-AddPlus.svg';
 import SurveyIcon from '../assets/img/icons/Icon-Survey.svg';
 import UserIcon from '../assets/img/icons/Icon-User.svg';
@@ -12,12 +14,6 @@ import UserNumber from '../assets/img/icons/Icon-AddUser.svg';
 import SpinIcon from '../assets/img/icons/Icon-Spin.svg';
 import ChronoIcon from '../assets/img/icons/Icon-Clock.svg';
 import WarningIcon from '../assets/img/icons/Icon-NotifWarning.svg';
-
-const Container = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  padding: 0 10%;
-`;
 
 const HeadTitle = styled.h1`
   width: 100%;
@@ -29,54 +25,6 @@ const HeadTitle = styled.h1`
 const HeadSubTitle = styled.div`
   font-size: ${props => props.theme.custom.bigtext}px;
   padding: 0;
-`;
-
-const ActionsSection = styled.div`
-  width: 100%;
-  display: flex;
-  flex-wrap: wrap;
-`;
-
-const Section = styled.div`
-  width: 33.33%;
-  box-sizing: border-box;
-  padding: 0 10px;
-
-  @media screen and (max-width: 640px) {
-    width: 100%;
-    padding: 0;
-  }
-`;
-
-const Row = styled.div`
-  width: 100%;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  box-sizing: border-box;
-  margin-top: 50px;
-`;
-
-const InfosSection = styled.div`
-  width: 30%;
-  box-sizing: border-box;
-
-  @media screen and (max-width: 640px) {
-    width: 100%;
-  }
-`;
-
-const ChartSection = styled.div`
-  width: 65%;
-  box-sizing: border-box;
-  box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.04);
-  padding: 15px;
-  margin-left: 5%;
-
-  @media screen and (max-width: 640px) {
-    width: 100%;
-    margin-left: 0;
-  }
 `;
 
 const DashboardInformations = [
@@ -103,57 +51,59 @@ const DashboardInformations = [
 ];
 
 const Dashboard = () => (
-  <Container>
-    <HeadTitle>
-      Bienvenue Nacer-Eddine !
-    </HeadTitle>
+  <Layout>
+    <Grid fluid>
+      <HeadTitle>
+        Bienvenue Nacer-Eddine !
+      </HeadTitle>
 
-    <HeadSubTitle>
-      Ici un text descriptif sur un theme !!
-    </HeadSubTitle>
+      <HeadSubTitle>
+        Ici un text descriptif sur un theme !!
+      </HeadSubTitle>
 
-    <ActionsSection>
-      <Section>
-        <ActionButton
-          icon={PlusIcon}
-          title="Créer un sondage"
-          text="Diffuser un sondage à une ou plusieurs équipes"
-          path="/survey/create"
-          color="rose85"
-        />
-      </Section>
+      <Row>
+        <Col xs={12} md={4}>
+          <ActionButton
+            icon={PlusIcon}
+            title="Créer un sondage"
+            text="Diffuser un sondage à une ou plusieurs équipes"
+            path="/survey/create"
+            color="rose85"
+          />
+        </Col>
 
-      <Section>
-        <ActionButton
-          icon={SurveyIcon}
-          title="Consulter les sondages"
-          text="Accéder aux sondages terminés"
-          path="/survey/all"
-          color="greenc9"
-        />
-      </Section>
+        <Col xs={12} md={4}>
+          <ActionButton
+            icon={SurveyIcon}
+            title="Consulter les sondages"
+            text="Accéder aux sondages terminés"
+            path="/survey/all"
+            color="greenc9"
+          />
+        </Col>
 
-      <Section>
-        <ActionButton
-          icon={UserIcon}
-          title="Gestion des collaborateurs"
-          text="Ajouter une équipe ou un collaborateur"
-          path="/users/add"
-          color=""
-        />
-      </Section>
-    </ActionsSection>
+        <Col xs={12} md={4}>
+          <ActionButton
+            icon={UserIcon}
+            title="Gestion des collaborateurs"
+            text="Ajouter une équipe ou un collaborateur"
+            path="/users/add"
+            color=""
+          />
+        </Col>
+      </Row>
 
-    <Row>
-      <InfosSection>
-        <DashboardInfos dataInfos={DashboardInformations} />
-      </InfosSection>
 
-      <ChartSection>
-        <ChartEmploye />
-      </ChartSection>
-    </Row>
-  </Container>
+      <Row>
+        <Col xs={12} lg={4}>
+          <DashboardInfos dataInfos={DashboardInformations} />
+        </Col>
+        <Col xs={12} lg={8}>
+          <ChartEmploye />
+        </Col>
+      </Row>
+    </Grid>
+  </Layout>
 );
 
 export default Dashboard;

@@ -22,14 +22,11 @@ const Container = styled.div`
   background-color: ${props => props.theme.colors.greyf7};
   position: fixed;
   top: 0;
+  left: -250px;
+  transition: all 1s;
 
-  @media screen and (max-width: 640px) {
-    left: -250px;
-    transition: all 1s;
-
-    &.sidebar__open {
-      left: 0;
-    }
+  &.sidebar__open {
+    left: 0;
   }
 `;
 
@@ -58,7 +55,6 @@ const MenuPicto = styled.div`
   right: -${props => props.theme.custom.title}px;
   top: 35px;
   transform: translateY(-50%);
-  display: none;
 
   @media screen and (max-width: 640px) {
     display: block;
