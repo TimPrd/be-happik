@@ -23,7 +23,7 @@ class App extends Component {
         socket.on('hi!', (col) => {
             alert(col);
         });
-        fetch('http://localhost:4000/survey/validate', {
+        fetch('http://localhost:4000/api/survey/validate', {
             method: 'post',
             headers: {
                 'Content-Type': 'application/json',

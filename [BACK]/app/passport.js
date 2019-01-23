@@ -37,7 +37,7 @@ passport.use(new JWTStrategy({
     },
     function (jwtPayload, cb) {
         //find the user in db if needed
-        return models.User.findOne({where: {id: jwtPayload.id}})
+        return models.User.findOne({where: {id: jwtPayload.id},   attributes: {exclude: ['password']}})
             .then(user => {
                 return cb(null, user);
             })

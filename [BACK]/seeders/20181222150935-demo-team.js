@@ -4,6 +4,7 @@ module.exports = {
     up: (queryInterface, Sequelize) => {
         return queryInterface.bulkInsert('Teams', [{
             teamName: 'JKRow',
+            id:1,
             createdAt: new Date(),
             updatedAt: new Date()
         }], {});

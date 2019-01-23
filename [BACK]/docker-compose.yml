@@ -1,23 +1,25 @@
 version: "2"
 services:
-  node:
+  web:
     container_name: bh_node
     hostname: bh_node
     working_dir: /home/node/app
     build:
       context: .
-      dockerfile: ./docker/node/Dockerfile
+      dockerfile: ./Dockerfile.web
     volumes:
       - './:/home/node/app'
     ports:
-      - '4000:4000'
+      - '3000:4000'
       - "56745:56745"
     links:
       - 'postgres:postgres'
   postgres:
     container_name: bh_postgres
     hostname: bh_postgres
-    build: './docker/postgres'
+    build:
+      context: .
+      dockerfile: ./Dockerfile.postgres
     working_dir: /home/psql
     volumes:
       - './sql:/home/psql/sql'
