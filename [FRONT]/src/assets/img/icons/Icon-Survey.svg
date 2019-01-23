@@ -1,0 +1,49 @@
+<svg id="Icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 38 38">
+  <defs>
+    <style>
+      .cls-1, .cls-3 {
+        fill: #fff;
+      }
+
+      .cls-1 {
+        stroke: #fc5185;
+      }
+
+      .cls-2 {
+        fill: #fc5185;
+      }
+
+      .cls-3 {
+        stroke: #3fc1c9;
+      }
+
+      .cls-4 {
+        fill: #3fc1c9;
+      }
+
+      .cls-5 {
+        stroke: none;
+      }
+
+      .cls-6 {
+        fill: none;
+      }
+    </style>
+  </defs>
+  <g id="Icon.BG" class="cls-1">
+    <circle class="cls-5" cx="19" cy="19" r="19"/>
+    <circle class="cls-6" cx="19" cy="19" r="18.5"/>
+  </g>
+  <path id="trend-up-icon" class="cls-2" d="M9,6h3.6L9,9.6l-4-4L.3,10.3l1.4,1.4L5,8.4l4,4,5-5V11h2V4H9Z" transform="translate(10.7 11)"/>
+  <g id="Icon-2" data-name="Icon">
+    <g id="Icon.BG-2" data-name="Icon.BG" class="cls-3">
+      <circle class="cls-5" cx="19" cy="19" r="19"/>
+      <circle class="cls-6" cx="19" cy="19" r="18.5"/>
+    </g>
+    <g id="Invoices" transform="translate(-9 -270)">
+      <g id="icon_Invoices" transform="translate(-166 190)">
+        <path id="Tracé_102" data-name="Tracé 102" class="cls-4" d="M14,0H2A.945.945,0,0,0,1,1V16l3-2,2,2,2-2,2,2,2-2,3,2V1A.945.945,0,0,0,14,0ZM12,10H4V8h8Zm0-4H4V4h8Z" transform="translate(186 91)"/>
+      </g>
+    </g>
+  </g>
+</svg>

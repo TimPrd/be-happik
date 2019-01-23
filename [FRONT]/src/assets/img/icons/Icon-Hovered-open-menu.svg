@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 38.66 38.66">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #fff;
+      }
+
+      .cls-2 {
+        fill: #777;
+      }
+
+      .cls-3 {
+        filter: url(#Ellipse_91);
+      }
+    </style>
+    <filter id="Ellipse_91" x="0" y="0" width="38.66" height="38.66" filterUnits="userSpaceOnUse">
+      <feOffset dy="3" input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feFlood flood-opacity="0.161"/>
+      <feComposite operator="in" in2="blur"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g id="open-menu" transform="translate(9 6)">
+    <g class="cls-3" transform="matrix(1, 0, 0, 1, -9, -6)">
+      <circle id="Ellipse_91-2" data-name="Ellipse 91" class="cls-1" cx="10.33" cy="10.33" r="10.33" transform="translate(9 6)"/>
+    </g>
+    <path id="Tracé_360" data-name="Tracé 360" class="cls-2" d="M24.223,16H15.369a.369.369,0,1,0,0,.738h8.854a.369.369,0,1,0,0-.738Z" transform="translate(-9.466 -10.097)"/>
+    <path id="Tracé_361" data-name="Tracé 361" class="cls-2" d="M24.223,27H15.369a.369.369,0,0,0,0,.738h8.854a.369.369,0,1,0,0-.738Z" transform="translate(-9.466 -17.039)"/>
+    <path id="Tracé_362" data-name="Tracé 362" class="cls-2" d="M24.223,38H15.369a.369.369,0,1,0,0,.738h8.854a.369.369,0,1,0,0-.738Z" transform="translate(-9.466 -23.981)"/>
+  </g>
+</svg>
