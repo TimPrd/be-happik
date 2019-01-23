@@ -1,4 +1,5 @@
 {
+  "verbose": true,
   "ext": "js",
   "watch": [
     "app/"

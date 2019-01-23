@@ -2,11 +2,22 @@ const Mailer = require('./Mailer');
 const models = require('../../models/');
 
 
+/**
+ * @api {post} /surveys/validate/ Save a new survey and notify users.
+ * @apiName Save new survey
+ * @apiGroup Surveys
+ *
+ * @apiParam {String} author id of the current user who is creating this survey.
+ * @apiParam {String} teams Names of all the concerned teams.
+ * @apiParam {String} questions list of all the questions object (title, description, place).
+ * @apiParam {String} author id of the current user who is creating this survey.
+ *
+ * @apiSuccess (200) {String NoContent
+ */
 exports.validate = async function (req, res) {
     const author = req.body.author;
     const teams = req.body.teams;
     const questions = req.body.questions;
-
 
     let survey = await models.Survey.create({
         title: req.body.surveyTitle,
@@ -51,7 +62,6 @@ exports.validate = async function (req, res) {
                 notif.setUser(user.id);
                 notif.setSender(author);
             });
-
             //var io = req.app.get('socketio');
             //var sockets = req.app.get('usersSocket');
             //sockets[1/*user.id*/]
@@ -60,17 +70,74 @@ exports.validate = async function (req, res) {
         });
     });
 
-    res.sendStatus(201);
+    res.sendStatus(204);
 };
 
 
+/**
+ * @api {get} /user/:id/surveys/ Get all the surveys that a user is related to.
+ * @apiName Get related surveys for a specific user
+ * @apiGroup User
+ *
+ * @apiSuccess (200) {Object} Surveys related surveys with basic infos (date, state, title..)
+ * @apiError (400) {Number} 404 No user have been found
+ */
+//todo : add creator
+//todo : logs
+//todo : move to user ?
 exports.getSurveyByUser = async function (req, res) {
     const userId = req.params.id;
-    await models.Survey.findAll({where: {userId: userId}}) //todo check where
-
+    if (!userId)
+        res.send("No user found").status(404);
+    let user = await models.User.findById(userId);
+    let surveys = await models.Teamsurvey.findAll({
+            where: {TeamId: user.TeamId}
+        }
+    ).then(async surveys => {
+        const ids = await surveys.map(s => s.SurveyId);
+        return await models.Survey.findAll({
+            where: {id: ids},
+            attributes: ['title', 'startDate', 'open'/*, 'creator'*/]
+        })
+    }).catch(error => {
+        res.send("An error occured, check logs").status(404);
+    });
+    res.send(surveys).status(200);
 };
+/*
+let limit = 9;   // number of records per page
+let offset = 0;
+models.Survey.findAndCountAll()
+    .then((data) => {
+        let pages = Math.ceil(data.count / limit);
+        offset = limit * (req.query.page - 1);
+        models.Survey.findAll({
+            where: {state: res.query.state},
+            limit: limit,
+            offset: offset,
+            $sort: {id: 1}
+        })
+            .then((surveys) => {
+                res.status(200).json({'result': surveys, 'count': data.count, 'pages': pages});
+            });
+    })
+    .catch(function (error) {
+        res.sendStatus(500);
+    });
 
+}
+;*/
 
+/**
+ * @api {get} /surveys/ Get all the surveys.
+ * @apiName Save new survey
+ * @apiGroup Surveys
+ *
+ * @apiParam {Number} page Query param to indicate the desired page .
+ * @apiParam {String} state Query param to indicate the desired state (true=open/false=closed).
+ *
+ * @apiSuccess (200) {Object} page the desired page with surveys grouped by 9
+ */
 exports.getAll = async function (req, res) {
     let limit = 9;   // number of records per page
     let offset = 0;
@@ -89,6 +156,6 @@ exports.getAll = async function (req, res) {
                 });
         })
         .catch(function (error) {
-            res.sendStatus(500);
+            res.sendStatus(404);
         });
 };

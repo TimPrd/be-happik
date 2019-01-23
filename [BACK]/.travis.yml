@@ -1,10 +1,7 @@
-# blacklist
+# whitelist
 branches:
   except:
     - DB_SETUP
-
-# whitelist
-branches:
   only:
     - master
     - DEV

@@ -28,6 +28,7 @@ module.exports = {
                 createdAt: new Date(),
                 updatedAt: new Date(),
                 password: "horcrux",
+                TeamId: 5
             },
             {
                 firstName: 'Rogue',
