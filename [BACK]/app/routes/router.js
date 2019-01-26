@@ -33,7 +33,7 @@ router.post("/user/register", controller.User.register);
 router.post("/user/reset/", controller.User.reset);
 router.post("/user/recover/", controller.User.recover);
 router.get("/question/predefined/", controller.Question.getPredefined);
-router.get("/team/list/", controller.Team.getTeamList);
+// router.get("/team/list/", controller.Team.getTeamList);
 
 
 /********************************************
@@ -49,6 +49,8 @@ router.get("/secret", controller.User.secret)
  ********************************************/
 router.post("/survey/validate", controller.Survey.validate);
 router.get("/surveys", controller.Survey.getAll);
+router.get("/surveys/questions/finished/", controller.Survey.getAllFinishedQuestionsBySurveys);
+router.get("/surveys/:id/answer", controller.Answer.getAnswer);
 
 
 module.exports = router;

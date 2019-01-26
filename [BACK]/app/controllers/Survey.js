@@ -5,7 +5,7 @@ const models = require('../../models/');
 exports.validate = async function (req, res) {
     const currentUserName = req.body.currentUserName;
     const teams = req.body.teams;
-    const idTeam = await models.Team.findOne({where: {teamName: teams}});
+    // const idTeam = await models.Team.findOne({where: {teamName: teams}});
     const users = await models.User.findAll({where: {TeamId: idTeam.id}});
     users.forEach(async user => {
 
@@ -67,3 +67,9 @@ exports.getAll = async function (req, res) {
             res.sendStatus(500);
         });
 };
+
+exports.getAllFinishedQuestionsBySurveys = async function (req, res) {
+    models.Survey.findAll({
+        where: {id: 1}
+    })
+}

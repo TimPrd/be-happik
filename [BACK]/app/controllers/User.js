@@ -22,7 +22,7 @@ exports.register = async function (req, res) {
 
     const sortedEmail = [...new Set(rawEmails.filter(x => /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(x)))];
     let users = [];
-    let team = await models.Team.findOne({where: {teamName: rawteam}});
+    // let team = await models.Team.findOne({where: {teamName: rawteam}});
 
     sortedEmail.forEach(async function (mail) {
         const token = require('crypto').randomBytes(10).toString('hex');
