@@ -21,6 +21,9 @@ const theme = {
     mediumtext: 13,
     text: 11,
   },
+  height: {
+    height: '40',
+  },
 };
 
 export default theme;
