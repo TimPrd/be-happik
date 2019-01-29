@@ -41,7 +41,8 @@ router.get("/team/list/", controller.Team.getTeamList);
  ********************************************/
 
 router.post("/login", controller.User.login);
-router.get("/user/:id/me", controller.User.me)
+//TODO Create me route (replace login)
+router.get("/user/:id/me", controller.User.login)
 
 
 /********************************************
@@ -49,6 +50,7 @@ router.get("/user/:id/me", controller.User.me)
  ********************************************/
 router.post("/survey/validate", controller.Survey.validate);
 router.get("/surveys", controller.Survey.getAll);
+router.get("/surveys/answer", controller.Survey.getAnswer);
 
 
 module.exports = router;

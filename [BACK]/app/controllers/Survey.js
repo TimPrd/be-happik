@@ -1,6 +1,6 @@
+const passport = require('passport');
 const Mailer = require('./Mailer');
 const models = require('../../models/');
-
 
 /**
  * @api {post} /surveys/validate/ Save a new survey and notify users.
@@ -158,4 +158,77 @@ exports.getAll = async function (req, res) {
         .catch(function (error) {
             res.sendStatus(404);
         });
+};
+
+//TODO api info
+
+exports.getAnswer =  function (req, res) {
+    passport.authenticate('jwt', {session: false}, async (err, user, info) => {
+        if (err) {
+            return res.json({msg: err});
+        }
+
+        let aa = '';
+
+        if (user) {
+            let q = null;
+            if (typeof req.query.q !== 'undefined') {
+                q = parseInt(req.query.q);
+            }
+            await models.userSurvey.findAll({
+                where:{
+                    UserId:user.id,
+                },
+                limit:q,
+            }).then( async data => {
+
+                console.log('superman')
+                console.log(data);
+                aa = data
+                return await data;
+                // return res.status(200).send(teams);
+            } ).catch(err => {
+                console.log(err)
+            })
+
+
+
+
+
+            await models.answer.findAll({
+                    where:{
+                        UserId:aa.UserId,
+                    },
+                })
+            .then(async data => {
+                // console.log(data)
+                console.log(aa)
+                return await res.status(200).send(data);
+            })
+                .catch(err => {
+                    console.log(err);
+                })
+        }
+        else
+            return res.json({msg: "You are not authorize"});
+    })(req, res);
+
+
+    // models.Answer.findAndCountAll()
+    //     .then((data) => {
+    //         let pages = Math.ceil(data.count / limit);
+    //         offset = limit * (req.query.page - 1);
+    //         models.Survey.findAll({
+    //             where: {state: res.query.state},
+    //             limit: limit,
+    //             offset: offset,
+    //             $sort: {id: 1}
+    //         })
+    //             .then((surveys) => {
+    //                 res.status(200).json({'result': surveys, 'count': data.count, 'pages': pages});
+    //             });
+    //     })
+    //     .catch(function (error) {
+    //         res.sendStatus(404);
+    //     });
 };
