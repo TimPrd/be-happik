@@ -160,7 +160,7 @@ exports.reset = async function (req, res) {
 };
 
 /**
- * @api {post} /user/login User sign-in.
+ * @api {post} /login User sign-in.
  * @apiName Login User
  * @apiGroup User
  *
@@ -186,8 +186,7 @@ exports.login = function (req, res) {
     passport.authenticate('local', {session: false}, (err, user, info) => {
         if (err || !user) {
             return res.status(400).json({
-                message: err,
-                user: user
+                message: err
             });
         }
         req.login(user, {session: false}, (err) => {
@@ -200,6 +199,7 @@ exports.login = function (req, res) {
     })(req, res);
 };
 
+
 exports.secret = function (req, res) {
     res.setHeader('Content-Type', 'application/json');
     console.log('secret')
@@ -208,7 +208,7 @@ exports.secret = function (req, res) {
             return res.json({msg: err});
         }
         if (user) {
-            return res.json({msg: "You are authorized"});
+            return res.send({user:user,msg: "You are authorized"});
         }
 
         else

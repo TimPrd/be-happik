@@ -9,7 +9,6 @@ const bodyParser = require('body-parser');
 const socketIo = require("socket.io");
 var cors = require('cors')
 
-
 const app = express();
 app.use(cors());
 
@@ -25,7 +24,7 @@ app.use(cookieParser());
 
 var users = [];
 
-app.io.on( "connection", function( socket )
+/*app.io.on( "connection", function( socket )
 {
     console.log( "A user connected" );
     socket.on('setUserId', function (userId) {
@@ -37,12 +36,18 @@ app.io.on( "connection", function( socket )
     });
 
 });
+*/
+
 
 const routes = require('./routes/router');
+app.use(express.static(path.join(__dirname, '../public')));
 
-app.use('/', routes);
+app.use('/api', routes);
 
-
+app.get('/*', function (req, res) {
+    console.log(express.static('public'));
+    res.sendFile(path.join(__dirname, '../public', 'index.html'));
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

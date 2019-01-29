@@ -1,0 +1,27 @@
+FROM node:11
+
+# Who(m) to blame if nothing works
+MAINTAINER timothe.pardieu@outlook.com
+
+# Switch to working directory
+WORKDIR /home/node/app
+
+# Copy contents of local folder to `WORKDIR`
+# You can pick individual files based on your need
+COPY ./ ./
+
+# Install nodemon globally
+RUN npm install -g nodemon
+
+# Install dependencies (if any) in package.json
+RUN npm install
+
+ENV PORT 4000
+
+ENV NODE_ENV development
+
+# Expose port from container so host can access 3000
+EXPOSE 4000
+
+# Start the Node.js app on load
+CMD [ "npm", "start" ]

@@ -7,12 +7,12 @@ var path = require('path');
 var appDir = path.dirname(require.main.filename);
 
 //HOME
-router.route("/").all(function (req, res) {
+/*router.route("/").all(function (req, res) {
     var io = req.app.get('socketio');
     io.emit('hi!');
     //res.sendFile(__dirname + '/index.html');
     res.send('Welcome on board ! ');
-});
+});*/
 
 /********************************************
  *             ROADS : Users                *
@@ -20,8 +20,8 @@ router.route("/").all(function (req, res) {
 
 router.post("/user/subscribe", controller.User.subscribe);
 
-router.get("/users", async function(req, res, next) {
-	const users = await models.User.findAll({});
+router.get("/users", async function (req, res, next) {
+    const users = await models.User.findAll({});
 });
 
 router.post("/user/register", controller.User.register);
@@ -41,7 +41,7 @@ router.get("/team/list/", controller.Team.getTeamList);
  ********************************************/
 
 router.post("/login", controller.User.login);
-router.get("/secret", controller.User.secret)
+//router.get("/user/:id/me", controller.User.me)
 
 
 /********************************************
