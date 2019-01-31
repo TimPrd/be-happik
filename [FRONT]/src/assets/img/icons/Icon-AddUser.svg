@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 41.958 41.958">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #e8e7ff;
+      }
+
+      .cls-2 {
+        fill: url(#linear-gradient);
+      }
+    </style>
+    <linearGradient id="linear-gradient" x2="0" y2="1" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#8280ff"/>
+      <stop offset="1" stop-color="#7e96ff"/>
+    </linearGradient>
+  </defs>
+  <g id="Icon" transform="translate(0)">
+    <circle id="Icon.BG" class="cls-1" cx="20.979" cy="20.979" r="20.979"/>
+    <path id="New_customer_Icon" data-name="New customer Icon" class="cls-2" d="M13.25,17.666V15.457H11.042V13.25H13.25V11.042h2.208V13.25h2.207v2.207H15.458v2.209ZM0,17.666v-1.1a5.467,5.467,0,0,1,5.521-5.521H8.833V13.25H5.521A3.213,3.213,0,0,0,2.43,15.457h6.4v2.209ZM3.312,5.521V4.415a4.416,4.416,0,0,1,8.833,0V5.521a4.416,4.416,0,0,1-8.833,0ZM5.521,4.415V5.521a2.208,2.208,0,1,0,4.417,0V4.415a2.208,2.208,0,0,0-4.417,0Z" transform="translate(12.147 12.146)"/>
+  </g>
+</svg>

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #5baf5e;
+      }
+    </style>
+  </defs>
+  <g id="Icon" transform="translate(-10 -10)">
+    <path id="Tracé_396" data-name="Tracé 396" class="cls-1" d="M28,46A18,18,0,1,0,10,28,18.02,18.02,0,0,0,28,46Zm0-34.8A16.8,16.8,0,1,1,11.2,28,16.819,16.819,0,0,1,28,11.2Z"/>
+    <path id="Tracé_397" data-name="Tracé 397" class="cls-1" d="M27.7,33.4A2.7,2.7,0,1,0,25,30.7,2.7,2.7,0,0,0,27.7,33.4Zm0-4.2a1.5,1.5,0,1,1-1.5,1.5A1.5,1.5,0,0,1,27.7,29.2Z" transform="translate(-6 -7.2)"/>
+    <path id="Tracé_398" data-name="Tracé 398" class="cls-1" d="M48.7,33.4A2.7,2.7,0,1,0,46,30.7,2.7,2.7,0,0,0,48.7,33.4Zm0-4.2a1.5,1.5,0,1,1-1.5,1.5A1.5,1.5,0,0,1,48.7,29.2Z" transform="translate(-14.4 -7.2)"/>
+    <path id="Tracé_399" data-name="Tracé 399" class="cls-1" d="M32.926,54.542a12.952,12.952,0,0,0,10.612-5.426l-.973-.7a11.89,11.89,0,0,1-19.278,0l-.973.7A12.95,12.95,0,0,0,32.926,54.542Z" transform="translate(-4.926 -15.366)"/>
+  </g>
+</svg>

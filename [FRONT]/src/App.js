@@ -1,69 +1,54 @@
-import React, {Component} from 'react';
-import socketIOClient from 'socket.io-client'
+import React from 'react';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { ThemeProvider, createGlobalStyle } from 'styled-components';
+import { ToastContainer } from 'react-toastify';
 
-import AddUser from './components/AddUser'
-import logo from './logo.svg';
+import 'react-toastify/dist/ReactToastify.css';
+
+import AddUser from './components/AddUser';
+import Dashboard from './containers/Dashboard';
+import NotFoundPage from './containers/404Page';
+import Theme from './utils/Theme';
 import './App.css';
+import LoginPage from './containers/LoginPage';
+import RegisterPage from './containers/RegisterPage';
+import PrivateRoute from './components/PrivateRoute';
+import Initiator from './components/Initiator';
+import CreateSurveyPage from './containers/CreateSurveyPage';
 
-class App extends Component {
-    constructor() {
-        super()
+const GlobalStyle = createGlobalStyle`
+  @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700');
 
-        this.state = {
-            endpoint: "http://localhost:4000" // this is where we are connecting to with sockets
-            ,rand : Math.floor(Math.random() * 2) //todo : will be the user id
-        }
-    }
+  body {
+    font-family: 'Source Sans Pro', sans-serif;
+  }
+`;
 
-    componentDidMount() {
-        const {endpoint} = this.state;
-        const socket = socketIOClient(endpoint);
-        console.log(this.state.rand)
-        socket.emit('setUserId', this.state.rand);
-        socket.on('hi!', (col) => {
-            alert(col);
-        });
-        fetch('http://localhost:4000/api/survey/validate', {
-            method: 'post',
-            headers: {
-                'Content-Type': 'application/json',
-                'Origin': 'http://localhost',
-                'Access-Control-Request-Method': 'POST',
-                'Access-Control-Allow-Origin':'*',
-                'Access-Control-Request-Headers': 'content-type'
-            },
-            body: JSON.stringify({teams:"JKRow"})
-        })
-            .then((response) => {
-                console.log(response.json());
-            })
-            .then((data) => {
-                console.log(data);
-                return data;
-            })
-            .catch((err) => {
-                console.log(err)
-            })
-    }
+const App = () => (
+  <ThemeProvider theme={Theme}>
+    <Router>
+      <Initiator>
+        <div className="App">
+          <GlobalStyle />
+          <main className="app__container">
+            <ToastContainer />
+            <Switch>
+              <PrivateRoute exact path="/user/create" component={AddUser} />
+              <PrivateRoute exact path="/dashboard" component={Dashboard} />
+              <PrivateRoute exact path="/" component={Dashboard} />
+              <PrivateRoute exact path="/survey/create" component={CreateSurveyPage} />
 
-    // method for emitting a socket.io event
-    send = () => {
-        const socket = socketIOClient(this.state.endpoint)
-        console.log(socket);
-        socket.emit('connection');
-    };
 
-    render() {
-        const socket = socketIOClient(this.state.endpoint);
-        socket.on('hi!', (col) => {
-            alert(col);
-        })
-        return (
-            <div className="App">
-                <AddUser/>
-            </div>
-        );
-    }
-}
+              <Route exact path="/login" component={LoginPage} />
+              <Route exact path="/register" component={RegisterPage} />
+
+              <Route component={NotFoundPage} />
+            </Switch>
+          </main>
+        </div>
+      </Initiator>
+    </Router>
+  </ThemeProvider>
+);
 
 export default App;
