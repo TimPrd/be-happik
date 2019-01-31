@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Formik } from 'formik';
 import React from 'react';
-import { Grid, Col, Row } from 'react-flexbox-grid';
+import { Col, Row } from 'react-flexbox-grid';
 import { withRouter } from 'react-router-dom';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
