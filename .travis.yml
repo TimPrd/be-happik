@@ -10,6 +10,7 @@ branches:
     - DEV
 
 language: node_js
+node_js: latest
 
 sudo: required
 
@@ -19,9 +20,7 @@ services:
 env:
   - DOCKER_COMPOSE_VERSION=1.23.1
 
-cache:
-  directories:
-  - "$HOME/.npm"
+cache: npm
 
 before_install:
   - sudo rm /usr/local/bin/docker-compose
