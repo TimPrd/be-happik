@@ -12,6 +12,9 @@ import Theme from './utils/Theme';
 import './App.css';
 import LoginPage from './containers/LoginPage';
 import RegisterPage from './containers/RegisterPage';
+import PrivateRoute from './components/PrivateRoute';
+import Initiator from './components/Initiator';
+import CreateSurveyPage from './containers/CreateSurveyPage';
 
 const GlobalStyle = createGlobalStyle`
   @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700');
@@ -24,21 +27,26 @@ const GlobalStyle = createGlobalStyle`
 const App = () => (
   <ThemeProvider theme={Theme}>
     <Router>
-      <div className="App">
-        <GlobalStyle />
-        <main className="app__container">
-          <ToastContainer />
-          <Switch>
-            <Route exact path="/user/create" component={AddUser} />
-            <Route exact path="/dashboard" component={Dashboard} />
+      <Initiator>
+        <div className="App">
+          <GlobalStyle />
+          <main className="app__container">
+            <ToastContainer />
+            <Switch>
+              <PrivateRoute exact path="/user/create" component={AddUser} />
+              <PrivateRoute exact path="/dashboard" component={Dashboard} />
+              <PrivateRoute exact path="/" component={Dashboard} />
+              <PrivateRoute exact path="/survey/create" component={CreateSurveyPage} />
 
-            <Route exact path="/login" component={LoginPage} />
-            <Route exact path="/register" component={RegisterPage} />
 
-            <Route component={NotFoundPage} />
-          </Switch>
-        </main>
-      </div>
+              <Route exact path="/login" component={LoginPage} />
+              <Route exact path="/register" component={RegisterPage} />
+
+              <Route component={NotFoundPage} />
+            </Switch>
+          </main>
+        </div>
+      </Initiator>
     </Router>
   </ThemeProvider>
 );

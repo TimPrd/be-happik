@@ -8,7 +8,7 @@ branches:
   only:
     - master
     - DEV
-    
+
 language: node_js
 
 sudo: required
@@ -26,26 +26,28 @@ before_install:
   - sudo mv docker-compose /usr/local/bin
 
 before_script:
-  - cd [BACK]
+  - cd ./[BACK]
   - npm install
   - docker-compose build
-  - docker-compose up -d 
+  - docker-compose up -d
   - docker exec -it bh_node npm install
+  - cd ../[FRONT]
+  - npm run build
 #  - docker-compose run node sequelize db:migrate
 #  - docker exec -it bh_node ./node_modules/sequelize-cli/bin/sequelize db:migrate
 # - docker exec -it bh_node node_modules/.bin/sequelize db:seed:all
-  
+
 # - docker-compose run users-service knex seed:run --env development --knexfile app/knexfile.js
 #   - docker-compose run locations-service knex migrate:latest --env development --knexfile app/knexfile.js
 #   - docker-compose run locations-service knex seed:run --env development --knexfile app/knexfile.js
 
 script:
 # - docker exec -it bh_node node_modules/.bin/sequelize db:migrate
-# - npm run travis 
-  - docker ps 
-  
+# - npm run travis
+  - docker ps
+
 after_script:
   - docker-compose down
-  
+
 after_success:
   - docker exec -it bh_node npm run coveralls

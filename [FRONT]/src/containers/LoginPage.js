@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { Formik } from 'formik';
 import React from 'react';
 import { Grid, Col, Row } from 'react-flexbox-grid';
@@ -8,6 +7,7 @@ import PropTypes from 'prop-types';
 import * as Yup from 'yup';
 import { toast } from 'react-toastify';
 
+import client from '../api';
 import GreenShape from '../assets/img/courbe-verte.svg';
 import Logo from '../assets/img/icons/logo.svg';
 import LoginHeader from '../components/Login/LoginHeader';
@@ -150,17 +150,15 @@ const LoginPage = ({ history }) => (
           validationSchema={SignupSchema}
           onSubmit={async (values, actions) => {
             try {
-              const response = await axios.post(`${process.env.REACT_APP_API_URL}/login`, {
+              const response = await client.post('/api/login', {
                 email: values.email,
                 password: values.password,
               });
 
-              console.log(response);
-
+              localStorage.setItem('user', JSON.stringify(response.data));
 
               history.push('/');
             } catch (error) {
-              console.log(error);
               toast.error('error', {
                 position: toast.POSITION.TOP_RIGHT,
               });
