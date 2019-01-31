@@ -41,7 +41,7 @@ router.get("/team/list/", controller.Team.getTeamList);
  ********************************************/
 
 router.post("/login", controller.User.login);
-router.get("/user/:id/me", controller.User.me)
+//router.get("/user/:id/me", controller.User.me)
 
 
 /********************************************
