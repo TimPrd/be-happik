@@ -32,6 +32,7 @@ before_script:
   - docker-compose up -d
   - docker exec -it bh_node npm install
   - cd ../[FRONT]
+  - npm install
   - npm run test
   - npm run build
 #  - docker-compose run node sequelize db:migrate
