@@ -10,7 +10,7 @@ branches:
     - DEV
 
 language: node_js
-node_js: latest
+node_js: 11.9.0
 
 sudo: required
 
