@@ -1,7 +1,7 @@
 build:
   docker:
-    web: Dockerfile
-    postgres: Dockerfile
+    web: Dockerfile.web
+    postgres: Dockerfile.postgres
 run:
   web: make && make db-install
 
