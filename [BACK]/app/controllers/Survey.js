@@ -168,46 +168,26 @@ exports.getAnswer =  function (req, res) {
             return res.json({msg: err});
         }
 
-        let aa = '';
-
         if (user) {
             let q = null;
             if (typeof req.query.q !== 'undefined') {
                 q = parseInt(req.query.q);
             }
-            await models.userSurvey.findAll({
+            const userSurvey = await models.userSurvey.findAll({
                 where:{
                     UserId:user.id,
                 },
                 limit:q,
-            }).then( async data => {
-
-                console.log('superman')
-                console.log(data);
-                aa = data
-                return await data;
-                // return res.status(200).send(teams);
-            } ).catch(err => {
-                console.log(err)
             })
 
-
-
-
-
-            await models.answer.findAll({
-                    where:{
-                        UserId:aa.UserId,
+            const answer = await models.answer.findAll({
+                where:{
+                        UserId:userSurvey[0].UserId,
                     },
+                attributes: ['id', 'result', 'UserId', 'SurveyId', 'QuestionId', 'createdAt', 'updatedAt']
                 })
-            .then(async data => {
-                // console.log(data)
-                console.log(aa)
-                return await res.status(200).send(data);
-            })
-                .catch(err => {
-                    console.log(err);
-                })
+
+            return res.json({msg : answer})
         }
         else
             return res.json({msg: "You are not authorize"});
