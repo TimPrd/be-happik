@@ -209,14 +209,12 @@ exports.getSurvey =  function (req, res) {
                         {
                             model: models.Question,
                         },
-                        {
-                            model: models.Survey,
-                        },
                     ],
                 });
 
+            let surv = userSurvey.Survey;
 
-            return await res.json({msg: answer})
+            return await res.json({msg: {survey : surv, answer: answer}})
         }
         else
             return res.json({msg: "You are not authorize"});
