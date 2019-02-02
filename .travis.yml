@@ -28,7 +28,7 @@ before_install:
   echo "$HEROKU_PASS") | heroku login
 before_script:
 - cd ./[BACK]
-- npm install
+- npm install 
 - docker-compose build
 - docker-compose up -d
 - docker exec -it bh_node npm install
