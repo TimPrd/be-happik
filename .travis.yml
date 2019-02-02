@@ -24,6 +24,7 @@ before_install:
 - sudo apt-get install expect
 - wget -qO- https://toolbelt.heroku.com/install.sh | sh
 - heroku plugins:install @heroku-cli/plugin-container-registry
+- sudo HEROKU_PASSWORD=$HEROKU_PASSWORD
 - expect heroku.exp
 before_script:
 - cd ./[BACK]
