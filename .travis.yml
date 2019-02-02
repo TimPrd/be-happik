@@ -45,7 +45,7 @@ after_script:
 - docker-compose down
 after_success:
 - docker login --username=_ --password=$TOKEN registry.heroku.com
-- echo 'timothe.pardieu@outlook.com\n $HEROKU_PASSWORD\n' | heroku login -i 
+- heroku login -i | 'echo test'
 - heroku container:push --recursive -a be-happik
 - heroku container:release web -a be-happik
 #- docker build -t registry.heroku.com/be-happik/web .
