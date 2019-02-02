@@ -21,8 +21,10 @@ before_install:
   -s`-`uname -m` > docker-compose
 - chmod +x docker-compose
 - sudo mv docker-compose /usr/local/bin
+- sudo apt-get install expect
 - wget -qO- https://toolbelt.heroku.com/install.sh | sh
 - heroku plugins:install @heroku-cli/plugin-container-registry
+- expect heroku.exp
 before_script:
 - cd ./[BACK]
 - npm install 
