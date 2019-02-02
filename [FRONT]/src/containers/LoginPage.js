@@ -135,7 +135,7 @@ const LoginPage = ({ history }) => (
         <Row>
           <Col mdOffset={3} xs={12} md={6}>
             <LoginHeader
-              title="Heureux de vous revoir"
+              title="Heureux de vous revoir !!"
               subtitle="Veuillez renseigner votre adresse e-mail et votre mot de passe afin
               d’accéder à la plateforme."
             />
