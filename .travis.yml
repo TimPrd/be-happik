@@ -45,8 +45,11 @@ after_script:
 - docker-compose down
 after_success:
 - docker login --username=_ --password=$TOKEN registry.heroku.com
-- docker build -t registry.heroku.com/be-happik/web .
-- docker push registry.heroku.com/be-happik/web
+- echo 'timothe.pardieu@outlook.com\n $HEROKU_PASSWORD\n' | heroku login -i 
+- heroku container:push --recursive -a be-happik
+- heroku container:release web -a be-happik
+#- docker build -t registry.heroku.com/be-happik/web .
+#- docker push registry.heroku.com/be-happik/web
 #- heroku container:push --recursive -a be-happik
 #- heroku container:release web postgres -a be-happik
 #- sudo docker login --username $HEROKU_USERNAME --password $HEROKU_AUTH_TOKEN registry.heroku.com
@@ -57,4 +60,4 @@ after_success:
 #- sudo docker push registry.heroku.com/be-happik/postgres;
 #- sudo docker release web postgres registry.heroku.com/be-happik/web;
 
-- docker exec -it bh_node npm run coveralls
+#- docker exec -it bh_node npm run coveralls
