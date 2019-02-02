@@ -38,7 +38,14 @@ script:
 deploy:
   provider: heroku
   api_key:
-    secure: RQe5Z/HskzIg+fXTpW/hQzzUzMImaG7/Q788jN3Bv9cMDlXzVNHeOpnqeBtToThxUle8Dz9pJOT2KVJprrQaaVMpwspLpggkFoGdJuPgMc9ctXpmEgkD8p69D/nxPJiRqDZ5jn5Ziuca8BOs3jQA/cTbZJCRT+HyBwLJrWSZeUoLSRdoOsOFT27E8PXaIHtiWOhAPRBozzF598KMMPoQY8khroCVo6jcuCmOuvt4ytBLv7PK/lZ2Nt2I5HKJktIpoSLWgOMbXDFrM7CzChDo9uyzUmx/Qwfm3nK/sbbJZlNAWG3TZms88G/gKFzTWGCygtbB2FiDtYBngrjTKMx5vmTYAY/phLFQSO7DgseVOg6woR/Eff0mEI9s8JW8EMnBHYjUUgzjv85MqabsLxMIrjbWqWJRSt6MqKmLwAa/1gWCZD4foX5/mMo2QXoMLcYpHj81oOb2PlEa3UnW++uqjnpnW6Hkz+d2wJcE5kP+olgYqb8h7Riz7uj8Iu/hB2lyoJO3NPDDSUM5NRuZfxdoWIcn6xzWQBUkZ782JrPyS0+jPwg9yUahEbB08TMn0k2IUHAzQBI2X0/J7BTX7PZOuj3LLQPhWeCM1TQXdxg4Yqrt6mtJQpGo4tLj3S4kzotS6ZNe6eYGV+9Vgkf5Pz8xgdy+5JsweIkThTgIfRAqgeI=
+    secure: "YOUR ENCRYPTED API KEY"
+  branch: BACK_deploy
+#deploy:
+#  provider: script
+#  script:
+#  - heroku container:push --recursive -a $HEROKU_APP_NAME
+#  - heroku container:release web postgres -a $HEROKU_APP_NAME
+#  branch: BACK_deploy
 after_script:
 - docker-compose down
 after_success:
