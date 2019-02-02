@@ -45,8 +45,8 @@ after_script:
 - docker-compose down
 after_success:
 - sudo docker login --username $HEROKU_USERNAME --password $HEROKU_AUTH_TOKEN registry.heroku.com
-- sudo docker tag bh_node:latest registry.heroku.com/be-happik/web
-- sudo docker tag bh_postgres:latest registry.heroku.com/be-happik/postgres
+- sudo docker tag back_web:latest registry.heroku.com/be-happik/web
+- sudo docker tag back_postgres:latest registry.heroku.com/be-happik/postgres
 
 - sudo docker push registry.heroku.com/be-happik/web;
 - sudo docker push registry.heroku.com/be-happik/postgres;
