@@ -19,6 +19,7 @@ class ChartEmploye extends React.Component {
   }
 
   componentDidMount() {
+    alert('HELLO')
     const theHelp = Chart.helpers;
     const ctx = document.getElementById('myChart');// this.canvasRef;
     Chart.defaults.global.legend.labels.usePointStyle = true;
