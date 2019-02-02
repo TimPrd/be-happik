@@ -1,4 +1,5 @@
 #!/usr/bin/expect
+echo $HEROKU_PASSWORD
 spawn heroku "login" -i
 
 expect "Email:"
@@ -9,7 +10,7 @@ send "\r"
 
 expect "Password (typing will be hidden):"
 
-send \${HEROKU_PASSWORD};
+send $HEROKU_PASSWORD;
 
 send "\r"
 
@@ -17,3 +18,5 @@ interact
 exit
 #send "\$HEROKU_PASSWORD"
 
+***
+CasseToiConnard2
