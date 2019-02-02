@@ -9,28 +9,28 @@ language: node_js
 node_js: 11.9.0
 sudo: required
 services:
-- docker
+  - docker
 cache: npm
 before_install:
-- sudo rm /usr/local/bin/docker-compose
-- curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname
-  -s`-`uname -m` > docker-compose
-- chmod +x docker-compose
-- sudo mv docker-compose /usr/local/bin
-- wget -qO- https://toolbelt.heroku.com/install.sh | sh
-- heroku plugins:install @heroku-cli/plugin-container-registry
+  - sudo rm /usr/local/bin/docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname
+    -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
+  - wget -qO- https://toolbelt.heroku.com/install.sh | sh
+  - heroku plugins:install @heroku-cli/plugin-container-registry
 before_script:
-- cd ./[BACK]
-- npm install
-- docker-compose build
-- docker-compose up -d
-- docker exec -it bh_node npm install
-- cd ../[FRONT]
-- npm install
-- npm run test
-- npm run build
+  - cd ./[BACK]
+  - npm install
+  - /usr/local/bin/docker-compose build
+  - /usr/local/bin/docker-compose up -d
+  - docker exec -it bh_node npm install
+  - cd ../[FRONT]
+  - npm install
+  - npm run test
+  - npm run build
 script:
-- docker ps
+  - docker ps
 deploy:
   provider: heroku
   api_key:
