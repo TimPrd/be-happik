@@ -23,7 +23,7 @@ before_install:
 - sudo mv docker-compose /usr/local/bin
 - wget -qO- https://toolbelt.heroku.com/install.sh | sh
 - heroku plugins:install @heroku-cli/plugin-container-registry
-- echo "$HEROKU_USERNAME"; echo "$HEROKU_PASS"; | heroku login
+- echo "$HEROKU_USERNAME"; echo "$HEROKU_PASS" | heroku login
 before_script:
 - cd ./[BACK]
 - npm install 
