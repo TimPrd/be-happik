@@ -5,12 +5,15 @@ expect "Email:"
 
 send "timothe.pardieu@outlook.com";
 
-send "\n"
+send "\r"
 
-expect "Password:"
+#expect "Password (typing will be hidden):"
 
-send "\$HEROKU_PASSWORD"
+#send "\$HEROKU_PASSWORD";
 
-send "\n"
+send "\r"
 
 interact
+exit
+#send "\$HEROKU_PASSWORD"
+
