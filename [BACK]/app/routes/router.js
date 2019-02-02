@@ -50,7 +50,8 @@ router.get("/user/:id/me", controller.User.login)
  ********************************************/
 router.post("/survey/validate", controller.Survey.validate);
 router.get("/surveys", controller.Survey.getAll);
-router.get("/surveys/answer", controller.Survey.getAnswer);
+router.get("/survey/:id", controller.Survey.getSurvey);
+// router.get("/survey/alex", controller.Survey.validate());
 
 
 module.exports = router;

@@ -160,9 +160,15 @@ exports.getAll = async function (req, res) {
         });
 };
 
-//TODO api info
+/**
+ * @api {get} /survey/:id Get all the surveys.
+ * @apiName Get a specific survey
+ * @apiGroup Surveys
+ *
+ * @apiSuccess (200) {Object} page the desired page with the survey
+ */
 
-exports.getAnswer =  function (req, res) {
+exports.getSurvey =  function (req, res) {
     passport.authenticate('jwt', {session: false}, async (err, user, info) => {
         if (err) {
             return res.json({msg: err});
@@ -173,42 +179,46 @@ exports.getAnswer =  function (req, res) {
             if (typeof req.query.q !== 'undefined') {
                 q = parseInt(req.query.q);
             }
-            const userSurvey = await models.userSurvey.findAll({
+
+            const SurveyId = req.params.id;
+
+            const userSurvey = await models.userSurvey.find({
                 where:{
                     UserId:user.id,
+                    SurveyId:SurveyId,
                 },
-                limit:q,
+                include:
+                    [
+                        {
+                            model: models.Survey,
+                        }
+                    ]
             })
+
+            if (!userSurvey) {
+                return res.json({msg: 'There is not survey for this id'});
+            }
 
             const answer = await models.answer.findAll({
                 where:{
-                        UserId:userSurvey[0].UserId,
+                        UserId:userSurvey.UserId,
+                        SurveyId:userSurvey.SurveyId,
                     },
-                attributes: ['id', 'result', 'UserId', 'SurveyId', 'QuestionId', 'createdAt', 'updatedAt']
-                })
+                include:
+                    [
+                        {
+                            model: models.Question,
+                        },
+                        {
+                            model: models.Survey,
+                        },
+                    ],
+                });
 
-            return res.json({msg : answer})
+
+            return await res.json({msg: answer})
         }
         else
             return res.json({msg: "You are not authorize"});
     })(req, res);
-
-
-    // models.Answer.findAndCountAll()
-    //     .then((data) => {
-    //         let pages = Math.ceil(data.count / limit);
-    //         offset = limit * (req.query.page - 1);
-    //         models.Survey.findAll({
-    //             where: {state: res.query.state},
-    //             limit: limit,
-    //             offset: offset,
-    //             $sort: {id: 1}
-    //         })
-    //             .then((surveys) => {
-    //                 res.status(200).json({'result': surveys, 'count': data.count, 'pages': pages});
-    //             });
-    //     })
-    //     .catch(function (error) {
-    //         res.sendStatus(404);
-    //     });
 };

@@ -4,7 +4,9 @@ module.exports = (sequelize, DataTypes) => {
     result: DataTypes.INTEGER
   }, {});
   answer.associate = function(models) {
-    // associations can be defined here
+    answer.belongsTo(models.Survey);
+    answer.belongsTo(models.Question);
+    answer.belongsTo(models.User);
   };
   return answer;
 };
