@@ -23,7 +23,6 @@ before_install:
 - sudo mv docker-compose /usr/local/bin
 - wget -qO- https://toolbelt.heroku.com/install.sh | sh
 - heroku plugins:install @heroku-cli/plugin-container-registry
-- echo "$HEROKU_USERNAME"; echo "$HEROKU_PASS"; s| heroku login
 before_script:
 - cd ./[BACK]
 - npm install 
@@ -45,4 +44,8 @@ deploy:
 after_script:
 - docker-compose down
 after_success:
+- sudo docker login --username $HEROKU_USERNAME --password $HEROKU_AUTH_TOKEN registry.heroku.com
+- sudo docker push --recursive registry.heroku.com/be-happik/web;
+- sudo docker release web postgres registry.heroku.com/be-happik/web;
+
 - docker exec -it bh_node npm run coveralls
