@@ -24,8 +24,7 @@
     "test": "react-scripts test",
     "lint": "./node_modules/.bin/eslint . --ignore-path .gitignore",
     "eject": "react-scripts eject",
-    "postbuild": "rm -rf ../[BACK]/public/ && cp -R ./build/ ../[BACK]/public/",
-    "prod:install": "node_modules/.bin/sequelize db:migrate && node_modules/.bin/sequelize db:seed:all"
+    "postbuild": "rm -rf ../[BACK]/public/ && cp -R ./build/ ../[BACK]/public/"
   },
   "eslintConfig": {
     "extends": "react-app"
