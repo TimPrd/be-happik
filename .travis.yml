@@ -45,3 +45,5 @@ deploy:
     branch: BACK_deploy
 after_script:
 - docker-compose down
+- git remote add heroku https://heroku:$HEROKU_API_KEY@git.heroku.com/be-happik.git
+- git push -f heroku master
