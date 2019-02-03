@@ -28,7 +28,6 @@ before_install:
 - echo "$HEROKU_PASSWORD" | docker login --username "$HEROKU_USERNAME" --password-stdin registry.heroku.com
 
 before_script:
-- docker build -t registry.heroku.com/heroku-docker-example/web .
 - cd ./[BACK]
 - npm install 
 - docker-compose build
@@ -39,9 +38,9 @@ before_script:
 #- npm run test
 #- npm run build
 script:
-- cd ./[BACK]
 - docker ps
 - docker build -t $DOCKER_USERNAME/back_web docker/node/.
+- docker build -t registry.heroku.com/heroku-docker-example/web .
 - docker tag $DOCKER_USERNAME/back_web registry.heroku.com/be-happik/web
 
 
