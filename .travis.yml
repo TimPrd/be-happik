@@ -4,6 +4,7 @@ branches:
   only:
   - master
   - DEV
+  - BACK_deploy
 language: node_js
 node_js: 11.9.0
 sudo: required
