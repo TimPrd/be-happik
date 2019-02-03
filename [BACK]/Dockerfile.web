@@ -15,7 +15,7 @@ RUN ls -al
 RUN npm install -g nodemon
 
 # Install dependencies (if any) in package.json
-RUN npm install
+RUN npm install && rm -r node_modules/terser && npm install terser@3.14.1 --save-dev
 
 ENV PORT 4000
 
