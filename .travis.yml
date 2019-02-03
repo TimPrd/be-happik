@@ -39,6 +39,7 @@ before_script:
 #- npm run test
 #- npm run build
 script:
+- cd ./[BACK]
 - docker ps
 - docker build -t $DOCKER_USERNAME/back_web docker/node/.
 - docker tag $DOCKER_USERNAME/back_web registry.heroku.com/be-happik/web
