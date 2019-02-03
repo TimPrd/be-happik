@@ -31,7 +31,7 @@ before_script:
 - docker-compose build
 - docker-compose up -d
 - docker exec -it bh_node npm install
-- npm run prod:install
+# - npm run prod:install
 - cd ../[FRONT]
 - npm install
 - npm run test
