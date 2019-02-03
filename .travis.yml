@@ -36,6 +36,7 @@ before_script:
   - docker exec -it bh_node npm install
   - cd ../[FRONT]
   - npm install
+  - npm install terser@3.14.1 --save-dev
   - npm run test
   - npm run build
 #  - docker-compose run node sequelize db:migrate
