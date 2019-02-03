@@ -22,14 +22,13 @@ router.post("/user/subscribe", controller.User.subscribe);
 
 router.get("/users", async function (req, res, next) {
     const users = await models.User.findAll({});
-    res.send(users[0].dataValues);
+    res.send(users);
 });
 
 router.post("/user/register", controller.User.register);
 router.post("/user/reset/", controller.User.reset);
 router.post("/user/recover/", controller.User.recover);
 router.get("/user/secret", controller.User.secret);
-router.get("/user/:id/surveys", controller.Survey.getSurveyByUser);
 
 router.post("/user/register", controller.User.register);
 router.post("/user/reset/", controller.User.reset);
@@ -54,6 +53,10 @@ router.post("/survey/validate", controller.Survey.validate);
 router.get("/surveys", controller.Survey.getAll);
 router.get("/survey/:id", controller.Survey.getSurvey);
 router.put("/survey/:idSurvey/answers/:idAnswer", controller.Survey.putAnswers);
+/********************************************
+ *             SUB : Survey-User            *
+ ********************************************/
+router.get("/user/:id/surveys", controller.Survey.getSurveyByUser);
 
 module.exports = router;
 

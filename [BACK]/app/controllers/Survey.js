@@ -1,7 +1,7 @@
 const passport = require('passport');
 const Mailer = require('./Mailer');
 const models = require('../../models/');
-const { Op } = require('sequelize')
+const {Op} = require('sequelize')
 
 /**
  * @api {post} /surveys/validate/ Save a new survey and notify users.
@@ -87,24 +87,33 @@ exports.validate = async function (req, res) {
 //todo : logs
 //todo : move to user ?
 exports.getSurveyByUser = async function (req, res) {
-    const userId = req.params.id;
-    if (!userId)
-        res.send("No user found").status(404);
-    let user = await models.User.findById(userId);
-    let surveys = await models.Teamsurvey.findAll({
-            where: {TeamId: user.TeamId}
+    passport.authenticate('jwt', {session: false}, async (err, user, info) => {
+            const userId = req.params.id;
+            if (!userId) {
+                res.send("No user found").status(404);
+            }
+            if (user.id == userId) {
+                let usr = await models.User.findById(userId);
+                let surveys = await models.Teamsurvey.findAll({
+                        where: {TeamId: usr.TeamId}
+                    }
+                ).then(async surveys => {
+                    const ids = await surveys.map(s => s.SurveyId);
+                    return await models.Survey.findAll({
+                        where: {id: ids},
+                        attributes: ['title', 'startDate', 'open', 'id'/*, 'creator'*/]
+                    })
+                }).catch(error => {
+                    res.send("An error occured, check logs").status(404);
+                });
+                res.send(surveys).status(200);
+            } else
+                return res.json({msg: "You are not authorize"});
         }
-    ).then(async surveys => {
-        const ids = await surveys.map(s => s.SurveyId);
-        return await models.Survey.findAll({
-            where: {id: ids},
-            attributes: ['title', 'startDate', 'open'/*, 'creator'*/]
-        })
-    }).catch(error => {
-        res.send("An error occured, check logs").status(404);
-    });
-    res.send(surveys).status(200);
-};
+    )
+    (req, res);
+}
+;
 /*
 let limit = 9;   // number of records per page
 let offset = 0;
@@ -169,8 +178,10 @@ exports.getAll = async function (req, res) {
  * @apiSuccess (200) {Object} page the desired page with the survey
  */
 
-exports.getSurvey =  function (req, res) {
+exports.getSurvey = function (req, res) {
     passport.authenticate('jwt', {session: false}, async (err, user, info) => {
+        console.log("SURV")
+
         if (err) {
             return res.json({msg: err});
         }
@@ -184,9 +195,9 @@ exports.getSurvey =  function (req, res) {
             const SurveyId = req.params.id;
 
             const userSurvey = await models.userSurvey.find({
-                where:{
-                    UserId:user.id,
-                    SurveyId:SurveyId,
+                where: {
+                    UserId: user.id,
+                    SurveyId: SurveyId,
                 },
                 include:
                     [
@@ -194,30 +205,31 @@ exports.getSurvey =  function (req, res) {
                             model: models.Survey,
                         }
                     ]
-            })
+            });
+
+            console.log(userSurvey)
 
             if (!userSurvey) {
-                return res.json({msg: 'There is not survey for this id'});
+                return res.json({msg: 'There is no  survey for this id'});
             }
 
             const answer = await models.answer.findAll({
-                where:{
-                        UserId:userSurvey.UserId,
-                        SurveyId:userSurvey.SurveyId,
-                    },
+                where: {
+                    UserId: userSurvey.UserId,
+                    SurveyId: userSurvey.SurveyId,
+                },
                 include:
                     [
                         {
                             model: models.Question,
                         },
                     ],
-                });
+            });
 
             let surv = userSurvey.Survey;
 
-            return await res.json({msg: {survey : surv, answer: answer}})
-        }
-        else
+            return await res.json({msg: {survey: surv, answer: answer}})
+        } else
             return res.json({msg: "You are not authorize"});
     })(req, res);
 };
@@ -230,7 +242,7 @@ exports.getSurvey =  function (req, res) {
  * @apiSuccess (200) {Object} page the desired page with the survey
  */
 
-exports.putAnswers =  function (req, res) {
+exports.putAnswers = function (req, res) {
     passport.authenticate('jwt', {session: false}, async (err, user, info) => {
         if (err) {
             return res.json({msg: err});
@@ -240,9 +252,9 @@ exports.putAnswers =  function (req, res) {
             const SurveyId = req.params.idSurvey;
 
             const userSurvey = await models.userSurvey.find({
-                where:{
-                    UserId:user.id,
-                    SurveyId:SurveyId,
+                where: {
+                    UserId: user.id,
+                    SurveyId: SurveyId,
                 },
                 include:
                     [
@@ -263,10 +275,10 @@ exports.putAnswers =  function (req, res) {
             const answerIds = answersBody.map(answer => answer.id);
 
             const answers = await models.answer.findAll({
-                where:{
-                    UserId:userSurvey.UserId,
-                    id:answerIds,
-                    SurveyId:userSurvey.SurveyId,
+                where: {
+                    UserId: userSurvey.UserId,
+                    id: answerIds,
+                    SurveyId: userSurvey.SurveyId,
                 },
             });
 
@@ -275,26 +287,25 @@ exports.putAnswers =  function (req, res) {
             }
 
             const results = answersBody
-                .filter(ans => typeof (ans.result) === 'number' )
-                .filter(ans => (0 <= ans.result &&  ans.result <= 100)  )
+                .filter(ans => typeof (ans.result) === 'number')
+                .filter(ans => (0 <= ans.result && ans.result <= 100))
                 .filter(ans => (answers
                     .map(a => a.id)
                     .includes(ans.id))
                 );
 
-            if (results.length < 1 ) {
-                return res.json({msg: 'Result should be a number between 0 and 100'} )
+            if (results.length < 1) {
+                return res.json({msg: 'Result should be a number between 0 and 100'})
             }
 
             results.forEach(async result => {
                 await answers.forEach(async ans => {
-                    await ans.update({result: result.result,where:{id:result.id}})
+                    await ans.update({result: result.result, where: {id: result.id}})
                 })
             });
 
             return await res.json({msg: 'Your answers have been updated'})
-        }
-        else
+        } else
             return res.json({msg: "You are not authorize"});
     })(req, res);
 };
@@ -307,7 +318,7 @@ exports.putAnswers =  function (req, res) {
  * @apiSuccess (200) {Object} page the desired page with the survey
  */
 
-exports.putAnswer =  function (req, res) {
+exports.putAnswer = function (req, res) {
     passport.authenticate('jwt', {session: false}, async (err, user, info) => {
         if (err) {
             return res.json({msg: err});
@@ -317,9 +328,9 @@ exports.putAnswer =  function (req, res) {
             const SurveyId = req.params.idSurvey;
 
             const userSurvey = await models.userSurvey.find({
-                where:{
-                    UserId:user.id,
-                    SurveyId:SurveyId,
+                where: {
+                    UserId: user.id,
+                    SurveyId: SurveyId,
                 },
                 include:
                     [
@@ -339,26 +350,25 @@ exports.putAnswer =  function (req, res) {
             const answerId = req.params.idAnswer;
 
             const answer = await models.answer.find({
-                where:{
-                    UserId:userSurvey.UserId,
-                    id:answerId,
-                    SurveyId:userSurvey.SurveyId,
+                where: {
+                    UserId: userSurvey.UserId,
+                    id: answerId,
+                    SurveyId: userSurvey.SurveyId,
                 },
             });
 
             let result;
 
-            typeof(req.body.result) === 'number' ? result = req.body.result : result = null;
+            typeof (req.body.result) === 'number' ? result = req.body.result : result = null;
 
-            if (result === null || (0 > result || result  > 100)) {
+            if (result === null || (0 > result || result > 100)) {
                 return res.json({msg: 'Result should be a number between 0 and 100'})
             }
 
-            await answer.update({result:result});
+            await answer.update({result: result});
 
             return await res.json({msg: 'Your answer have been updated'})
-        }
-        else
+        } else
             return res.json({msg: "You are not authorize"});
     })(req, res);
 };
