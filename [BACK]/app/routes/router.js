@@ -51,8 +51,7 @@ router.get("/user/:id/me", controller.User.login)
 router.post("/survey/validate", controller.Survey.validate);
 router.get("/surveys", controller.Survey.getAll);
 router.get("/survey/:id", controller.Survey.getSurvey);
-// router.get("/survey/alex", controller.Survey.validate());
-
+router.put("/survey/:idSurvey/answers/:idAnswer", controller.Survey.putAnswers);
 
 module.exports = router;
 
