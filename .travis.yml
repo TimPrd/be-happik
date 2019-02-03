@@ -21,13 +21,14 @@ before_install:
   -s`-`uname -m` > docker-compose
 - chmod +x docker-compose
 - sudo mv docker-compose /usr/local/bin
-- sudo apt-get install expect
 - wget -qO- https://toolbelt.heroku.com/install.sh | sh
-- heroku plugins:install @heroku-cli/plugin-container-registry
-- sudo bash -c export HEROKU_PASSWORD=$HEROKU_PASSWORD;
-- echo $HEROKU_PASSWORD
-- expect heroku.exp
+- heroku plugins:install @heroku-cli/plugin-container-registry 
+# login to docker registries (dockerhub + heroku)
+- echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+- echo "$HEROKU_PASSWORD" | docker login -u "$HEROKU_USERNAME" --password-stdin registry.heroku.com
+
 before_script:
+- docker build -t registry.heroku.com/heroku-docker-example/web .
 - cd ./[BACK]
 - npm install 
 - docker-compose build
@@ -39,19 +40,37 @@ before_script:
 #- npm run build
 script:
 - docker ps
+- docker build -t $DOCKER_USERNAME/back_web docker/node/.
+- docker tag $DOCKER_USERNAME/back_web registry.heroku.com/be-happik/web
+
+
 deploy:
-  provider: script
-  script:
-  - heroku container:push --recursive -a $HEROKU_APP_NAME
-  - heroku container:release web postgres -a $HEROKU_APP_NAME
-  branch: BACK_deploy
+  provider: heroku
+  api_key: $TOKEN
+  app: be-happik
+  #provider: script
+  #script: 
+    # push to dockerhub & heroku
+    #docker push $DOCKER_USERNAME/back_web;
+    #docker push registry.heroku.com/be-happik/web;
+    #heroku container:release web --app be-happik
+  on:
+    branch: BACK_deploy
+
+#deploy:
+#  provider: script
+#  script:
+#    docker push registry.heroku.com/be-happik/web;
+#  - heroku container:push --recursive -a $HEROKU_APP_NAME
+#  - heroku container:release web postgres -a $HEROKU_APP_NAME
+#  branch: BACK_deploy
 after_script:
 - docker-compose down
 after_success:
-- docker login --username=_ --password=$TOKEN registry.heroku.com
-- heroku login -i | 'echo test'
-- heroku container:push --recursive -a be-happik
-- heroku container:release web -a be-happik
+#- docker login --username=_ --password=$TOKEN registry.heroku.com
+#- heroku login -i | 'echo test'
+#- heroku container:push --recursive -a be-happik
+#- heroku container:release web -a be-happik
 #- docker build -t registry.heroku.com/be-happik/web .
 #- docker push registry.heroku.com/be-happik/web
 #- heroku container:push --recursive -a be-happik
