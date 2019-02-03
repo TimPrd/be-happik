@@ -9,13 +9,10 @@ send "\r"
 
 expect "Password (typing will be hidden):"
 
-send "$HEROKU_PASSWORD";
+send "\$PATH";
 
 send "\r"
 
 interact
 exit
 #send "\$HEROKU_PASSWORD"
-
-***
-CasseToiConnard2
