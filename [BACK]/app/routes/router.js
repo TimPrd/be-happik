@@ -22,11 +22,13 @@ router.post("/user/subscribe", controller.User.subscribe);
 
 router.get("/users", async function (req, res, next) {
     const users = await models.User.findAll({});
+    res.send(users[0].dataValues);
 });
 
 router.post("/user/register", controller.User.register);
 router.post("/user/reset/", controller.User.reset);
 router.post("/user/recover/", controller.User.recover);
+router.get("/user/secret", controller.User.secret);
 router.get("/user/:id/surveys", controller.Survey.getSurveyByUser);
 
 router.post("/user/register", controller.User.register);
