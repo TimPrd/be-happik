@@ -8,6 +8,11 @@ import styled from 'styled-components';
 import client from '../../api';
 import Input from '../inputs';
 
+
+const Container = styled(Row)`
+  margin: ${props => props.theme.custom.text}px 0;
+`;
+
 const Submitbutton = styled.button`
   width: 100%;
   height: 36px;
@@ -15,7 +20,7 @@ const Submitbutton = styled.button`
   border: none;
   background-color: ${props => props.theme.colors.rose85};
   color: ${props => props.theme.colors.white};
-  margin: ${props => props.theme.custom.bigtext}px 0;
+  margin: ${props => props.theme.custom.text}px 0;
 `;
 
 const QuestionsPart1 = styled.div`
@@ -37,6 +42,17 @@ const PredefQuestion = styled.div`
   padding: 0 25px;
 
   span {
+    text-align: left;
+  }
+`;
+
+const SelectContainer = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+
+  span {
+    margin: 10px 0;
     text-align: left;
   }
 `;
@@ -75,8 +91,16 @@ class CreateSurvey extends React.Component {
           'Content-Type': 'application/json',
         },
       });
+      let newdata = predefinedquestions.data;
 
-      return predefinedquestions.data.msg === 'You are not authorize' ? null : predefinedquestions.data;
+      if (newdata.msg !== 'You are not authorize') {
+        newdata = newdata.map(data => ({ question: data, isChecked: false }));
+      } else {
+        return null;
+      }
+      console.log(newdata);
+
+      return newdata;
     } catch (err) {
       return null;
     }
@@ -86,7 +110,7 @@ class CreateSurvey extends React.Component {
     const loggedUser = JSON.parse(localStorage.getItem('user'));
 
     try {
-      const teams = await client.get('/api/team/list/', {
+      const teams = await client.get('/api/team/list?q=20', {
         headers: {
           Authorization: `Bearer ${loggedUser.token}`,
           'Content-Type': 'application/json',
@@ -148,7 +172,7 @@ class CreateSurvey extends React.Component {
             <Row>
               <Col xs={12}>
                 <form onSubmit={handleSubmit}>
-                  <Row>
+                  <Container>
                     <Col xs={12} mdOffset={3} md={6}>
                       <Label className="column_direction" htmlFor="title">
                         <span>
@@ -164,23 +188,31 @@ class CreateSurvey extends React.Component {
                         />
                       </Label>
                     </Col>
-                  </Row>
+                  </Container>
 
-                  <Row>
+                  <Container>
                     <Col xs={12} mdOffset={3} md={6}>
-                      <Select
-                        options={values.teams}
-                        closeMenuOnSelect={false}
-                        isMulti
-                        onChange={option => setFieldValue('teamSelect', option)}
-                        name="teamSelect"
-                        // styles={colourStyles}
-                      />
-                    </Col>
-                  </Row>
+                      <SelectContainer>
+                        <span>
+                          Sélectionner une ou plusieurs équipes
+                        </span>
 
-                  <Row>
+                        <Select
+                          options={values.teams}
+                          closeMenuOnSelect={false}
+                          isMulti
+                          onChange={option => setFieldValue('teamSelect', option)}
+                          name="teamSelect"
+                          // styles={colourStyles}
+                        />
+                      </SelectContainer>
+                    </Col>
+                  </Container>
+
+                  <Container>
                     <Col xs={12} md={6}>
+                      <h3>Questions prédéfinies</h3>
+
                       <QuestionsPart1>
                         <FieldArray
                           name="predefined_questions"
@@ -191,7 +223,7 @@ class CreateSurvey extends React.Component {
                                   <PredefQuestion>
                                     <Label>
                                       <span>
-                                        {question}
+                                        {question.question}
                                       </span>
 
                                       <input
@@ -210,6 +242,8 @@ class CreateSurvey extends React.Component {
                     </Col>
 
                     <Col xs={12} md={6}>
+                      <h3>Questions personnalisées</h3>
+
                       <FieldArray
                         name="questions"
                         render={arrayHelpers => (
@@ -244,7 +278,7 @@ class CreateSurvey extends React.Component {
                         )}
                       />
                     </Col>
-                  </Row>
+                  </Container>
 
                   <Row>
                     <Col mdOffset={7} xs={6} md={2}>
