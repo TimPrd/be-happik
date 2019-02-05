@@ -7,7 +7,7 @@ exports.getTeamList = async function (req, res) {
             return res.json({msg: err});
         }
 
-        if (user && user.RoleId === 0) {
+        if (user && user.RoleId === 2) {
             let q = null;
             if (typeof req.query.q !== 'undefined') {
                 q = parseInt(req.query.q);
