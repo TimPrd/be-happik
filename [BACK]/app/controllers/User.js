@@ -293,9 +293,9 @@ exports.me = function (req, res, next) {
         }
 
         if (user) {
-            return res.send(user);
+            return res.status(200).send(user);
         } else {
-            return res.json({msg: "You are not authorize"});
+            return res.status(400).json({msg: "You are not authorize"});
         }
     })(req, res);
 };
