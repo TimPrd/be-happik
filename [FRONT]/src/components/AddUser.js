@@ -1,5 +1,7 @@
 import React from 'react';
-import { Formik, Form, Field, FieldArray } from 'formik';
+import {
+  Formik, Form, Field, FieldArray,
+} from 'formik';
 import * as Yup from 'yup';
 import styled from 'styled-components';
 
@@ -48,9 +50,9 @@ const AddUserSchema = Yup.object().shape({
   email: Yup.array()
     .of(
       Yup.string()
-      .min(5, 'Your email is too Short!')
-      .max(50, 'Your email is too Long!')
-      .required('Email is required'),
+        .min(5, 'Your email is too Short!')
+        .max(50, 'Your email is too Long!')
+        .required('Email is required'),
     ),
   team: Yup.string()
     .required('Select a team'),
@@ -61,7 +63,7 @@ const AddUser = () => (
     <Formik
       validationSchema={AddUserSchema}
 
-      onSubmit={values => {
+      onSubmit={(values) => {
         console.log('Values: ', values);
       }}
     >
@@ -70,7 +72,7 @@ const AddUser = () => (
         handleBlur,
         values,
         errors,
-        touched
+        touched,
       }) => (
         <Form>
           <Container>
@@ -80,14 +82,14 @@ const AddUser = () => (
                 <div>
                   {values.email && values.email.length > 0 ? (
                     values.email.map((email, index) => (
-                      <div key={index}>
+                      <div key={index.toString()}>
                         <Input
                           onChange={handleChange}
                           onBlur={handleBlur}
                           value={values.name}
                           type="email"
                           name={`email.${index}`}
-                          className={ errors.email && touched.email && errors.email[index] ? 'withError' : ''}
+                          className={errors.email && touched.email && errors.email[index] ? 'withError' : ''}
                         />
 
                         {errors.email && touched.email ? (
@@ -112,7 +114,7 @@ const AddUser = () => (
             />
           </Container>
 
-          <br/>
+          <br />
 
           <Container>
             <Field component="select" name="team">
