@@ -1,12 +1,12 @@
 import React from 'react';
 import { Col, Row } from 'react-flexbox-grid';
-import { Formik } from 'formik';
+import { Formik, FieldArray } from 'formik';
 import { toast } from 'react-toastify';
 import Select from 'react-select';
 import styled from 'styled-components';
 
 import client from '../../api';
-// import { UserContext } from '../../contexts';
+import Input from '../inputs';
 
 const options = [
   { value: 'chocolate', label: 'Chocolate' },
@@ -62,6 +62,53 @@ const Submitbutton = styled.button`
   margin: ${props => props.theme.custom.bigtext}px 0;
 `;
 
+const QuestionsPart1 = styled.div`
+  width: 100%;
+  height: auto;
+  max-height: 500px;
+  border: none;
+  box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.04);
+`;
+
+const PredefQuestion = styled.div`
+  width: 100%;
+  height: 70px;
+  box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.04);
+  margin: 12px 0;
+  padding: 0 30px;
+`;
+
+const Label = styled.label`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  &.column_direction {
+    flex-direction: column;
+  }
+`;
+
+const questions = [
+  {
+    question: 'car',
+    isChecked: false,
+  },
+  {
+    question: 'motorcycle',
+    isChecked: false,
+  },
+  {
+    question: 'airplane',
+    isChecked: false,
+  },
+  {
+    question: 'rocket',
+    isChecked: false,
+  },
+];
+
 class CreateSurvey extends React.Component {
   state = {
     teams: null,
@@ -71,16 +118,12 @@ class CreateSurvey extends React.Component {
     const loggedUser = JSON.parse(localStorage.getItem('user'));
 
     try {
-      // const response = await client.get('/me');
       const teams = await client.get('/api/team/list/', {
         headers: {
           Authorization: `Bearer ${loggedUser.token}`,
           'Content-Type': 'application/json',
         },
       });
-
-      console.log(loggedUser);
-      console.log(teams);
 
       return teams;
     } catch (err) {
@@ -101,8 +144,10 @@ class CreateSurvey extends React.Component {
       <div>
         <Formik
           initialValues={{
-            email: '',
-            password: '',
+            title: '',
+            teams: [],
+            predefined_questions: [],
+            questions: [],
           }}
           // validationSchema={SignupSchema}
           onSubmit={async (values, actions) => {
@@ -128,9 +173,20 @@ class CreateSurvey extends React.Component {
             handleSubmit, values, setFieldValue,
           }) => (
             <Row>
-              {console.log(values)}
               <Col xs={12}>
                 <form onSubmit={handleSubmit}>
+                  <Col xs={12} mdOffset={3} md={6}>
+                    <label htmlFor="title">
+                      Titre du sondage
+                      <Input
+                        id="title"
+                        name="title"
+                        type="text"
+                        placeholder="mon super sondage"
+                      />
+                    </label>
+                  </Col>
+
                   <Col xs={12} mdOffset={3} md={6}>
                     <Select
                       options={options}
@@ -141,6 +197,74 @@ class CreateSurvey extends React.Component {
                       // styles={colourStyles}
                     />
                   </Col>
+
+                  <Row>
+                    <Col xs={12} md={6}>
+                      <QuestionsPart1>
+                        <FieldArray
+                          name="predefined_questions"
+                          render={arrayHelpers => (
+                            <div>
+                              {questions.map((question, index) => (
+                                <PredefQuestion key={index}>
+                                  <Label>
+                                    <span>
+                                      {question.question}
+                                    </span>
+
+                                    <input
+                                      type="checkbox"
+                                      name={`predefined_questions.${index}`}
+                                      // checked={}
+                                      onClick={e => arrayHelpers.replace(index, { ...question, isChecked: e.target.checked })}
+                                      // onChange={e => arrayHelpers.replace(index, { ...question, isChecked: !e.target.checked })}
+                                    />
+                                  </Label>
+                                </PredefQuestion>
+                              ))}
+                            </div>
+                          )}
+                        />
+                      </QuestionsPart1>
+                    </Col>
+
+                    <Col xs={12} md={6}>
+                      <QuestionsPart1>
+                        <FieldArray
+                          name="questions"
+                          render={arrayHelpers => (
+                            <div>
+                              {values.questions && values.questions.length > 0 ? (
+                                <div>
+                                  {values.questions.map((question, index) => (
+                                    <div key={index}>
+                                      <Label className="column_direction">
+                                        <span>
+                                          Énoncé de la question
+                                        </span>
+                                        <Input
+                                          type="text"
+                                          name={`questions.${index}`}
+                                        />
+                                      </Label>
+                                    </div>
+                                  ))}
+
+                                  <button type="button" onClick={() => arrayHelpers.push('')}>
+                                    +
+                                  </button>
+                                </div>
+                              ) : (
+                                <button type="button" onClick={() => arrayHelpers.push('')}>
+                                  Add a friend
+                                </button>
+                              )}
+                            </div>
+                          )}
+                        />
+                      </QuestionsPart1>
+                    </Col>
+                  </Row>
 
                   <Row>
                     <Col mdOffset={7} xs={6} md={2}>
