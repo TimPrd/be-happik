@@ -8,50 +8,6 @@ import styled from 'styled-components';
 import client from '../../api';
 import Input from '../inputs';
 
-const options = [
-  { value: 'chocolate', label: 'Chocolate' },
-  { value: 'strawberry', label: 'Strawberry' },
-  { value: 'vanilla', label: 'Vanilla' },
-];
-
-// const colourStyles = {
-//   control: styles => ({ ...styles, backgroundColor: 'white' }),
-//   option: (styles, {
-//     data, isDisabled, isFocused, isSelected
-//   }) => {
-//     return {
-//       ...styles,
-//       backgroundColor: isDisabled
-//         ? null
-//         : isSelected ? data.color : isFocused ? color.alpha(0.1).css() : null,
-//       color: isDisabled
-//         ? '#ccc'
-//         : isSelected
-//           ? chroma.contrast(color, 'white') > 2 ? 'white' : 'black'
-//           : data.color,
-//       cursor: isDisabled ? 'not-allowed' : 'default',
-//     };
-//   },
-//   multiValue: (styles, { data }) => {
-//     return {
-//       ...styles,
-//       backgroundColor: color.alpha(0.1).css(),
-//     };
-//   },
-//   multiValueLabel: (styles, { data }) => ({
-//     ...styles,
-//     color: data.color,
-//   }),
-//   multiValueRemove: (styles, { data }) => ({
-//     ...styles,
-//     color: data.color,
-//     ':hover': {
-//       backgroundColor: data.color,
-//       color: 'white',
-//     },
-//   }),
-// };
-
 const Submitbutton = styled.button`
   width: 100%;
   height: 36px;
@@ -66,16 +22,23 @@ const QuestionsPart1 = styled.div`
   width: 100%;
   height: auto;
   max-height: 500px;
+  padding: 1rem;
   border: none;
   box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.04);
+
+  overflow: auto;
 `;
 
 const PredefQuestion = styled.div`
   width: 100%;
   height: 70px;
   box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.04);
-  margin: 12px 0;
-  padding: 0 30px;
+  margin: 10px 0;
+  padding: 0 25px;
+
+  span {
+    text-align: left;
+  }
 `;
 
 const Label = styled.label`
@@ -87,31 +50,36 @@ const Label = styled.label`
 
   &.column_direction {
     flex-direction: column;
+    align-items: flex-start;
+
+    span {
+      margin: 10px 0;
+    }
   }
 `;
-
-const questions = [
-  {
-    question: 'car',
-    isChecked: false,
-  },
-  {
-    question: 'motorcycle',
-    isChecked: false,
-  },
-  {
-    question: 'airplane',
-    isChecked: false,
-  },
-  {
-    question: 'rocket',
-    isChecked: false,
-  },
-];
 
 class CreateSurvey extends React.Component {
   state = {
     teams: null,
+    predefQuestions: null,
+  };
+
+  fetchQuestions = async () => {
+    const loggedUser = JSON.parse(localStorage.getItem('user'));
+    console.log(loggedUser);
+
+    try {
+      const predefinedquestions = await client.get('/api/question/predefined?q=20', {
+        headers: {
+          Authorization: `Bearer ${loggedUser.token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      return predefinedquestions.data.msg === 'You are not authorize' ? null : predefinedquestions.data;
+    } catch (err) {
+      return null;
+    }
   };
 
   fetchTeams = async () => {
@@ -125,7 +93,7 @@ class CreateSurvey extends React.Component {
         },
       });
 
-      return teams;
+      return teams.data.msg === 'You are not authorize' ? null : teams.data;
     } catch (err) {
       return null;
     }
@@ -133,20 +101,27 @@ class CreateSurvey extends React.Component {
 
   componentDidMount = async () => {
     const teams = await this.fetchTeams();
+    const predefQuestions = await this.fetchQuestions();
 
-    this.setState(teams);
+    this.setState({
+      teams,
+      predefQuestions,
+    });
   };
 
   render() {
-    const { teams } = this.state;
+    const { teams, predefQuestions } = this.state;
+
+    console.log(this.state);
 
     return (
       <div>
         <Formik
+          enableReinitialize
           initialValues={{
             title: '',
-            teams: [],
-            predefined_questions: [],
+            teams: teams || [],
+            predefined_questions: predefQuestions || [],
             questions: [],
           }}
           // validationSchema={SignupSchema}
@@ -164,39 +139,45 @@ class CreateSurvey extends React.Component {
               toast.error('error', {
                 position: toast.POSITION.TOP_RIGHT,
               });
-              actions.setFieldError('email', true);
-              actions.setFieldError('password', true);
             }
           }}
           render={({
-            // handleChange, handleBlur, errors, touched,
-            handleSubmit, values, setFieldValue,
+            // , handleBlur, errors, touched,
+            handleChange, handleSubmit, values, setFieldValue,
           }) => (
             <Row>
               <Col xs={12}>
                 <form onSubmit={handleSubmit}>
-                  <Col xs={12} mdOffset={3} md={6}>
-                    <label htmlFor="title">
-                      Titre du sondage
-                      <Input
-                        id="title"
-                        name="title"
-                        type="text"
-                        placeholder="mon super sondage"
-                      />
-                    </label>
-                  </Col>
+                  <Row>
+                    <Col xs={12} mdOffset={3} md={6}>
+                      <Label className="column_direction" htmlFor="title">
+                        <span>
+                          Titre du sondage
+                        </span>
 
-                  <Col xs={12} mdOffset={3} md={6}>
-                    <Select
-                      options={options}
-                      closeMenuOnSelect={false}
-                      isMulti
-                      onChange={option => setFieldValue('teamSelect', option)}
-                      name="teamSelect"
-                      // styles={colourStyles}
-                    />
-                  </Col>
+                        <Input
+                          id="title"
+                          name="title"
+                          type="text"
+                          placeholder="mon super sondage"
+                          onChange={handleChange}
+                        />
+                      </Label>
+                    </Col>
+                  </Row>
+
+                  <Row>
+                    <Col xs={12} mdOffset={3} md={6}>
+                      <Select
+                        options={values.teams}
+                        closeMenuOnSelect={false}
+                        isMulti
+                        onChange={option => setFieldValue('teamSelect', option)}
+                        name="teamSelect"
+                        // styles={colourStyles}
+                      />
+                    </Col>
+                  </Row>
 
                   <Row>
                     <Col xs={12} md={6}>
@@ -204,40 +185,44 @@ class CreateSurvey extends React.Component {
                         <FieldArray
                           name="predefined_questions"
                           render={arrayHelpers => (
-                            <div>
-                              {questions.map((question, index) => (
-                                <PredefQuestion key={index}>
-                                  <Label>
-                                    <span>
-                                      {question.question}
-                                    </span>
+                            <Row>
+                              {values.predefined_questions.map((question, index) => (
+                                <Col xs={12} key={index.toString()}>
+                                  <PredefQuestion>
+                                    <Label>
+                                      <span>
+                                        {question}
+                                      </span>
 
-                                    <input
-                                      type="checkbox"
-                                      name={`predefined_questions.${index}`}
-                                      // checked={}
-                                      onClick={e => arrayHelpers.replace(index, { ...question, isChecked: e.target.checked })}
-                                      // onChange={e => arrayHelpers.replace(index, { ...question, isChecked: !e.target.checked })}
-                                    />
-                                  </Label>
-                                </PredefQuestion>
+                                      <input
+                                        type="checkbox"
+                                        name={`predefined_questions.${index}`}
+                                        onClick={e => arrayHelpers.replace(index, { ...question, isChecked: e.target.checked })}
+                                      />
+                                    </Label>
+                                  </PredefQuestion>
+                                </Col>
                               ))}
-                            </div>
+                            </Row>
                           )}
                         />
                       </QuestionsPart1>
                     </Col>
 
                     <Col xs={12} md={6}>
-                      <QuestionsPart1>
-                        <FieldArray
-                          name="questions"
-                          render={arrayHelpers => (
-                            <div>
-                              {values.questions && values.questions.length > 0 ? (
-                                <div>
-                                  {values.questions.map((question, index) => (
-                                    <div key={index}>
+                      <FieldArray
+                        name="questions"
+                        render={arrayHelpers => (
+                          <Row end="xs">
+                            <Col xs={6}>
+                              <Submitbutton type="button" onClick={() => arrayHelpers.push('')}>Ajouter une question</Submitbutton>
+                            </Col>
+
+                            {values.questions && values.questions.length > 0 && (
+                              <Col xs={12}>
+                                {values.questions.map((question, index) => (
+                                  <Row key={index.toString()}>
+                                    <Col xs={12}>
                                       <Label className="column_direction">
                                         <span>
                                           Énoncé de la question
@@ -245,24 +230,19 @@ class CreateSurvey extends React.Component {
                                         <Input
                                           type="text"
                                           name={`questions.${index}`}
+                                          value={question}
+                                          placeholder="Votre question ..."
+                                          onChange={handleChange}
                                         />
                                       </Label>
-                                    </div>
-                                  ))}
-
-                                  <button type="button" onClick={() => arrayHelpers.push('')}>
-                                    +
-                                  </button>
-                                </div>
-                              ) : (
-                                <button type="button" onClick={() => arrayHelpers.push('')}>
-                                  Add a friend
-                                </button>
-                              )}
-                            </div>
-                          )}
-                        />
-                      </QuestionsPart1>
+                                    </Col>
+                                  </Row>
+                                ))}
+                              </Col>
+                            )}
+                          </Row>
+                        )}
+                      />
                     </Col>
                   </Row>
 
@@ -276,7 +256,7 @@ class CreateSurvey extends React.Component {
             </Row>
           )}
         />
-        {teams}
+        {/* {teams} */}
       </div>
     );
   }
