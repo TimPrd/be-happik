@@ -285,7 +285,14 @@ exports.subscribe = async function (req, res, next) {
 
 };
 
-
+/**
+ * @api {get} /user/me/ Get the current logged user's info
+ * @apiName Get user info
+ * @apiGroup User
+ *
+ * @apiSuccess {Object} user User data.
+ * @apiError UserNotFound No connected user was not found.
+ */
 exports.me = function (req, res, next) {
     passport.authenticate('jwt', {session: false}, async (err, user, info) => {
         if (err) {
@@ -295,7 +302,7 @@ exports.me = function (req, res, next) {
         if (user) {
             return res.status(200).send(user);
         } else {
-            return res.status(400).json({msg: "You are not authorize"});
+            return res.status(403).json({msg: "You are not authorize"});
         }
     })(req, res);
 };
