@@ -45,7 +45,8 @@ router
     .post("/user/register", controller.User.register)
     .post("/user/reset/", controller.User.reset)
     .post("/user/recover/", controller.User.recover)
-    .post("/user/subscribe", controller.User.subscribe);
+    .post("/user/subscribe", controller.User.subscribe)
+    .delete("/user/:id", controller.User.delete);
 
 
 /********************************************

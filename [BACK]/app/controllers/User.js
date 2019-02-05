@@ -299,3 +299,31 @@ exports.me = function (req, res, next) {
         }
     })(req, res);
 };
+
+/**
+ * @api {delete} /user/:id Delete an user.
+ * @apiName Delete an user
+ * @apiGroup User
+ *
+ * @apiParam {Number} id user id.
+
+ * @apiSuccess (202) {String} msg the returned message
+ */
+exports.delete = function (req, res, next) {
+    passport.authenticate('jwt', {session: false}, async (err, user, info) => {
+        let msg = "";
+        if (user.RoleId == 2) {
+             del = await models.User.destroy({
+                where: {
+                    id: req.params.id
+                }
+            });
+
+            if (del)
+                msg = "User deleted";
+            else
+                msg = "Not deleted";
+        }
+        res.status(202).send(msg);
+    })(req, res);
+};

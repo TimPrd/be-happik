@@ -24,7 +24,9 @@ exports.validate = async function (req, res) {
 
     let survey = await models.Survey.create({
         title: req.body.surveyTitle,
-        description: req.body.surveyDescription
+        description: req.body.surveyDescription,
+        startDate: new Date(),
+        open: true,
     }).then(survey => {
         survey.setAuthor(author)
         return survey;
