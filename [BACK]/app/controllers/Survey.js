@@ -1,6 +1,7 @@
+const passport = require('passport');
 const Mailer = require('./Mailer');
 const models = require('../../models/');
-
+const { Op } = require('sequelize')
 
 /**
  * @api {post} /surveys/validate/ Save a new survey and notify users.
@@ -12,7 +13,7 @@ const models = require('../../models/');
  * @apiParam {String} questions list of all the questions object (title, description, place).
  * @apiParam {String} author id of the current user who is creating this survey.
  *
- * @apiSuccess (200) {String NoContent
+ * @apiSuccess (204) {String} NoContent
  */
 exports.validate = async function (req, res) {
     const author = req.body.author;
@@ -158,4 +159,282 @@ exports.getAll = async function (req, res) {
         .catch(function (error) {
             res.sendStatus(404);
         });
+};
+
+/**
+ * @api {get} /survey/:id Get information about a specific survey.
+ * @apiName Get a specific survey
+ * @apiGroup Surveys
+ *
+ * @apiSuccess (200) {Object} page the desired page with the survey
+ */
+
+exports.getSurvey =  function (req, res) {
+    passport.authenticate('jwt', {session: false}, async (err, user, info) => {
+        if (err) {
+            return res.json({msg: err});
+        }
+
+        if (user) {
+            const SurveyId = req.params.id;
+
+            const userSurvey = await models.userSurvey.find({
+                where:{
+                    UserId:user.id,
+                    SurveyId:SurveyId,
+                },
+                include:
+                    [
+                        {
+                            model: models.Survey,
+                            includes: [
+                                {
+                                    model:models.User
+                                }
+                            ]
+
+                        }
+                    ]
+            });
+
+            if (!userSurvey) {
+                return res.json({msg: 'There is not survey for this id'});
+            }
+
+            const Author = await models.User.find({
+                where:{
+                    RoleId:0,
+                    id:userSurvey.Survey.AuthorId
+                },
+                attributes: ['firstName','lastName']
+            })
+
+            const questionsSurvey = await models.Questionsurvey.findAll({
+                where:{
+                        SurveyId:userSurvey.SurveyId,
+                    },
+                include:[
+                    {
+                        model: models.Question,
+                    },
+                ]
+                });
+
+            let surv = userSurvey.Survey;
+
+            async function setSurv(survey, userSurvey,Author, questionsSurvey){
+
+                survey.AuthorId = undefined;
+                return { survey: survey, author: Author, questions:  questionsSurvey.map(q => q.Question)};
+            }
+
+            const survey = await setSurv(surv, userSurvey, Author, questionsSurvey);
+
+            return await res.json({msg: survey})
+        }
+        else
+            return res.json({msg: "You are not authorize"});
+    })(req, res);
+};
+
+/**
+ * @api {get} /survey/:id/answers Get information about a specific survey and questions/answers.
+ * @apiName Get a specific survey
+ * @apiGroup Surveys
+ *
+ * @apiSuccess (200) {Object} page the desired page with the survey
+ */
+
+exports.getSurveyWithAnswers =  function (req, res) {
+    passport.authenticate('jwt', {session: false}, async (err, user, info) => {
+        if (err) {
+            return res.json({msg: err});
+        }
+
+        if (user) {
+            let q = null;
+            if (typeof req.query.q !== 'undefined') {
+                q = parseInt(req.query.q);
+            }
+
+            const SurveyId = req.params.id;
+
+            const userSurvey = await models.userSurvey.find({
+                where:{
+                    UserId:user.id,
+                    SurveyId:SurveyId,
+                },
+                include:
+                    [
+                        {
+                            model: models.Survey,
+                        }
+                    ]
+            })
+
+            if (!userSurvey) {
+                return res.json({msg: 'There is not survey for this id'});
+            }
+
+            const answer = await models.answer.findAll({
+                where:{
+                    UserId:userSurvey.UserId,
+                    SurveyId:userSurvey.SurveyId,
+                },
+                include:
+                    [
+                        {
+                            model: models.Question,
+                        },
+                    ],
+            });
+
+            let surv = userSurvey.Survey;
+
+            return await res.json({msg: {survey : surv, answer: answer}})
+        }
+        else
+            return res.json({msg: "You are not authorize"});
+    })(req, res);
+};
+
+/**
+ * @api {put} /survey/:idSurvey/answers Get all the surveys.
+ * @apiName update results of a survey
+ * @apiGroup Surveys
+ *
+ * @apiSuccess (200) {Object} page the desired page with the survey
+ */
+
+exports.putAnswers =  function (req, res) {
+    passport.authenticate('jwt', {session: false}, async (err, user, info) => {
+        if (err) {
+            return res.json({msg: err});
+        }
+
+        if (user) {
+            const SurveyId = req.params.idSurvey;
+
+            const userSurvey = await models.userSurvey.find({
+                where:{
+                    UserId:user.id,
+                    SurveyId:SurveyId,
+                },
+                include:
+                    [
+                        {
+                            model: models.Survey,
+                            where: {
+                                open: true
+                            }
+                        }
+                    ]
+            });
+
+            if (!userSurvey) {
+                return res.json({msg: 'There is not survey for this id or this survey cannot be updated'});
+            }
+
+            const answersBody = req.body.answers;
+            const answerIds = answersBody.map(answer => answer.id);
+
+            const answers = await models.answer.findAll({
+                where:{
+                    UserId:userSurvey.UserId,
+                    id:answerIds,
+                    SurveyId:userSurvey.SurveyId,
+                },
+            });
+
+            if (!answers) {
+                return res.json({msg: "There is no answer with these ids"})
+            }
+
+            const results = answersBody
+                .filter(ans => typeof (ans.result) === 'number' )
+                .filter(ans => (0 <= ans.result &&  ans.result <= 100)  )
+                .filter(ans => (answers
+                    .map(a => a.id)
+                    .includes(ans.id))
+                );
+
+            if (results.length < 1 ) {
+                return res.json({msg: 'Result should be a number between 0 and 100'} )
+            }
+
+            results.forEach(async result => {
+                await answers.forEach(async ans => {
+                    await ans.update({result: result.result,where:{id:result.id}})
+                })
+            });
+
+            return await res.json({msg: 'Your answers have been updated'})
+        }
+        else
+            return res.json({msg: "You are not authorize"});
+    })(req, res);
+};
+
+/**
+ * @api {put} /survey/:idSurvey/answer/:idAnswer Get all the surveys.
+ * @apiName Get a specific survey
+ * @apiGroup Surveys
+ *
+ * @apiSuccess (200) {Object} page the desired page with the survey
+ */
+
+exports.putAnswer =  function (req, res) {
+    passport.authenticate('jwt', {session: false}, async (err, user, info) => {
+        if (err) {
+            return res.json({msg: err});
+        }
+
+        if (user) {
+            const SurveyId = req.params.idSurvey;
+
+            const userSurvey = await models.userSurvey.find({
+                where:{
+                    UserId:user.id,
+                    SurveyId:SurveyId,
+                },
+                include:
+                    [
+                        {
+                            model: models.Survey,
+                            where: {
+                                open: true
+                            }
+                        }
+                    ]
+            });
+
+            if (!userSurvey) {
+                return res.json({msg: 'There is not survey for this id or this survey cannot be updated'});
+            }
+
+            const answerId = req.params.idAnswer;
+
+            const answer = await models.answer.find({
+                where:{
+                    UserId:userSurvey.UserId,
+                    id:answerId,
+                    SurveyId:userSurvey.SurveyId,
+                },
+            });
+
+            let result;
+
+            typeof(req.body.result) === 'number' ? result = req.body.result : result = null;
+
+            if (result === null || (0 > result || result  > 100)) {
+                return res.json({msg: 'Result should be a number between 0 and 100'})
+            }
+
+            await answer.update({result:result});
+
+            return await res.json({msg: 'Your answer have been updated'})
+        }
+        else
+            return res.json({msg: "You are not authorize"});
+    })(req, res);
 };

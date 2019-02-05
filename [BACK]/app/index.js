@@ -40,6 +40,8 @@ var users = [];
 
 
 const routes = require('./routes/router');
+//TODO Remove line below
+app.use('/', routes);
 app.use(express.static(path.join(__dirname, '../public')));
 
 app.use('/api', routes);
