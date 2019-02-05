@@ -13,7 +13,7 @@ const { Op } = require('sequelize')
  * @apiParam {String} questions list of all the questions object (title, description, place).
  * @apiParam {String} author id of the current user who is creating this survey.
  *
- * @apiSuccess (200) {String NoContent
+ * @apiSuccess (204) {String} NoContent
  */
 exports.validate = async function (req, res) {
     const author = req.body.author;
