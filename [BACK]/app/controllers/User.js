@@ -208,10 +208,8 @@ exports.secret = function (req, res) {
             return res.json({msg: err});
         }
         if (user) {
-            return res.send({user:user,msg: "You are authorized"});
-        }
-
-        else
+            return res.send({user: user, msg: "You are authorized"});
+        } else
             return res.json({msg: "You are not authorize"});
     })(req, res);
 };
@@ -287,3 +285,17 @@ exports.subscribe = async function (req, res, next) {
 
 };
 
+
+exports.me = function (req, res, next) {
+    passport.authenticate('jwt', {session: false}, async (err, user, info) => {
+        if (err) {
+            return res.json({msg: err});
+        }
+
+        if (user) {
+            return res.send(user);
+        } else {
+            return res.json({msg: "You are not authorize"});
+        }
+    })(req, res);
+};

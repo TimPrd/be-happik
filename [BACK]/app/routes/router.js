@@ -16,9 +16,9 @@ var appDir = path.dirname(require.main.filename);
 
 /********************************************
  *             ROADS : Users                *
+ *             Many Instances               *
  ********************************************/
 
-router.post("/user/subscribe", controller.User.subscribe);
 
 router.get("/users", async function (req, res, next) {
     const users = await models.User.findAll({});
@@ -29,13 +29,23 @@ router.post("/user/register", controller.User.register);
 router.post("/user/reset/", controller.User.reset);
 router.post("/user/recover/", controller.User.recover);
 router.get("/user/secret", controller.User.secret);
-router.get("/user/:id/surveys", controller.Survey.getSurveyByUser);
 
-router.post("/user/register", controller.User.register);
-router.post("/user/reset/", controller.User.reset);
-router.post("/user/recover/", controller.User.recover);
+
 router.get("/question/predefined/", controller.Question.getPredefined);
 router.get("/team/list/", controller.Team.getTeamList);
+
+
+/********************************************
+ *             ROADS : User                 *
+ *             One Instance                 *
+ ********************************************/
+router
+    .get("/user/me", controller.User.me)
+    .get("/user/:id/surveys", controller.Survey.getSurveyByUser)
+    .post("/user/register", controller.User.register)
+    .post("/user/reset/", controller.User.reset)
+    .post("/user/recover/", controller.User.recover)
+    .post("/user/subscribe", controller.User.subscribe);
 
 
 /********************************************
@@ -44,7 +54,7 @@ router.get("/team/list/", controller.Team.getTeamList);
 
 router.post("/login", controller.User.login);
 //TODO Create me route (replace login)
-router.get("/user/:id/me", controller.User.login)
+//router.get("/user/:id", controller.User.login)
 
 
 /********************************************
