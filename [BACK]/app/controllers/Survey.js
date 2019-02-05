@@ -15,6 +15,8 @@ const { Op } = require('sequelize')
  *
  * @apiSuccess (204) {String} NoContent
  */
+//todo : passport to check role & connexion
+//todo : docs
 exports.validate = async function (req, res) {
     const author = req.body.author;
     const teams = req.body.teams;
@@ -22,6 +24,7 @@ exports.validate = async function (req, res) {
 
     let survey = await models.Survey.create({
         title: req.body.surveyTitle,
+        description: req.body.surveyDescription
     }).then(survey => {
         survey.setAuthor(author)
         return survey;

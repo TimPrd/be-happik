@@ -19,26 +19,26 @@ module.exports = {
             {
                 teamName: 'Gryffindor',
                 createdAt: new Date(),
-                updatedAt: new Date()
+                updatedAt: new Date(),
             },
             {
                 teamName: 'Hufflepuff',
                 createdAt: new Date(),
-                updatedAt: new Date()
+                updatedAt: new Date(),
             },
             {
                 teamName: 'Ravenclaw',
                 createdAt: new Date(),
-                updatedAt: new Date()
+                updatedAt: new Date(),
             },
             {
                 teamName: 'Slytherin',
                 createdAt: new Date(),
-                updatedAt: new Date()
+                updatedAt: new Date(),
             }
         ], {});
 
-        return await queryInterface.bulkInsert('Users', [
+        await queryInterface.bulkInsert('Users', [
             /* Gryffindor */
             {
                 firstName: 'Harry',
@@ -207,7 +207,10 @@ module.exports = {
                 RoleId: 2,
                 TeamId: 4
             }], {});
-
+        await queryInterface.sequelize.query('update "Teams" SET "ManagerId" = 16 where id = 1;')
+        await queryInterface.sequelize.query('update "Teams" SET "ManagerId" = 4 where id = 2;')
+        await queryInterface.sequelize.query('update "Teams" SET "ManagerId" = 8 where id = 3;')
+        return await queryInterface.sequelize.query('update "Teams" SET "ManagerId" = 11 where id = 4;')
 
     },
 
