@@ -52,6 +52,7 @@ router.get("/user/:id/me", controller.User.login)
  ********************************************/
 router.post("/survey/validate", controller.Survey.validate);
 router.get("/surveys", controller.Survey.getAll);
+router.get("/survey/:id/answers", controller.Survey.getSurveyWithAnswers);
 router.get("/survey/:id", controller.Survey.getSurvey);
 router.put("/survey/:idSurvey/answers/:idAnswer", controller.Survey.putAnswers);
 
