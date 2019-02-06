@@ -4,6 +4,8 @@ const models = require('../../models/');
 const Utils = require('./Utils');
 const bcrypt = require('bcrypt-nodejs');
 const Mailer = require('./Mailer');
+const { loggers } = require('winston')
+const logger = loggers.get('my-logger')
 
 
 /**
@@ -193,6 +195,7 @@ exports.login = function (req, res) {
             if (err) {
                 res.send(err);
             }
+            user.password = undefined;
             const token = jwt.sign(JSON.stringify(user), 'HELLO');// @todo: process.env.JWT_TOKEN);
             return res.json({user, token});
         });
@@ -204,6 +207,7 @@ exports.secret = function (req, res) {
     res.setHeader('Content-Type', 'application/json');
     console.log('secret')
     passport.authenticate('jwt', {session: false}, (err, user, info) => {
+        logger.debug(user);
         if (err) {
             return res.json({msg: err});
         }
@@ -318,7 +322,6 @@ exports.delete = function (req, res, next) {
                     id: req.params.id
                 }
             });
-
             if (del)
                 msg = "User deleted";
             else

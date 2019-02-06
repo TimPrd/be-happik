@@ -14,7 +14,7 @@ module.exports = {
             recordsSurvey[i] = {
                 title: faker.name.title(),
                 startDate: new Date(),
-                endDate: "",
+                endDate: new Date(new Date().getTime()+(15*24*60*60*1000)),
                 open: i % 18 !== 0,
                 AuthorId: randomManager,
                 createdAt: new Date(),
