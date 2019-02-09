@@ -4,7 +4,7 @@ module.exports = (sequelize, DataTypes) => {
     teamName: DataTypes.STRING
   }, {});
   Team.associate = function(models) {
-    Team.hasOne(models.User)
+    Team.belongsTo(models.User)
     // associations can be defined here
   };
   return Team;
