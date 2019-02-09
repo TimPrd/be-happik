@@ -78,6 +78,7 @@ class CreateSurvey extends React.Component {
   state = {
     teams: null,
     predefQuestions: null,
+    me: JSON.parse(localStorage.getItem('user')),
   };
 
   fetchQuestions = async () => {
@@ -94,11 +95,12 @@ class CreateSurvey extends React.Component {
       let newdata = predefinedquestions.data;
 
       if (newdata.msg !== 'You are not authorize') {
+        console.log(newdata);
+
         newdata = newdata.map(data => ({ question: data, isChecked: false }));
       } else {
         return null;
       }
-      console.log(newdata);
 
       return newdata;
     } catch (err) {
@@ -135,8 +137,7 @@ class CreateSurvey extends React.Component {
 
   render() {
     const { teams, predefQuestions } = this.state;
-
-    console.log(this.state);
+    const { me } = this.state;
 
     return (
       <div>
@@ -146,10 +147,25 @@ class CreateSurvey extends React.Component {
             title: '',
             teams: teams || [],
             predefined_questions: predefQuestions || [],
-            questions: [],
+            questions: [''],
           }}
           // validationSchema={SignupSchema}
           onSubmit={async (values, actions) => {
+            console.log(values);
+            console.log(me.user.id);
+            const predefined = values.predefined_questions.filter(question => question.isChecked);
+            console.log(predefined);
+
+            const data = {
+              auhor: me.user.id,
+              teams: 'Slytherin',
+              questions: [
+                { title: 'Q1', body: 'Body1' },
+                { title: 'Q2', body: 'Body2' },
+              ],
+              surveyTitle: 'MySurvey',
+            };
+
             try {
               // const response = await client.post('/api/login', {
               //   email: values.email,
