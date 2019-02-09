@@ -67,5 +67,12 @@ router.get("/survey/:id/answers", controller.Survey.getSurveyWithAnswers);
 router.get("/survey/:id", controller.Survey.getSurvey);
 router.put("/survey/:idSurvey/answers/:idAnswer", controller.Survey.putAnswers);
 
+/********************************************
+ *              ROADS : Mood                *
+ ********************************************/
+router
+    //.get('/user/:id/moods')
+    //.get('/users/moods')
+    .post('/user/:id/mood', controller.Mood.create);
 module.exports = router;
 
