@@ -65,7 +65,6 @@ router.get("/surveys", controller.Survey.getAll);
 router.get("/survey/:id/answers", controller.Survey.getSurveyWithAnswers);
 router.get("/survey/:id", controller.Survey.getSurvey);
 router.put("/survey/:idSurvey/answers/:idAnswer", controller.Survey.putAnswers);
-router.post("/survey/:idSurvey/answers/", controller.Survey.postAnswers);
 
 module.exports = router;
 
