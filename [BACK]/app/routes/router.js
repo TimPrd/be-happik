@@ -66,5 +66,10 @@ router.get("/survey/:id/answers", controller.Survey.getSurveyWithAnswers);
 router.get("/survey/:id", controller.Survey.getSurvey);
 router.put("/survey/:idSurvey/answers/:idAnswer", controller.Survey.putAnswers);
 
+/********************************************
+ *             ROADS : Teams                *
+ ********************************************/
+router.post("/teams/create", controller.Team.postCreateTeams);
+
 module.exports = router;
 

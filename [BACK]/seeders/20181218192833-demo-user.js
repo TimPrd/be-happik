@@ -207,10 +207,10 @@ module.exports = {
                 RoleId: 2,
                 TeamId: 4
             }], {});
-        await queryInterface.sequelize.query('update "Teams" SET "ManagerId" = 16 where id = 1;')
-        await queryInterface.sequelize.query('update "Teams" SET "ManagerId" = 4 where id = 2;')
-        await queryInterface.sequelize.query('update "Teams" SET "ManagerId" = 8 where id = 3;')
-        return await queryInterface.sequelize.query('update "Teams" SET "ManagerId" = 11 where id = 4;')
+        await queryInterface.sequelize.query('update "Teams" SET "UserId" = 16 where id = 1;')
+        await queryInterface.sequelize.query('update "Teams" SET "UserId" = 4 where id = 2;')
+        await queryInterface.sequelize.query('update "Teams" SET "UserId" = 8 where id = 3;')
+        return await queryInterface.sequelize.query('update "Teams" SET "UserId" = 11 where id = 4;')
 
     },
 
