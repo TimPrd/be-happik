@@ -2,7 +2,7 @@ module.exports = {
     up: (queryInterface, Sequelize) => {
         return queryInterface.addColumn(
             'Teams', // name of Source model
-            'ManagerId', // name of the key we're adding
+            'UserId', // name of the key we're adding
             {
                 type: Sequelize.INTEGER,
                 references: {
@@ -18,7 +18,7 @@ module.exports = {
     down: (queryInterface, Sequelize) => {
         return queryInterface.removeColumn(
             'Team', // name of Source model
-            'ManagerId' // key we want to remove
+            'UserId' // key we want to remove
         );
     }
 };
