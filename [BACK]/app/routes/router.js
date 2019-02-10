@@ -76,5 +76,10 @@ router
     .post('/user/:id/mood', controller.Mood.create);
 
 router.get('/a', controller.Analytic.moodPerWeek);
+/********************************************
+ *             ROADS : Teams                *
+ ********************************************/
+router.post("/teams/create", controller.Team.postCreateTeams);
+
 module.exports = router;
 

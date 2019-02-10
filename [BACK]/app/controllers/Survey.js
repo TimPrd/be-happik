@@ -29,7 +29,7 @@ const logger = loggers.get('my-logger');
  *      "surveyTitle":"MySurvey",
  *      "surveyDescription":"MyDescription"
  *  }
- * @apiSuccess (200) {String} NoContent
+ * @apiSuccess (204) {String} NoContent
  */
 //todo : passport to check role & connexion (manager)
 //todo : docs

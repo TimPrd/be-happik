@@ -5,7 +5,7 @@ const models = require('../../models/');
  * @apiName Predefined questions
  * @apiGroup Questions
  *
- * @apiParam {String} q number of questions to fetch.
+ * @apiParam {Number} q number of questions to fetch.
  *
  * @apiSuccess (200) {String} predefined questions fetched
  */
