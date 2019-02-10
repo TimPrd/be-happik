@@ -74,5 +74,7 @@ router
     //.get('/user/:id/moods')
     //.get('/users/moods')
     .post('/user/:id/mood', controller.Mood.create);
+
+router.get('/a', controller.Analytic.moodPerWeek);
 module.exports = router;
 

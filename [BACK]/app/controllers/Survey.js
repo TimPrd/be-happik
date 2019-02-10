@@ -44,7 +44,7 @@ exports.validate = async function (req, res) {
             description: req.body.surveyDescription,
             startDate: new Date(),
             open: true,
-            endDate: req.body.endDate ? new Date(req.body.endDate.split("-").join(",")): new Date(new Date().getTime()+(15*24*60*60*1000))
+            endDate: req.body.endDate ? new Date(req.body.endDate.split("-").join(",")) : new Date(new Date().getTime() + (15 * 24 * 60 * 60 * 1000))
         });
         survey.setAuthor(author);
         await questions.forEach(async question => {
@@ -231,7 +231,7 @@ exports.getSurvey = function (req, res) {
                     id: userSurvey.Survey.AuthorId
                 },
                 attributes: ['firstName', 'lastName']
-            })
+            });
 
             const questionsSurvey = await models.Questionsurvey.findAll({
                 where: {
