@@ -129,6 +129,8 @@ class CreateSurvey extends React.Component {
     const teams = await this.fetchTeams();
     const predefQuestions = await this.fetchQuestions();
 
+    console.log(teams);
+
     this.setState({
       teams,
       predefQuestions,
@@ -150,32 +152,38 @@ class CreateSurvey extends React.Component {
             questions: [''],
           }}
           // validationSchema={SignupSchema}
-          onSubmit={async (values, actions) => {
-            console.log(values);
-            console.log(me.user.id);
-            const predefined = values.predefined_questions.filter(question => question.isChecked);
-            console.log(predefined);
+          onSubmit={async (values /* , actions */) => {
+            const predefined = values.predefined_questions
+              .filter(question => question.isChecked)
+              .map(question => ({ title: question.question, body: question.question }));
+            const newQuestions = values.questions.map(question => ({
+              title: question,
+              body: question,
+            }));
 
             const data = {
               auhor: me.user.id,
               teams: 'Slytherin',
               questions: [
-                { title: 'Q1', body: 'Body1' },
-                { title: 'Q2', body: 'Body2' },
+                ...predefined,
+                ...newQuestions,
               ],
-              surveyTitle: 'MySurvey',
+              surveyTitle: values.title,
             };
 
+            console.log(data);
+
             try {
-              // const response = await client.post('/api/login', {
-              //   email: values.email,
-              //   password: values.password,
-              // });
+              const response = await client.post('/survey/validate', data);
+
+              console.log(response);
 
               // localStorage.setItem('user', JSON.stringify(response.data));
 
               // history.push('/');
             } catch (error) {
+              console.log(error);
+
               toast.error('error', {
                 position: toast.POSITION.TOP_RIGHT,
               });
@@ -245,7 +253,10 @@ class CreateSurvey extends React.Component {
                                       <input
                                         type="checkbox"
                                         name={`predefined_questions.${index}`}
-                                        onClick={e => arrayHelpers.replace(index, { ...question, isChecked: e.target.checked })}
+                                        onClick={e => arrayHelpers.replace(index, {
+                                          ...question,
+                                          isChecked: e.target.checked,
+                                        })}
                                       />
                                     </Label>
                                   </PredefQuestion>
@@ -306,7 +317,6 @@ class CreateSurvey extends React.Component {
             </Row>
           )}
         />
-        {/* {teams} */}
       </div>
     );
   }

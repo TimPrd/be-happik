@@ -2,9 +2,9 @@ import React from 'react';
 import { Grid, Row, Col } from 'react-flexbox-grid';
 import styled from 'styled-components';
 
-import Layout from './Layout';
+import Layout from '../Layout';
 
-import CreateSurvey from '../components/Survey/CreateSurvey';
+import CreateSurvey from '../../components/Survey/CreateSurvey';
 
 const Title = styled.h1`
   text-align: left;

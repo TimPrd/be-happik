@@ -17,17 +17,17 @@ class Initiator extends React.Component {
 
     try {
       // const response = await client.get('/me');
-      const secret = await client.get('/api/user/secret', {
+      const me = await client.get('/user/me', {
         headers: {
           Authorization: `Bearer ${loggedUser.token}`,
           'Content-Type': 'application/json',
         },
       });
 
-      console.log(secret);
+      console.log(me);
 
-      return secret.data.msg === 'You are authorized'
-        ? ({ user: loggedUser, loading: false })
+      return me.data.msg !== 'You are not authorize'
+        ? ({ user: me.data, loading: false })
         : ({ user: null, loading: true });
     } catch (err) {
       return { user: null, loading: false };
