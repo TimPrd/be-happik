@@ -18,7 +18,7 @@ module.exports = {
         type: Sequelize.DATE
       },
       endDate: {
-        type: Sequelize.STRING
+        type: Sequelize.DATE
       },
       open: {
         type: Sequelize.BOOLEAN
