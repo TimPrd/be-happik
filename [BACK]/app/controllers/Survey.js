@@ -354,8 +354,15 @@ exports.postAnswers =  function (req, res) {
             });
 
             if (!userSurvey) {
-                return res.json({msg: 'There is not survey for this id or this survey cannot be updated'});
+                return res.status(400).json({err: 'There is not survey for this id or this survey cannot be updated'});
             }
+
+            if (Array.isArray(req.body.answers) === false || typeof req.body.answers[0] === "undefined"||  typeof req.body.answers[0].id !== 'number' ) {
+                return res.status(400).json({err: 'You must add answers', z:req.body.answers});
+            }
+
+            const answersBody = req.body.answers;
+            const answerIds = answersBody.map(answer => answer.id);
 
             const answers = await models.answer.findAll({
                 where:{
@@ -483,7 +490,7 @@ exports.putAnswers = function (req, res) {
             });
 
             if (!answers) {
-                return res.json({msg: "There is no answer with these ids"})
+                return res.status(400).json({err: "There is no answer with these ids"})
             }
 
             const results = answersBody
@@ -494,9 +501,11 @@ exports.putAnswers = function (req, res) {
                     .includes(ans.id))
                 );
 
-            if (results.length < 1) {
-                return res.json({msg: 'Result should be a number between 0 and 100'})
+            if (results.length < 1 ) {
+                return res.status(400).json({err: 'Result should be a number between 0 and 100 and ids must match the survey answers'} )
             }
+
+
 
             results.forEach(async result => {
                 await answers.forEach(async ans => {
@@ -561,14 +570,15 @@ exports.putAnswer = function (req, res) {
 
             typeof (req.body.result) === 'number' ? result = req.body.result : result = null;
 
-            if (result === null || (0 > result || result > 100)) {
-                return res.json({msg: 'Result should be a number between 0 and 100'})
+            if (result === null || (0 > result || result  > 100)) {
+                return res.status(400).json({err: 'Result should be a number between 0 and 100'})
             }
 
             await answer.update({result: result});
 
-            return await res.json({msg: 'Your answer have been updated'})
-        } else
-            return res.json({msg: "You are not authorize"});
+            return await res.json('Your answer have been updated')
+        }
+        else
+            return res.status(401).json({err: "You are not authorize"});
     })(req, res);
 };
