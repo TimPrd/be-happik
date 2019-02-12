@@ -1,6 +1,7 @@
 const passport = require('passport');
 const models = require('../../models/');
 
+// todo : if teamlist q = not present => getAll
 exports.getTeamList = async function (req, res) {
     passport.authenticate('jwt', {session: false}, async (err, user, info) => {
         if (err) {
