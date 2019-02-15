@@ -7,17 +7,20 @@ module.exports = {
         UserId: 1,
         SurveyId: 1,
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
+        isAnswered: false
       },{
         UserId: 2,
         SurveyId: 1,
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
+        isAnswered: false
       },{
-        UserId: 2,
+        UserId: 4,
         SurveyId: 1,
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
+        isAnswered: true
       }], {});
   },
 

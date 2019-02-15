@@ -2,6 +2,15 @@ const passport = require('passport');
 const models = require('../../models/');
 
 // todo : if teamlist q = not present => getAll
+
+/**
+ * @api {get} /user/me/ Get the current logged user's info
+ * @apiName Get user info
+ * @apiGroup User
+ *
+ * @apiSuccess {Object} user User data.
+ * @apiError UserNotFound No connected user was not found.
+ */
 exports.getTeamList = async function (req, res) {
     passport.authenticate('jwt', {session: false}, async (err, user, info) => {
         if (err) {
@@ -26,8 +35,15 @@ exports.getTeamList = async function (req, res) {
         else
             return res.json({msg: "You are not authorize"});
     })(req, res);
-}
+};
 
+
+/**
+ * @api {post} /team/ Create a / plural new team (max 10)
+ * @apiName Create a new team
+ * @apiGroup Team
+ * @apiParam {String[]} teams names of all the concerned teams.
+ */
 exports.postCreateTeams = async function (req, res) {
     passport.authenticate('jwt', {session: false}, async (err, user, info) => {
         if (err) {
