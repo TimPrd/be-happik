@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
     up: (queryInterface, Sequelize) => {
-        return queryInterface.createTable('userSurveys', {
+        return queryInterface.createTable('userMoods', {
             id: {
                 allowNull: false,
                 autoIncrement: true,
@@ -16,15 +16,13 @@ module.exports = {
                 allowNull: false,
                 type: Sequelize.DATE
             },
-            isAnswered: {
-                type: Sequelize.BOOLEAN,
-                defaultValue: false,
+            mood: {
                 allowNull: false,
-            },
-
+                type: Sequelize.INTEGER
+            }
         });
     },
     down: (queryInterface, Sequelize) => {
-        return queryInterface.dropTable('userSurveys');
+        return queryInterface.dropTable('userMoods');
     }
 };

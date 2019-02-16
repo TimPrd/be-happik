@@ -4,7 +4,7 @@ module.exports = (sequelize, DataTypes) => {
         title: DataTypes.STRING,
         description: DataTypes.STRING,
         startDate: DataTypes.DATE,
-        endDate: DataTypes.STRING,
+        endDate: DataTypes.DATE,
         open: DataTypes.BOOLEAN
     }, {});
     Survey.associate = function (models) {

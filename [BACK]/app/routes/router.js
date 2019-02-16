@@ -25,14 +25,14 @@ router.get("/users", async function (req, res, next) {
     res.send(users[0].dataValues);
 });
 
-router.post("/user/register", controller.User.register);
-router.post("/user/reset/", controller.User.reset);
-router.post("/user/recover/", controller.User.recover);
-router.get("/user/secret", controller.User.secret);
+router
+    .get("/user/secret", controller.User.secret)
+    .post("/user/register", controller.User.register)
+    .post("/user/reset/", controller.User.reset)
+    .post("/user/recover/", controller.User.recover);
 
 
 router.get("/question/predefined/", controller.Question.getPredefined);
-router.get("/team/list/", controller.Team.getTeamList);
 
 
 /********************************************
@@ -46,7 +46,8 @@ router
     .post("/user/reset/", controller.User.reset)
     .post("/user/recover/", controller.User.recover)
     .post("/user/subscribe", controller.User.subscribe)
-    .get("/collaborators", controller.User.getCollaborators)
+    .delete("/user/:id", controller.User.delete)
+    .get("/collaborators", controller.User.getCollaborators);
 
 
 /********************************************
@@ -61,17 +62,39 @@ router.post("/login", controller.User.login);
 /********************************************
  *             ROADS : Survey               *
  ********************************************/
-router.post("/survey/validate", controller.Survey.validate);
-router.get("/surveys", controller.Survey.getAll);
-router.get("/survey/:id/answers", controller.Survey.getSurveyWithAnswers);
-router.get("/survey/:id", controller.Survey.getSurvey);
-router.put("/survey/:idSurvey/answers/:idAnswer", controller.Survey.putAnswers);
-router.post("/survey/:idSurvey/answers/", controller.Survey.postAnswers);
+router
+    .get("/surveys", controller.Survey.getAll)
+    .get("/survey/:id/answers", controller.Survey.getSurveyWithAnswers)
+    .get("/survey/:id", controller.Survey.getSurvey)
+    .post("/survey/:idSurvey/answers/", controller.Survey.postAnswers)
+    .post("/survey/validate", controller.Survey.validate)
+    .put("/survey/:idSurvey/answers/:idAnswer", controller.Survey.putAnswers)
+    .put("/survey/:idSurvey/answers", controller.Survey.putAnswers);
+
+/********************************************
+ *              ROADS : Mood                *
+ ********************************************/
+router
+//.get('/user/:id/moods')
+//.get('/users/moods')
+    .post('/user/:id/mood', controller.Mood.create);
 
 /********************************************
  *             ROADS : Teams                *
  ********************************************/
-router.post("/teams/create", controller.Team.postCreateTeams);
+
+router
+    .get("/team/list/", controller.Team.getTeamList)
+    .post("/team/", controller.Team.postCreateTeams);
+
+/********************************************
+ *             ROADS : Stats                *
+ ********************************************/
+router
+    .get('/analytic/mood', controller.Analytic.moodPerWeek)
+    .get('/analytic/count', controller.Analytic.counts)
+    .get('/analytic/survey/response', controller.Analytic.surveyResponse)
+    .get('/analytic/survey/status', controller.Analytic.surveyStatus);
 
 module.exports = router;
 

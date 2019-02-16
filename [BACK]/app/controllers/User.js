@@ -4,6 +4,8 @@ const models = require('../../models/');
 const Utils = require('./Utils');
 const bcrypt = require('bcrypt-nodejs');
 const Mailer = require('./Mailer');
+const { loggers } = require('winston')
+const logger = loggers.get('my-logger')
 
 
 /**
@@ -193,6 +195,7 @@ exports.login = function (req, res) {
             if (err) {
                 res.send(err);
             }
+            user.password = undefined;
             const token = jwt.sign(JSON.stringify(user), 'HELLO');// @todo: process.env.JWT_TOKEN);
             return res.json({user, token});
         });
@@ -204,6 +207,7 @@ exports.secret = function (req, res) {
     res.setHeader('Content-Type', 'application/json');
     console.log('secret')
     passport.authenticate('jwt', {session: false}, (err, user, info) => {
+        logger.debug(user);
         if (err) {
             return res.json({msg: err});
         }
@@ -306,6 +310,34 @@ exports.me = function (req, res, next) {
         }
     })(req, res);
 };
+
+/**
+ * @api {delete} /user/:id Delete an user.
+ * @apiName Delete an user
+ * @apiGroup User
+ *
+ * @apiParam {Number} id user id.
+
+ * @apiSuccess (202) {String} msg the returned message
+ */
+exports.delete = function (req, res, next) {
+    passport.authenticate('jwt', {session: false}, async (err, user, info) => {
+        let msg = "";
+        if (user.RoleId == 2) {
+             del = await models.User.destroy({
+                where: {
+                    id: req.params.id
+                }
+            });
+            if (del)
+                msg = "User deleted";
+            else
+                msg = "Not deleted";
+        }
+        res.status(202).send(msg);
+    })(req, res);
+};
+
 
 /**
  * @api {get} /collabors Get all user of a company or team and all teams.
