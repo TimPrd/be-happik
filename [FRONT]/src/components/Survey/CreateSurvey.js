@@ -4,6 +4,8 @@ import { Formik, FieldArray } from 'formik';
 import { toast } from 'react-toastify';
 import Select from 'react-select';
 import styled from 'styled-components';
+import { withRouter } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 import client from '../../api';
 import Input from '../inputs';
@@ -83,8 +85,6 @@ class CreateSurvey extends React.Component {
 
   fetchQuestions = async () => {
     const loggedUser = JSON.parse(localStorage.getItem('user'));
-    console.log(loggedUser);
-
     try {
       const predefinedquestions = await client.get('/api/question/predefined?q=20', {
         headers: {
@@ -95,8 +95,6 @@ class CreateSurvey extends React.Component {
       let newdata = predefinedquestions.data;
 
       if (newdata.msg !== 'You are not authorize') {
-        console.log(newdata);
-
         newdata = newdata.map(data => ({ question: data, isChecked: false }));
       } else {
         return null;
@@ -129,8 +127,6 @@ class CreateSurvey extends React.Component {
     const teams = await this.fetchTeams();
     const predefQuestions = await this.fetchQuestions();
 
-    console.log(teams);
-
     this.setState({
       teams,
       predefQuestions,
@@ -138,8 +134,8 @@ class CreateSurvey extends React.Component {
   };
 
   render() {
-    const { teams, predefQuestions } = this.state;
-    const { me } = this.state;
+    const { teams, predefQuestions, me } = this.state;
+    const { history } = this.props;
 
     return (
       <div>
@@ -171,19 +167,12 @@ class CreateSurvey extends React.Component {
               surveyTitle: values.title,
             };
 
-            console.log(data);
 
             try {
-              const response = await client.post('/survey/validate', data);
+              await client.post('/survey/validate', data);
 
-              console.log(response);
-
-              // localStorage.setItem('user', JSON.stringify(response.data));
-
-              // history.push('/');
+              history.push('/');
             } catch (error) {
-              console.log(error);
-
               toast.error('error', {
                 position: toast.POSITION.TOP_RIGHT,
               });
@@ -322,4 +311,13 @@ class CreateSurvey extends React.Component {
   }
 }
 
-export default CreateSurvey;
+CreateSurvey.propTypes = {
+  history: PropTypes.objectOf(PropTypes.oneOfType([
+    PropTypes.number,
+    PropTypes.object,
+    PropTypes.func,
+    PropTypes.string,
+  ])).isRequired,
+};
+
+export default withRouter(CreateSurvey);

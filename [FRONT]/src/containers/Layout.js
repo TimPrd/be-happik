@@ -34,8 +34,7 @@ const Aside = styled.div`
 const Content = styled.div`
   width: 100%;
   height: auto;
-  overflow: auto;
-  margin-top: 70px;
+  margin-top: 100px;
 `;
 
 const Layout = ({ children }) => (

@@ -1,15 +1,17 @@
 import React from 'react';
+import { withRouter } from 'react-router-dom';
 import { Grid, Col, Row } from 'react-flexbox-grid';
 import { Form, Formik, FieldArray } from 'formik';
-// import { toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import styled from 'styled-components';
+import PropTypes from 'prop-types';
+import moment from 'moment';
+
+import { surveyMock, allMoods } from './surveyMock';
 
 import client from '../../api';
-import AngryIcon from '../../assets/img/icons/Icon-Angry.svg';
-import BigSmileIcon from '../../assets/img/icons/Icon-BigSmile.svg';
-import NeutralIcon from '../../assets/img/icons/Icon-Neutral.svg';
-import SadIcon from '../../assets/img/icons/Icon-Sad.svg';
-import SmileIcon from '../../assets/img/icons/Icon-Smile.svg';
+
+import Button from '../Buttons/Button';
 
 const AnswerContainer = styled.div`
   height: 110px;
@@ -45,12 +47,35 @@ const ChoiceContainer = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  border-radius: 4px;
+  cursor: pointor;
+  position: relative;
 
   &:hover {
     border: 1px solid ${props => props.theme.colors.greenc9};
-    border-radius: 4px;
-    cursor: pointor;
   }
+
+  & input[type="checkbox"] {
+    display: none;
+  }
+
+  & input[type="checkbox"]:checked + label::after {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 4px;
+    top: 0;
+    left: 0;
+    border: 1px solid ${props => props.theme.colors.greenc9};
+  }
+`;
+
+const Label = styled.label`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 `;
 
 const ChoiceP = styled.p`
@@ -69,83 +94,26 @@ const Icon = styled.img`
 class ReplySurvey extends React.Component {
   state = {
     survey: null,
+    moods: allMoods,
   };
 
   fetchSurvey = async () => {
+    const { match } = this.props;
     const loggedUser = JSON.parse(localStorage.getItem('user'));
+    const surveyId = match.params.id || null;
 
     try {
-      let survey = await client.get('/api/survey/1', {
+      let survey = await client.get(`/api/survey/${surveyId}`, {
         headers: {
           Authorization: `Bearer ${loggedUser.token}`,
           'Content-Type': 'application/json',
         },
       });
 
-      console.log(survey);
-      survey = {
-        author: null,
-        survey: {
-          id: 1,
-          title: 'Future Interactions Officer',
-          description: null,
-          startDate: '2019-02-09T17:28:37.397Z',
-          endDate: '',
-          open: false,
-          createdAt: '2019-02-09T17:28:37.397Z',
-          updatedAt: '2019-02-09T17:28:37.397Z',
-          AuthorId: undefined,
-        },
-        questions: [
-          {
-            UserId: null,
-            createdAt: '2019-02-09T17:28:37.335Z',
-            description: 'Sit incidunt aut minus voluptas libero quam.',
-            id: 5,
-            predefined: true,
-            title: 'Internal Applications Liaison',
-            updatedAt: '2019-02-09T17:28:37.335Z',
-          },
-          {
-            UserId: null,
-            createdAt: '2019-02-09T17:28:37.335Z',
-            description: 'Sit incidunt aut minus voluptas libero quam.',
-            id: 5,
-            predefined: true,
-            title: 'Internal Applications Liaison',
-            updatedAt: '2019-02-09T17:28:37.335Z',
-          },
-          {
-            UserId: null,
-            createdAt: '2019-02-09T17:28:37.335Z',
-            description: 'Sit incidunt aut minus voluptas libero quam.',
-            id: 5,
-            predefined: true,
-            title: 'Internal Applications Liaison',
-            updatedAt: '2019-02-09T17:28:37.335Z',
-          },
-          {
-            UserId: null,
-            createdAt: '2019-02-09T17:28:37.335Z',
-            description: 'Sit incidunt aut minus voluptas libero quam.',
-            id: 5,
-            predefined: true,
-            title: 'Internal Applications Liaison',
-            updatedAt: '2019-02-09T17:28:37.335Z',
-          },
-        ],
-      };
+      // fake mock for survey;
+      survey = surveyMock;
 
       return survey;
-      // if (newdata.msg !== 'You are not authorize') {
-      //   console.log(newdata);
-
-      //   newdata = newdata.map(data => ({ question: data, isChecked: false }));
-      // } else {
-      //   return null;
-      // }
-
-      // return newdata;
     } catch (err) {
       return null;
     }
@@ -154,44 +122,66 @@ class ReplySurvey extends React.Component {
   componentDidMount = async () => {
     const survey = await this.fetchSurvey();
 
-    console.log(survey);
-
     this.setState({ survey });
   };
 
   render() {
-    const { survey } = this.state;
-
-    console.log(survey);
+    const { survey, moods } = this.state;
+    const { history } = this.props;
 
     return (
       <Grid>
         {survey && (
           <div>
-            <Row>
-              <Col md={3}>
-                HELLO WORLD
-              </Col>
-
-              <Col md={6}>
-                <SurveyTitle>{survey.survey.title}</SurveyTitle>
-              </Col>
-
-              <Col md={3}>
-                HELLO WORLD
-              </Col>
-            </Row>
             <Formik
-              initialValues={{ friends: ['jared', 'ian', 'brent'] }}
-              onSubmit={values =>
-                setTimeout(() => {
-                  alert(JSON.stringify(values, null, 2));
-                }, 500)
-              }
-              render={({ values }) => (
+              initialValues={{ questions: survey.questions || '' }}
+              onSubmit={async (values) => {
+                const answers = values.questions;
+
+                try {
+                  const response = await client.post('/api/survey/:idSurvey/answers/', answers);
+
+                  console.log(response);
+                } catch (error) {
+                  toast.error('error', {
+                    position: toast.POSITION.TOP_RIGHT,
+                  });
+                }
+              }}
+              render={({ values, handleChange, handleSubmit }) => (
                 <Form>
+                  <Row middle="xs">
+                    <Col md={3}>
+                      <Button label="Go Back" handleClick={history.goBack} type="submit" />
+                    </Col>
+
+                    <Col md={6}>
+                      <Row>
+                        <Col xs={12}>
+                          <SurveyTitle>{survey.survey.title}</SurveyTitle>
+                        </Col>
+
+                        <Col xs={6}>
+                          <p>
+                            Auteur :&nbsp;
+                            {survey.author}
+                          </p>
+                        </Col>
+                        <Col xs={6}>
+                          <p>
+                            Date d’expiration :&nbsp;
+                            {moment(survey.survey.endDate).format('D MMMM YYYY')}
+                          </p>
+                        </Col>
+                      </Row>
+                    </Col>
+
+                    <Col md={3}>
+                      <Button label="Submit" handleClick={handleSubmit} type="submit" />
+                    </Col>
+                  </Row>
                   <FieldArray
-                    name="friends"
+                    name="questions"
                     render={arrayHelpers => (
                       <Row>
                         <Col xs={12}>
@@ -204,36 +194,34 @@ class ReplySurvey extends React.Component {
                               </Row>
 
                               <Row around="xs">
-                                <Col md={2}>
-                                  <ChoiceContainer>
-                                    <Icon src={BigSmileIcon} alt="poll answer" />
-                                    <ChoiceP>Très satisfait</ChoiceP>
-                                  </ChoiceContainer>
-                                </Col>
-                                <Col md={2}>
-                                  <ChoiceContainer>
-                                    <Icon src={SmileIcon} alt="poll answer" />
-                                    <ChoiceP>Satisfait</ChoiceP>
-                                  </ChoiceContainer>
-                                </Col>
-                                <Col md={2}>
-                                  <ChoiceContainer>
-                                    <Icon src={NeutralIcon} alt="poll answer" />
-                                    <ChoiceP>Indifférent</ChoiceP>
-                                  </ChoiceContainer>
-                                </Col>
-                                <Col md={2}>
-                                  <ChoiceContainer>
-                                    <Icon src={SadIcon} alt="poll answer" />
-                                    <ChoiceP>Insatisfait</ChoiceP>
-                                  </ChoiceContainer>
-                                </Col>
-                                <Col md={2}>
-                                  <ChoiceContainer>
-                                    <Icon src={AngryIcon} alt="poll answer" />
-                                    <ChoiceP>Très insatisfait</ChoiceP>
-                                  </ChoiceContainer>
-                                </Col>
+                                {moods.map((mood, newIndex) => {
+                                  const isChecked = values.questions
+                                    && values.questions[index]
+                                    && values.questions[index].isChecked
+                                    && values.questions[index].mood === mood.mood;
+
+                                  return (
+                                    <Col md={2} key={newIndex.toString()}>
+                                      <ChoiceContainer>
+                                        <input
+                                          name={`question.${newIndex}`}
+                                          type="checkbox"
+                                          id={`checkbox_${index}${newIndex}`}
+                                          onClick={e => arrayHelpers.replace(index, {
+                                            ...mood,
+                                            isChecked: e.target.checked,
+                                          })}
+                                          onChange={handleChange}
+                                          checked={isChecked}
+                                        />
+                                        <Label htmlFor={`checkbox_${index}${newIndex}`}>
+                                          <Icon src={mood.icon} alt="poll answer" />
+                                          <ChoiceP>{mood.title}</ChoiceP>
+                                        </Label>
+                                      </ChoiceContainer>
+                                    </Col>
+                                  );
+                                })}
                               </Row>
                             </AnswerContainer>
                           ))}
@@ -251,4 +239,8 @@ class ReplySurvey extends React.Component {
   }
 }
 
-export default ReplySurvey;
+ReplySurvey.propTypes = {
+  history: PropTypes.instanceOf(Object).isRequired,
+};
+
+export default withRouter(ReplySurvey);

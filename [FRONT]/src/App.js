@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { ThemeProvider, createGlobalStyle } from 'styled-components';
 import { ToastContainer } from 'react-toastify';
+import moment from 'moment';
 
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -20,6 +21,7 @@ import Initiator from './components/Initiator';
 import AllSurveys from './containers/Survey/All';
 import CreateSurveyPage from './containers/Survey/Create';
 import ReplySurveyPage from './containers/Survey/Reply';
+import french from './Locales';
 
 const GlobalStyle = createGlobalStyle`
   @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700');
@@ -28,6 +30,8 @@ const GlobalStyle = createGlobalStyle`
     font-family: 'Source Sans Pro', sans-serif;
   }
 `;
+
+moment.locale('fr', french);
 
 const App = () => (
   <ThemeProvider theme={Theme}>
