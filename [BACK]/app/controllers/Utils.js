@@ -1,4 +1,4 @@
-exports.checkFormControl = function (user, password, req, res ) {
+exports.checkFormControl = function (user, password, req, res) {
     if (password.length < 6) {
         return {
             error: "Mot de passe trop court"
@@ -8,11 +8,11 @@ exports.checkFormControl = function (user, password, req, res ) {
             error: "Mot de passe trop long"
         }
     } else if (password.search(/\d/) === -1) {
-        return{
+        return {
             error: "Votre mot de passe doit contenir au moins 1 chiffre",
         }
     } else if (password.search(/[A-Z]/) === -1) {
-        return{
+        return {
             error: "Votre mot de passe doit contenir au moins 1 majuscule",
         }
     } else {
@@ -25,4 +25,6 @@ exports.regex = async function (inputRegex, str) {
     var regex = new RegExp(inputRegex);
     return regex.test(str);
 };
+
+
 

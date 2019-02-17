@@ -434,6 +434,9 @@ exports.postAnswers =  function (req, res) {
             //var sockets = req.app.get('usersSocket');
             //sockets[1/*user.id*/]
             //.emit('hi!', "important notification message");
+            userSurvey.update({
+                isAnswered: true
+            });
             return await res.json({msg: 'Your answers have been created'})
         }
         else
