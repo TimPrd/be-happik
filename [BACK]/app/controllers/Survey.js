@@ -183,9 +183,12 @@ exports.getSurveysByUser = async function (req, res) {
  * @apiGroup Surveys
  *
  * @apiParam {Number} page Query param to indicate the desired page .
- * @apiParam {String} state Query param to indicate the desired state (true=open/false=closed).
+ * @apiParam {Boolean} open Query param to indicate the desired state (true=open/false=closed).
  *
- * @apiSuccess (200) {Object[]}} surveys All the survey
+ * @apiExample Example usage:
+ * http://localhost/surveys?page=1&open=true
+ *
+ * @apiSuccess (200) {Object[]} surveys All the survey
  * @apiSuccess (200) {Number} surveys.id id of the survey
  * @apiSuccess (200) {String} surveys.title Title of the survey
  * @apiSuccess (200) {String} surveys.description Description of the survey
@@ -239,8 +242,13 @@ exports.getSurveysByUser = async function (req, res) {
 
  *     }
  *
- * @apiError (400) {String} Please specify a state and page
- * @apiError (404) {String} Please specify a state and page
+ * @apiError {String} SurveyNotFound There is no surveys
+ * @apiError {String} WrongParams Please specify a state and page
+ * @apiErrorExample {json} Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *         "There is no surveys"
+ *     }
  */
 exports.getAllSurveys = async function (req, res) {
 
