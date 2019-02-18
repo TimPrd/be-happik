@@ -14,7 +14,7 @@ const models = require('../../models/');
 exports.getTeamList = async function (req, res) {
     passport.authenticate('jwt', {session: false}, async (err, user, info) => {
         if (err) {
-            return res.json({msg: err});
+            return res.status(400).json(err);
         }
 
         if (user && user.RoleId === 2) {
@@ -33,7 +33,7 @@ exports.getTeamList = async function (req, res) {
             } )
         }
         else
-            return res.json({msg: "You are not authorize"});
+            return res.status(403).json("You are not authorize");
     })(req, res);
 };
 
@@ -47,11 +47,11 @@ exports.getTeamList = async function (req, res) {
 exports.postCreateTeams = async function (req, res) {
     passport.authenticate('jwt', {session: false}, async (err, user, info) => {
         if (err) {
-            return res.json({msg: err});
+            return res.status(400).json(err);
         }
 
         if (!user) {
-            return res.json({msg: "You are not authorize"});
+            return res.status(401).json("You are not authorize");
         }
 
         const u = await models.User.find({
@@ -61,24 +61,25 @@ exports.postCreateTeams = async function (req, res) {
         });
 
         if (u.RoleId !== 1) {
-            return res.json({msg: "You are not authorize"});
+            return res.status(403).json( "You are not authorize");
         }
 
         const teamsBody = req.body.teams;
 
         if (teamsBody.length > 10) {
-            return res.json({msg: "You can't add more than 10 teams."});
+            return res.status(400).json("You can't add more than 10 teams.");
         }
 
         let teams = [];
         let i = 0;
 
         for (const team of teamsBody) {
-            teams[i] = await models.Team.create({teamName: team.name});
+            // teams[i] = await models.Team.create({teamName: team.name});
+            teams[i] = await models.Team.create({teamName: team});
             await teams[i].setUser(u)
             i++;
         }
 
-        return res.json({msg: 'All your teams have been added'})
+        return res.status(200).json('All your teams have been added')
     })(req, res)
 }
