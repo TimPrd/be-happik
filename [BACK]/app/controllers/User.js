@@ -204,6 +204,8 @@ exports.login = function (req, res) {
 
 
 exports.secret = function (req, res) {
+
+
     res.setHeader('Content-Type', 'application/json');
     console.log('secret')
     passport.authenticate('jwt', {session: false}, (err, user, info) => {

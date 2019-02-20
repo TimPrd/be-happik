@@ -7,7 +7,7 @@ const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const socketIo = require("socket.io");
-const { format, loggers, transports } = require('winston');
+const {format, loggers, transports} = require('winston');
 // app.js
 
 var cors = require('cors')
@@ -41,19 +41,24 @@ app.use(cookieParser());
 
 var users = [];
 
-/*app.io.on( "connection", function( socket )
+app.io.on( "connection", function( socket )
 {
+// please note that server will take 2 data entries as function parameter below
+    socket.emit('welcome', { message: 'Welcome!' });
+
     console.log( "A user connected" );
+
     socket.on('setUserId', function (userId) {
+        console.info("userid receive : ", userId)
         users[userId]=socket;
         app.set('usersSocket', users);
     });
-    socket.on('send notification', function (userId) { //=> /survey/validate/
-        users[userId].emit('notification', "important notification message");
+    socket.on('send', function (userId) { //=> /survey/validate/
+        users[userId].emit('notification', "important notification message for " + userId);
     });
 
 });
-*/
+
 
 
 const routes = require('./routes/router');
