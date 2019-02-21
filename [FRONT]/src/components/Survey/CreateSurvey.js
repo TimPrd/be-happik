@@ -10,7 +10,6 @@ import PropTypes from 'prop-types';
 import client from '../../api';
 import Input from '../inputs';
 
-
 const Container = styled(Row)`
   margin: ${props => props.theme.custom.text}px 0;
 `;
@@ -117,7 +116,7 @@ class CreateSurvey extends React.Component {
         },
       });
 
-      return teams.data.msg === 'You are not authorize' ? null : teams.data;
+      return teams.data.msg === 'You are not authorize' ? null : teams.data.map(team => ({ value: team, label: team }));
     } catch (err) {
       return null;
     }
@@ -159,7 +158,7 @@ class CreateSurvey extends React.Component {
 
             const data = {
               auhor: me.user.id,
-              teams: 'Slytherin',
+              teams,
               questions: [
                 ...predefined,
                 ...newQuestions,

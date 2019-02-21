@@ -9,13 +9,12 @@ const EmployeeRoute = ({ component: Component, ...rest }) => (
     {user => (
       <Route
         {...rest}
-        render={props => (user && user.RoleId === 2 ? (
+        render={props => (user && user.RoleId === 1 ? (
           <Component {...props} />
         ) : (
           <Redirect
             to={{
               pathname: '/',
-              // state: { from: props.location },
             }}
           />
         ))
@@ -26,7 +25,6 @@ const EmployeeRoute = ({ component: Component, ...rest }) => (
 );
 
 EmployeeRoute.propTypes = {
-  // location: PropTypes.objectOf(PropTypes.string).isRequired,
   component: PropTypes.func.isRequired,
 };
 

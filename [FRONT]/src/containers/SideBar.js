@@ -116,7 +116,7 @@ const MenuMock = [
   {
     pageName: 'Collaborateurs',
     Icon: UserIcon,
-    url: '/Collaborateurs',
+    url: '/collaborators',
   },
   {
     pageName: 'Aide',

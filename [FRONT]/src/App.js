@@ -22,6 +22,7 @@ import AllSurveys from './containers/Survey/All';
 import CreateSurveyPage from './containers/Survey/Create';
 import ReplySurveyPage from './containers/Survey/Reply';
 import french from './Locales';
+import Collaborators from './containers/Collaborators';
 
 const GlobalStyle = createGlobalStyle`
   @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700');
@@ -50,6 +51,7 @@ const App = () => (
               <ManagerRoute exact path="/survey/create" component={CreateSurveyPage} />
               <EmployeeRoute exact path="/survey/reply/:id" component={ReplySurveyPage} />
 
+              <ManagerRoute exact path="/collaborators" component={Collaborators} />
 
               <PublicRoute exact path="/login" component={LoginPage} />
               <Route exact path="/register" component={RegisterPage} />

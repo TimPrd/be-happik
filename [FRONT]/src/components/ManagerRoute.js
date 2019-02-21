@@ -9,13 +9,12 @@ const ManagerRoute = ({ component: Component, ...rest }) => (
     {user => (
       <Route
         {...rest}
-        render={props => (user && user.RoleId === 1 ? (
+        render={props => (user && user.RoleId === 2 ? (
           <Component {...props} />
         ) : (
           <Redirect
             to={{
               pathname: '/',
-              // state: { from: props.location },
             }}
           />
         ))
@@ -26,7 +25,6 @@ const ManagerRoute = ({ component: Component, ...rest }) => (
 );
 
 ManagerRoute.propTypes = {
-  // location: PropTypes.objectOf(PropTypes.string).isRequired,
   component: PropTypes.func.isRequired,
 };
 

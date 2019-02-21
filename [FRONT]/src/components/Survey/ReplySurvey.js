@@ -139,9 +139,11 @@ class ReplySurvey extends React.Component {
                 const answers = values.questions;
 
                 try {
-                  const response = await client.post('/api/survey/:idSurvey/answers/', answers);
+                  await client.post('/api/survey/:idSurvey/answers/', answers);
 
-                  console.log(response);
+                  toast.success('Réponse soumise avec succes', {
+                    position: toast.POSITION.TOP_RIGHT,
+                  });
                 } catch (error) {
                   toast.error('error', {
                     position: toast.POSITION.TOP_RIGHT,

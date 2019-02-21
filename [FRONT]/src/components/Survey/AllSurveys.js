@@ -76,7 +76,6 @@ class CreateSurvey extends React.Component {
       });
 
       surveys = allUserSurvey;
-      console.log(surveys);
 
       return surveys;
     } catch (err) {
@@ -125,9 +124,9 @@ class CreateSurvey extends React.Component {
                 </Row>
               </Col>
 
-              {user.RoleId === 1 && (
+              {user.RoleId === 2 && (
                 <Col xs={6} sm={2}>
-                  <Button label="Créer un sondate" handleClick={() => history.push('/dashboard')} type="submit" />
+                  <Button label="Créer un sondate" handleClick={() => history.push('/survey/create')} type="submit" />
                 </Col>
               )}
             </Row>
