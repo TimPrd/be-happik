@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { ThemeProvider, createGlobalStyle } from 'styled-components';
 import { ToastContainer } from 'react-toastify';
+import moment from 'moment';
 
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -13,8 +14,15 @@ import './App.css';
 import LoginPage from './containers/LoginPage';
 import RegisterPage from './containers/RegisterPage';
 import PrivateRoute from './components/PrivateRoute';
+import PublicRoute from './components/PublicRoute';
+import EmployeeRoute from './components/EmployeeRoute';
+import ManagerRoute from './components/ManagerRoute';
 import Initiator from './components/Initiator';
-import CreateSurveyPage from './containers/CreateSurveyPage';
+import AllSurveys from './containers/Survey/All';
+import CreateSurveyPage from './containers/Survey/Create';
+import ReplySurveyPage from './containers/Survey/Reply';
+import french from './Locales';
+import Collaborators from './containers/Collaborators';
 
 const GlobalStyle = createGlobalStyle`
   @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700');
@@ -23,6 +31,8 @@ const GlobalStyle = createGlobalStyle`
     font-family: 'Source Sans Pro', sans-serif;
   }
 `;
+
+moment.locale('fr', french);
 
 const App = () => (
   <ThemeProvider theme={Theme}>
@@ -36,10 +46,14 @@ const App = () => (
               <PrivateRoute exact path="/user/create" component={AddUser} />
               <PrivateRoute exact path="/dashboard" component={Dashboard} />
               <PrivateRoute exact path="/" component={Dashboard} />
-              <PrivateRoute exact path="/survey/create" component={CreateSurveyPage} />
 
+              <PrivateRoute exact path="/survey" component={AllSurveys} />
+              <ManagerRoute exact path="/survey/create" component={CreateSurveyPage} />
+              <EmployeeRoute exact path="/survey/reply/:id" component={ReplySurveyPage} />
 
-              <Route exact path="/login" component={LoginPage} />
+              <ManagerRoute exact path="/collaborators" component={Collaborators} />
+
+              <PublicRoute exact path="/login" component={LoginPage} />
               <Route exact path="/register" component={RegisterPage} />
 
               <Route component={NotFoundPage} />

@@ -24,19 +24,8 @@ module.exports = {
         ],
       },
     ],
-    "jsx-a11y/label-has-associated-control": [ 2, {
-      "labelComponents": ["CustomInputLabel"],
-      "labelAttributes": ["label"],
-      "controlComponents": ["CustomInput"],
-      "depth": 3,
-    }],
-    "jsx-a11y/label-has-for": [ 2, {
-      "components": [ "Label" ],
-      "required": {
-          "every": [ "nesting", "id" ]
-      },
-      "allowChildren": false
-    }],
+    "jsx-a11y/label-has-associated-control": [ 1 ],
+    "jsx-a11y/label-has-for": [ 1 ],
     "linebreak-style": [
       "error",
       "unix"

@@ -111,12 +111,12 @@ const MenuMock = [
   {
     pageName: 'Sondages',
     Icon: SurveyIcon,
-    url: '/Sondages',
+    url: '/survey',
   },
   {
     pageName: 'Collaborateurs',
     Icon: UserIcon,
-    url: '/Collaborateurs',
+    url: '/collaborators',
   },
   {
     pageName: 'Aide',

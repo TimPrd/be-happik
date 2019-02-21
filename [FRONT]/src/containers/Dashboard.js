@@ -14,6 +14,7 @@ import UserNumber from '../assets/img/icons/Icon-AddUser.svg';
 import SpinIcon from '../assets/img/icons/Icon-Spin.svg';
 import ChronoIcon from '../assets/img/icons/Icon-Clock.svg';
 import WarningIcon from '../assets/img/icons/Icon-NotifWarning.svg';
+import { UserContext } from '../contexts';
 
 const HeadTitle = styled.h1`
   width: 100%;
@@ -51,59 +52,64 @@ const DashboardInformations = [
 ];
 
 const Dashboard = () => (
-  <Layout>
-    <Grid fluid>
-      <HeadTitle>
-        Bienvenue Nacer-Eddine !
-      </HeadTitle>
+  <UserContext.Consumer>
+    {user => (
+      <Layout>
+        <Grid fluid>
+          <HeadTitle>
+            Bienvenue &nbsp;
+            {`${user.firstName} ${user.lastName}`}
+          </HeadTitle>
 
-      <HeadSubTitle>
-        Ici un text descriptif sur un theme !!
-      </HeadSubTitle>
+          <HeadSubTitle>
+            Ici un text descriptif sur un theme !!
+          </HeadSubTitle>
 
-      <Row>
-        <Col xs={12} md={4}>
-          <ActionButton
-            icon={PlusIcon}
-            title="Créer un sondage"
-            text="Diffuser un sondage à une ou plusieurs équipes"
-            path="/survey/create"
-            color="rose85"
-          />
-        </Col>
+          <Row>
+            <Col xs={12} md={4}>
+              <ActionButton
+                icon={PlusIcon}
+                title="Créer un sondage"
+                text="Diffuser un sondage à une ou plusieurs équipes"
+                path="/survey/create"
+                color="rose85"
+              />
+            </Col>
 
-        <Col xs={12} md={4}>
-          <ActionButton
-            icon={SurveyIcon}
-            title="Consulter les sondages"
-            text="Accéder aux sondages terminés"
-            path="/survey/all"
-            color="greenc9"
-          />
-        </Col>
+            <Col xs={12} md={4}>
+              <ActionButton
+                icon={SurveyIcon}
+                title="Consulter les sondages"
+                text="Accéder aux sondages terminés"
+                path="/survey/all"
+                color="greenc9"
+              />
+            </Col>
 
-        <Col xs={12} md={4}>
-          <ActionButton
-            icon={UserIcon}
-            title="Gestion des collaborateurs"
-            text="Ajouter une équipe ou un collaborateur"
-            path="/users/add"
-            color=""
-          />
-        </Col>
-      </Row>
+            <Col xs={12} md={4}>
+              <ActionButton
+                icon={UserIcon}
+                title="Gestion des collaborateurs"
+                text="Ajouter une équipe ou un collaborateur"
+                path="/collaborators"
+                color=""
+              />
+            </Col>
+          </Row>
 
 
-      <Row>
-        <Col xs={12} lg={4}>
-          <DashboardInfos dataInfos={DashboardInformations} />
-        </Col>
-        <Col xs={12} lg={8}>
-          <ChartEmploye />
-        </Col>
-      </Row>
-    </Grid>
-  </Layout>
+          <Row>
+            <Col xs={12} lg={4}>
+              <DashboardInfos dataInfos={DashboardInformations} />
+            </Col>
+            <Col xs={12} lg={8}>
+              <ChartEmploye />
+            </Col>
+          </Row>
+        </Grid>
+      </Layout>
+    )}
+  </UserContext.Consumer>
 );
 
 export default Dashboard;

@@ -97,20 +97,14 @@ const LoginPage = ({ history }) => (
         }}
         validationSchema={SignupSchema}
         onSubmit={async (values, actions) => {
-          console.log(values);
-
           try {
-            const response = await axios.post(`${process.env.REACT_APP_API_URL}/user/register`, {
+            await axios.post(`${process.env.REACT_APP_API_URL}/user/register`, {
               email: values.email,
               password: values.password,
             });
 
-            console.log(response);
-
-
             history.push('/');
           } catch (error) {
-            console.log(error);
             toast.error('error', {
               position: toast.POSITION.TOP_RIGHT,
             });
@@ -124,7 +118,6 @@ const LoginPage = ({ history }) => (
           <Row>
             <Col xs={12}>
               <form onSubmit={handleSubmit}>
-                {console.log(errors)}
                 <Row>
                   <Col xs={12} mdOffset={3} md={6}>
                     <Label htmlFor="email">
