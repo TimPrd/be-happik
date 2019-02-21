@@ -33,9 +33,9 @@ checkMoodScore = (score) => {
  */
 exports.create = async function (req, res) {
     passport.authenticate('jwt', {session: false}, async (err, user, info) => {
-            if (user && user.id == req.params.id) {
+            if (user && user.id === req.params.id) {
                 if (!req.body.mood || checkMoodScore(req.body.mood) === undefined) {
-                    return res.status(400).json({msg: "Your mood score cannot be recognized."})
+                    return res.status(400).json("Your mood score cannot be recognized.")
                 } else {
                     let date = req.body.date.split("-").join(",");
                     let mood = await models.userMood.findOrCreate({
@@ -53,7 +53,7 @@ exports.create = async function (req, res) {
                     return res.status(200).send(mood);
                 }
             } else {
-                return res.status(400).json({msg: "You are not authorize"});
+                return res.status(401).json("You are not authorize");
             }
         }
     )

@@ -23,6 +23,6 @@ exports.getPredefined = function (req, res) {
         limit: q,
     }).then(data => {
         const questions = data.map(question => question.title);
-        res.send(questions).status(200);
+        res.status(200).json(questions);
     })
 }
