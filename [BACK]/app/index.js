@@ -43,11 +43,7 @@ var users = [];
 
 app.io.on( "connection", function( socket )
 {
-// please note that server will take 2 data entries as function parameter below
-    socket.emit('welcome', { message: 'Welcome!' });
-
     console.log( "A user connected" );
-
     socket.on('setUserId', function (userId) {
         console.info("userid receive : ", userId)
         users[userId]=socket;

@@ -11,7 +11,6 @@ import client from '../api';
 import GreenShape from '../assets/img/courbe-verte.svg';
 import Logo from '../assets/img/icons/logo.svg';
 import LoginHeader from '../components/Login/LoginHeader';
-import io from "socket.io-client";
 
 
 const SignupSchema = Yup.object().shape({

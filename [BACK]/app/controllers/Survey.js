@@ -85,7 +85,7 @@ exports.validate = async function (req, res) {
                 notif.setUser(user.id);
                 notif.setSender(author);
                 var socket = req.app.get('usersSocket');
-                socket[2/*user.id*/].emit('notification', "important notification for U <3 ");
+                socket[user.id/*user.id*/].emit('notification', "important notification for U <3 ");
 
                 //var io = req.app.get('socketio');
                 //var sockets = req.app.get('usersSocket');

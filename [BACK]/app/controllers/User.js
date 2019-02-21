@@ -4,7 +4,7 @@ const models = require('../../models/');
 const Utils = require('./Utils');
 const bcrypt = require('bcrypt-nodejs');
 const Mailer = require('./Mailer');
-const { loggers } = require('winston')
+const {loggers} = require('winston')
 const logger = loggers.get('my-logger')
 
 
@@ -13,62 +13,69 @@ const logger = loggers.get('my-logger')
  * @apiName Register User
  * @apiGroup User
  *
- * @apiParam {String[]} email users email.
+ * @apiParam {Object[]} newUser users email and team id.
  * @apiParam {String} team the team that user will join.
  * @apiParam {Number} currentUserId ID of the current user who register.
  */
 exports.register = async function (req, res) {
     const rawEmails = req.body.email;
-    const rawteam = req.body.team;
+    const rawteam = req.body;
     const currentUser = req.body.currentUserId;
+    passport.authenticate('jwt', {session: false}, async (err, user, info) => {
+        if (err) {
+            return res.status(520).json({err: err});
+        }
 
-    const sortedEmail = [...new Set(rawEmails.filter(x => /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(x)))];
-    let users = [];
-    let team = await models.Team.findOne({where: {teamName: rawteam}});
+        //remove non valid email
+        let newUsers = req.body.filter(x => /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(x.email));
+        //remove duplicates
+        newUsers = newUsers.filter((user, index, self) =>
+            index === self.findIndex((u) => (
+                u.email === user.email
+            ))
+        );
 
-    sortedEmail.forEach(async function (mail) {
-        const token = require('crypto').randomBytes(10).toString('hex');
-        console.log("token : ", token)
-        models.User.findOne({
-            where: {id: currentUser, RoleId: 0}
-        }).then(async currentUsr => {
-            if (currentUsr) {
-                console.log("current : ", currentUsr)
-                await models.User.find({
-                    where: {email: mail, isRegistered: false}
-                }).then(async user => {
-                    if (!user) {
-                        console.log("usr : ", user)
-                        await models.User.create({
-                            email: mail,
+        if (newUsers.length) {
+            newUsers.forEach(async newUser => {
+                const token = require('crypto').randomBytes(10).toString('hex');
+                console.log("token : ", token);
+                if (user.RoleId == 2) {
+                    let userInDb = await models.User.find({
+                        where: {email: newUser.email, isRegistered: false}
+                    });
+                    if (!userInDb) {
+                        let createdUser = await models.User.create({
+                            email: newUser.email,
                             createdAt: new Date(),
                             updatedAt: new Date(),
-                        }).then(async created => {
-                            created.setTeam(team.id);
-                            models.Recovery.create({
-                                token: token,
-                                destroyable: false,
-                            }).then(recovery => {
-                                return recovery.setUser(created.id)
-                            })
+                            RoleId: 1,
+                            TeamId: newUser.team
                         });
+                        const userTeam = await createdUser.getTeam();
+                        let recover = await models.Recovery.create({
+                            token: token,
+                            destroyable: false,
+                        });
+                        const datas = {
+                            email: newUser.email,
+                            team: userTeam.dataValues.teamName,
+                            token: token,
+                            url: "www.behappik.com",
+                        };
+                        //Mailer.send(newUser.email, 'd-3ddc12cac0664916b99d3a2af772d9f1', datas);
+                        await recover.setUser(createdUser.id);
                     }
-                }).catch(error => {
-                    console.log(error)// Ooops, do some error-handling
-                });
-            }
-        });
-
-        const datas = {
-            email: mail,
-            team: team.teamName,
-            token: token,
-            url: "www.behappik.com",
-        };
-        Mailer.send(mail, 'd-3ddc12cac0664916b99d3a2af772d9f1', datas)
-    });
-    res.end();
+                } else {
+                    res.status(401).send({msg: "You are not authorize to perform this operation"});
+                }
+            })
+        } else {
+            res.status(404).send({msg: "No email have been found"});
+        }
+        res.status(201).send({msg: "Users created"});
+    })(req, res);
 };
+
 
 /**
  * @api {post} /user/recover User changes its password.
@@ -326,7 +333,7 @@ exports.delete = function (req, res, next) {
     passport.authenticate('jwt', {session: false}, async (err, user, info) => {
         let msg = "";
         if (user.RoleId == 2) {
-             del = await models.User.destroy({
+            del = await models.User.destroy({
                 where: {
                     id: req.params.id
                 }
@@ -349,7 +356,7 @@ exports.delete = function (req, res, next) {
  * @apiSuccess (200) {Object} page the desired page with the survey
  */
 
-exports.getCollaborators =  function (req, res) {
+exports.getCollaborators = function (req, res) {
     passport.authenticate('jwt', {session: false}, async (err, user, info) => {
         if (err) {
             return res.status(520).json({err: err});
@@ -366,7 +373,7 @@ exports.getCollaborators =  function (req, res) {
 
             if (teamParams === 'ALL') {
                 users = await models.User.findAll({
-                    attributes:['firstName', 'lastName', 'email', 'avatar', 'isRegistered']
+                    attributes: ['firstName', 'lastName', 'email', 'avatar', 'isRegistered']
                 })
             } else {
                 const team = await models.Team.find({
@@ -382,17 +389,16 @@ exports.getCollaborators =  function (req, res) {
                 users = await models.User.findAll({
                     where: {
                         TeamId: team.id
-                    }, attributes:['firstName', 'lastName', 'email', 'avatar', 'isRegistered']
+                    }, attributes: ['firstName', 'lastName', 'email', 'avatar', 'isRegistered']
                 })
             }
 
             const teams = await models.Team.findAll({
-                attributes:['id', 'teamName']
+                attributes: ['id', 'teamName']
             });
 
-            return await res.json({employees : users, teams: teams})
-        }
-        else
+            return await res.json({employees: users, teams: teams})
+        } else
             return res.status(401).json({err: "You are not authorize"});
     })(req, res);
 };

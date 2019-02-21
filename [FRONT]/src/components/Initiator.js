@@ -26,6 +26,18 @@ class Initiator extends React.Component {
                 },
             });
 
+            var socket = await io.connect("http://localhost:4000/"); // TIP: io() with no args does auto-discovery
+            await socket.on('welcome', function (s) {
+                console.log("We are connected")
+                socket.emit('setUserId', loggedUser.id);
+                socket.emit('send', loggedUser.id);
+    
+                socket.on("notification", msg => console.log(msg))
+    
+            });
+            //setInterval(async function(){ await client.post('/api/survey/validate',{}); }, 3000);
+    
+
             console.log(secret);
 
             return secret.data.msg === 'You are authorized'
@@ -40,22 +52,6 @@ class Initiator extends React.Component {
         const state = await this.fetchMe();
 
         this.setState(state);
-
-
-        var socket = await io.connect("http://localhost:4000/"); // TIP: io() with no args does auto-discovery
-        const  nb= Math.floor(Math.random() * Math.floor(5)); //=> userID
-        await socket.on('welcome', function (s) {
-            console.log("We are connected")
-            socket.emit('setUserId', nb);
-            socket.emit('send', nb);
-
-            socket.on("notification", msg => console.log(msg))
-
-        });
-        setInterval(async function(){ await client.post('/api/survey/validate',{}); }, 3000);
-
-
-
     };
 
     render() {
