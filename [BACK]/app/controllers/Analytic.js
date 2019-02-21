@@ -60,9 +60,9 @@ exports.moodPerWeek = async function (req, res) {
                     }
                     datas.push({data: /*Object.values(counts)*/counts, date: date})
                 }
-                return res.status(200).send(datas);
+                return res.status(200).json(datas);
             } else {
-                return res.status(400).json({msg: "You are not authorize"});
+                return res.status(400).json("You are not authorize");
             }
         }
     )
@@ -125,7 +125,7 @@ exports.counts = async function (req, res) {
                 };
                 return res.status(200).send(json);
             } else {
-                return res.status(400).json({msg: "You are not authorize"});
+                return res.status(400).json("You are not authorize");
             }
         }
     )
@@ -153,7 +153,7 @@ exports.surveyResponse = async function (req, res) {
 
                 return res.status(200).send(surveys);
             } else {
-                return res.status(400).json({msg: "You are not authorize"});
+                return res.status(400).json("You are not authorize");
             }
         }
     )
@@ -189,7 +189,7 @@ exports.surveyStatus = async function (req, res) {
                 });
                 return res.status(200).send(surveys);
             } else {
-                return res.status(400).json({msg: "You are not authorize"});
+                return res.status(400).json("You are not authorize");
             }
         }
     )

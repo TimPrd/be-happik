@@ -28,8 +28,8 @@ router.get("/users", async function (req, res, next) {
 router
     .get("/user/secret", controller.User.secret)
     .post("/user/register", controller.User.register)
-    .post("/user/reset/", controller.User.reset)
-    .post("/user/recover/", controller.User.recover);
+    .post("/user/reset", controller.User.reset)
+    .post("/user/recover", controller.User.recover);
 
 
 router.get("/question/predefined/", controller.Question.getPredefined);
@@ -41,10 +41,9 @@ router.get("/question/predefined/", controller.Question.getPredefined);
  ********************************************/
 router
     .get("/user/me", controller.User.me)
-    .get("/user/:id/surveys", controller.Survey.getSurveyByUser)
     .post("/user/register", controller.User.register)
-    .post("/user/reset/", controller.User.reset)
-    .post("/user/recover/", controller.User.recover)
+    .post("/user/reset", controller.User.reset)
+    .post("/user/recover", controller.User.recover)
     .post("/user/subscribe", controller.User.subscribe)
     .delete("/user/:id", controller.User.delete)
     .get("/collaborators", controller.User.getCollaborators);
@@ -63,12 +62,12 @@ router.post("/login", controller.User.login);
  *             ROADS : Survey               *
  ********************************************/
 router
-    .get("/surveys", controller.Survey.getAll)
-    .get("/survey/:id/answers", controller.Survey.getSurveyWithAnswers)
-    .get("/survey/:id", controller.Survey.getSurvey)
-    .post("/survey/:idSurvey/answers/", controller.Survey.postAnswers)
+    .get("/surveys", controller.Survey.getAllSurveys)
+    .get("/surveys/user/:idUser", controller.Survey.getSurveysByUser)
+    .get("/survey/:idSurvey/answers", controller.Survey.getSurveyWithAnswers)
+    .get("/survey/:idSurvey", controller.Survey.getSurvey)
+    .post("/survey/:idSurvey/answers", controller.Survey.postAnswers)
     .post("/survey/validate", controller.Survey.validate)
-    .put("/survey/:idSurvey/answers/:idAnswer", controller.Survey.putAnswers)
     .put("/survey/:idSurvey/answers", controller.Survey.putAnswers);
 
 /********************************************
@@ -84,8 +83,8 @@ router
  ********************************************/
 
 router
-    .get("/team/list/", controller.Team.getTeamList)
-    .post("/team/", controller.Team.postCreateTeams);
+    .get("/team/list", controller.Team.getTeamList)
+    .post("/team", controller.Team.postCreateTeams);
 
 /********************************************
  *             ROADS : Stats                *
