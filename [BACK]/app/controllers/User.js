@@ -18,9 +18,6 @@ const logger = loggers.get('my-logger')
  * @apiParam {Number} currentUserId ID of the current user who register.
  */
 exports.register = async function (req, res) {
-    const rawEmails = req.body.email;
-    const rawteam = req.body;
-    const currentUser = req.body.currentUserId;
     passport.authenticate('jwt', {session: false}, async (err, user, info) => {
         if (err) {
             return res.status(520).json({err: err});
@@ -194,17 +191,15 @@ exports.reset = async function (req, res) {
 exports.login = function (req, res) {
     passport.authenticate('local', {session: false}, (err, user, info) => {
         if (err || !user) {
-            return res.status(400).json({
-                message: err
-            });
+            return res.status(400).json(err);
         }
         req.login(user, {session: false}, (err) => {
             if (err) {
-                res.send(err);
+                res.status(500).send(err);
             }
             user.password = undefined;
             const token = jwt.sign(JSON.stringify(user), 'HELLO');// @todo: process.env.JWT_TOKEN);
-            return res.json({user, token});
+            return res.send(200).json({user, token});
         });
     })(req, res);
 };
@@ -218,12 +213,12 @@ exports.secret = function (req, res) {
     passport.authenticate('jwt', {session: false}, (err, user, info) => {
         logger.debug(user);
         if (err) {
-            return res.json({msg: err});
+            return res.status(500).json(err);
         }
         if (user) {
-            return res.send({user: user, msg: "You are authorized"});
+            return res.status(200).send({user: user});
         } else
-            return res.json({msg: "You are not authorize"});
+            return res.status(401).json("You are not authorize");
     })(req, res);
 };
 
@@ -265,12 +260,10 @@ exports.subscribe = async function (req, res, next) {
                 where: {UserId: user.id, token: token, destroyable: false}
             }).then(async recover => {
                 if (!recover)
-                    res.status(400).send({error: "Aucune entrée correspondante"});
+                    res.status(400).send("No matching data");
                 const checkPassword = Utils.checkFormControl(user, password, req, res);
                 if (checkPassword !== "success") {
-                    return res.send(JSON.stringify({
-                        checkPassword
-                    }));
+                    return res.json(checkPassword);
                 } else {
                     const hash = bcrypt.hashSync(password);
                     console.log(hash);
@@ -284,15 +277,14 @@ exports.subscribe = async function (req, res, next) {
                             where: {email: email}
                         });
                     recover.update({destroyable: true});
-                    return res.send(JSON.stringify(password));
+                    return res.status(200).json(password);
                 }
             }).catch((err, req, res, next) => {
                 console.log(err);
+                return res.status(500).json('There is some problem');
             });
         } else {
-            return res.send(JSON.stringify({
-                error: "Identifiant ou mot de passe temporaire incorrect",
-            }));
+            return res.status(401).json("Wrong email or temporary password");
         }
     });
 
@@ -309,13 +301,13 @@ exports.subscribe = async function (req, res, next) {
 exports.me = function (req, res, next) {
     passport.authenticate('jwt', {session: false}, async (err, user, info) => {
         if (err) {
-            return res.json({msg: err});
+            return res.status(500).json(err);
         }
 
         if (user) {
             return res.status(200).send(user);
         } else {
-            return res.status(403).json({msg: "You are not authorize"});
+            return res.status(403).json("You are not authorize");
         }
     })(req, res);
 };
@@ -332,8 +324,8 @@ exports.me = function (req, res, next) {
 exports.delete = function (req, res, next) {
     passport.authenticate('jwt', {session: false}, async (err, user, info) => {
         let msg = "";
-        if (user.RoleId == 2) {
-            del = await models.User.destroy({
+        if (user.RoleId === 2) {
+             del = await models.User.destroy({
                 where: {
                     id: req.params.id
                 }
@@ -359,13 +351,69 @@ exports.delete = function (req, res, next) {
 exports.getCollaborators = function (req, res) {
     passport.authenticate('jwt', {session: false}, async (err, user, info) => {
         if (err) {
-            return res.status(520).json({err: err});
+            return res.status(520).json(err);
         }
 
         if (user) {
 
             if (typeof req.query.team === 'undefined' || typeof req.query.team !== 'string' || typeof req.query.team == null) {
-                return res.status(409).json({err: 'Please specify a team'});
+                return res.status(409).json('Please specify a team');
+            }
+
+            const teamParams = req.query.team;
+            let users;
+
+            if (teamParams === 'ALL') {
+                users = await models.User.findAll({
+                    attributes:['firstName', 'lastName', 'email', 'avatar', 'isRegistered']
+                })
+            } else {
+                const team = await models.Team.find({
+                    where: {
+                        teamName: teamParams
+                    }
+                })
+
+                if (!team) {
+                    return res.status(404).json('There is no team for the name ' + teamParams);
+                }
+
+                users = await models.User.findAll({
+                    where: {
+                        TeamId: team.id
+                    }, attributes:['firstName', 'lastName', 'email', 'avatar', 'isRegistered']
+                })
+            }
+
+            const teams = await models.Team.findAll({
+                attributes:['id', 'teamName']
+            });
+
+            return await res.status(200).json({employees : users, teams: teams})
+        }
+        else
+            return res.status(401).json("You are not authorize");
+    })(req, res);
+};
+
+/**
+ * @api {post} /user/password/reset Reset the password of a user
+ * @apiName Reset password
+ * @apiGroup User
+ *
+ * @apiSuccess (200) {Object    } page the desired page with the survey
+ */
+
+exports.resetPassword =  function (req, res) {
+    passport.authenticate('jwt', {session: false}, async (err, user, info) => {
+        if (err) {
+            return res.status(520).json(err);
+        }
+
+        if (user) {
+
+            if (typeof req.query.team === 'undefined' || typeof req.query.team !== 'string' || typeof req.query.team == null) {
+                return res.status(409).json('Please specify a team');
             }
 
             const teamParams = req.query.team;
@@ -383,7 +431,7 @@ exports.getCollaborators = function (req, res) {
                 })
 
                 if (!team) {
-                    return res.status(404).json({err: 'There is no team for the name ' + teamParams});
+                    return res.status(404).json('There is no team for the name ' + teamParams);
                 }
 
                 users = await models.User.findAll({
@@ -397,8 +445,11 @@ exports.getCollaborators = function (req, res) {
                 attributes: ['id', 'teamName']
             });
 
-            return await res.json({employees: users, teams: teams})
-        } else
-            return res.status(401).json({err: "You are not authorize"});
+
+            return await res.json({employees : users, teams: teams})
+        }
+        else {
+            return res.status(401).json("You are not authorize");
+        }
     })(req, res);
 };
