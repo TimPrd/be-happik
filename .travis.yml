@@ -1,51 +1,59 @@
-# blacklist
 branches:
   except:
-    - DB_SETUP
-
-# whitelist
-branches:
+  - DB_SETUP
   only:
-    - master
-    - DEV
-    
+  - master
+  - DEV
+  - BACK_deploy
 language: node_js
-
+node_js: 11.9.0
 sudo: required
-
 services:
-  - docker
-
+- docker
 env:
+  matrix:
   - DOCKER_COMPOSE_VERSION=1.23.1
-
+cache: npm
 before_install:
-  - sudo rm /usr/local/bin/docker-compose
-  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
-  - chmod +x docker-compose
-  - sudo mv docker-compose /usr/local/bin
-
+- sudo rm /usr/local/bin/docker-compose
+- curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname
+  -s`-`uname -m` > docker-compose
+- chmod +x docker-compose
+- sudo mv docker-compose /usr/local/bin
+# - wget -qO- https://toolbelt.heroku.com/install.sh | sh
+# - heroku plugins:install @heroku-cli/plugin-container-registry
+# - echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
+# - echo "$HEROKU_PASSWORD" | docker login --username "$HEROKU_USERNAME" --password-stdin
+#   registry.heroku.com
 before_script:
-  - cd [BACK]
-  - npm install
-  - docker-compose build
-  - docker-compose up -d 
-  - docker exec -it bh_node npm install
-#  - docker-compose run node sequelize db:migrate
-#  - docker exec -it bh_node ./node_modules/sequelize-cli/bin/sequelize db:migrate
-# - docker exec -it bh_node node_modules/.bin/sequelize db:seed:all
-  
-# - docker-compose run users-service knex seed:run --env development --knexfile app/knexfile.js
-#   - docker-compose run locations-service knex migrate:latest --env development --knexfile app/knexfile.js
-#   - docker-compose run locations-service knex seed:run --env development --knexfile app/knexfile.js
+- cd ./[BACK]
+- npm install
+- docker-compose build
+- docker-compose up -d
+- docker exec -it bh_node npm install
+- docker exec -it bh_node node_modules/.bin/sequelize db:migrate
+- docker exec -it bh_node node_modules/.bin/sequelize db:seed:all
+
+# - npm run prod:install
+- cd ../[FRONT]
+- npm install
+- npm run test
+- npm run build
+
 
 script:
-# - docker exec -it bh_node node_modules/.bin/sequelize db:migrate
-# - npm run travis 
-  - docker ps 
-  
+- docker ps
+- docker build -t $DOCKER_USERNAME/back_web docker/node/.
+- docker build -t registry.heroku.com/heroku-docker-example/web docker/node/.
+- docker tag $DOCKER_USERNAME/back_web registry.heroku.com/be-happik/web
+# deploy:
+#   provider: heroku
+#   api_key:
+#     secure: mXjvUngMf37DeYenxU+Oow2u64+4VUau0GIRk8SjZkMhVIrYZOcNwZsBaSUCFWA8H7e6N7KnrIVJnFPz5R9JGVsqlZD1QlSzzql4J3dJgaG/wJSvAhgwJ5b1C3xTUoND9sOv8hptyqT2QtermaDlWLRHhm9kYnCwCDu593PvG6U5/vgbMxGaWJ+rXcDyEPcD4XzbnnoNWvBvxmg1lT/B99+z3HBujIzaoCSzL8xCCK99Dq3w7FpTuqT6H2Mu4tdr6SyFFMvYD1kkuozya7SCGBtESgKZK1slfgwWjbU5wde6xULKSOZYD5+hK6TvjS3uJcCyCXT8juaXwF+39/sx8LB92+ARq3JmMOZUPgc6nrMATFiHT9aWlfg2gnTfBYm5aRsxHarp1WIvP0YAQQyNKjw1Rbhf4GpF4tg/YLQLzCwb9ZcKwxDxCh3kQ+MkBFu4chP6LIvvy+b5HgDJvYCS7PVFTTxJ7PlbWOcNpw7M2gpePJEoWnFAubegFnA6kJKQS0HKBvtX15RDjuBSb+6RkRnMjqwpOPM7S4PhuH5ghRp5eXMHAAUzl9kZWxSVnAptP/s4rZ/hiqQeOMpddT97+mv64wGcUxDyUzT7juFuRMbhiCWI4Tc2a6mWQx3iiWJLvsXQPEzk38YJ+hzcu7n6yb7WIFeZiCaqVDG1eSRsh1w=
+#   app: be-happik
+#   on:
+#     branch: BACK_deploy
 after_script:
-  - docker-compose down
-  
-after_success:
-  - docker exec -it bh_node npm run coveralls
+- docker-compose down
+- git remote add heroku https://heroku:$HEROKU_API_KEY@git.heroku.com/be-happik.git
+- git push -f heroku master

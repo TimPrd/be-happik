@@ -56,7 +56,7 @@ const DashboardInfos = ({ dataInfos }) => (
     <InfosTitle>
       Informations générales
     </InfosTitle>
-
+  
     {dataInfos.map((info, index) => (
       <InfosSections key={index.toString()}>
         <Icon src={info.picto} />

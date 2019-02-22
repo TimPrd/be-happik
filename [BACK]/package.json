@@ -3,7 +3,7 @@
     "version": "0.0.0",
     "private": true,
     "engines": {
-        "node" : ">=11.3.0",
+        "node": ">=11.3.0",
         "npm": ">=6.4.1"
     },
     "scripts": {
@@ -13,7 +13,8 @@
         "travis": "./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha -- -R spec ./test/*",
         "coveralls": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
         "db:reset": "docker stop bh_postgres && sleep 5 && docker rm bh_postgres && npm run db:install",
-        "db:install": "docker-compose build && docker-compose up -d && sleep 10 && make && make db-install"
+        "db:install": "docker-compose build && docker-compose up -d && sleep 10 && make && make db-install",
+        "prod:install": "node_modules/.bin/sequelize db:migrate && node_modules/.bin/sequelize db:seed:all"
     },
     "dependencies": {
         "@sendgrid/mail": "^6.3.1",
@@ -28,6 +29,7 @@
         "deep-extend": "0.6.0",
         "dotenv": "^6.2.0",
         "express": "~4.16.2",
+        "faker": "^4.1.0",
         "hbs": "~4.0.1",
         "istanbul": "^0.4.5",
         "jsonwebtoken": "^8.4.0",

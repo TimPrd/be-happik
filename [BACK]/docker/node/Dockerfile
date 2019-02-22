@@ -7,15 +7,14 @@ MAINTAINER timothe.pardieu@outlook.com
 WORKDIR /home/node/app
 
 # Copy contents of local folder to `WORKDIR`
-
+# You can pick individual files based on your need
 COPY ./ ./
-RUN ls -al
 
 # Install nodemon globally
 RUN npm install -g nodemon
 
 # Install dependencies (if any) in package.json
-RUN npm install && npm install terser@3.14.1 --save-dev
+RUN npm install
 
 ENV PORT 4000
 
