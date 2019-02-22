@@ -31,11 +31,16 @@ before_script:
 - docker-compose build
 - docker-compose up -d
 - docker exec -it bh_node npm install
+- docker exec -it bh_node node_modules/.bin/sequelize db:migrate
+- docker exec -it bh_node node_modules/.bin/sequelize db:seed:all
+
 # - npm run prod:install
 - cd ../[FRONT]
 - npm install
 - npm run test
 - npm run build
+
+
 script:
 - docker ps
 - docker build -t $DOCKER_USERNAME/back_web docker/node/.
