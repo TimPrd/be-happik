@@ -68,11 +68,6 @@ exports.register = async function (req, res) {
                 (u.email === user.email && typeof user.email === 'string' && typeof user.team === 'number'))
         );
 
-        newUsers = newUsers.filter((user) =>
-            typeof user.email === 'string' &&
-            typeof user.team === 'number'
-        );
-
         if (newUsers.length) {
             newUsers.forEach(async newUser => {
                 const token = require('crypto').randomBytes(10).toString('hex');
