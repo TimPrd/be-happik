@@ -15,14 +15,14 @@ const logger = loggers.get('my-logger')
  *
  * @apiParam {Object[]} User users email and team id.
  * @apiParam {String} User.email email The mail of the user to add.
- * @apiParam {Number} User.teamId teamId The id of the team the user will join.
+ * @apiParam {Number} User.team team The id team the user will join.
  *
  * @apiParamExample {json} Request-Example:
  *
  *  [
  *    {
  *      "email": "harry@potter.com",
- *      "teamId": 2
+ *      "team": 2
  *    },
  *    {
  *      "email": "hermioner@granger.com",
@@ -64,21 +64,20 @@ exports.register = async function (req, res) {
         let newUsers = req.body.filter(x => /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(x.email));
         //remove duplicates
         newUsers = newUsers.filter((user, index, self) =>
-            index === self.findIndex((u) => (
-                u.email === user.email
-            ))
+            index === self.findIndex((u) =>
+                (u.email === user.email && typeof user.email === 'string' && typeof user.team === 'number'))
         );
 
         newUsers = newUsers.filter((user) =>
             typeof user.email === 'string' &&
-            typeof user.teamId === 'number'
+            typeof user.team === 'number'
         );
 
         if (newUsers.length) {
             newUsers.forEach(async newUser => {
                 const token = require('crypto').randomBytes(10).toString('hex');
                 console.log("token : ", token);
-                if (user.RoleId === 2 || true) {
+                if (user.RoleId === 2) {
                     let userInDb = await models.User.find({
                         where: {email: newUser.email, isRegistered: false}
                     });
@@ -88,7 +87,7 @@ exports.register = async function (req, res) {
                             createdAt: new Date(),
                             updatedAt: new Date(),
                             RoleId: 1,
-                            TeamId: newUser.teamId
+                            TeamId: newUser.team
                         });
                         const userTeam = await createdUser.getTeam();
                         let recover = await models.Recovery.create({
