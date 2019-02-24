@@ -25,7 +25,7 @@ loggers.add('my-logger', {
     format: format.combine(
         format.colorize(),
         format.timestamp({
-            format: 'YY-MM-DD HH:mm:ss'
+            format: 'YY-MM-DD'
         }),
         format.printf(info => `${info.level} (${info.timestamp}) : ${info.message}`)
     ),
