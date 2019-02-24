@@ -37,11 +37,12 @@ exports.validate = async function (req, res) {
     const author = req.body.author;
     const teams = req.body.teams;
     const questions = req.body.questions;
-    if (!_.isEmpty(req.body.author) && !_.isEmpty(req.body.surveyTitle) && !_.isEmpty(req.body.surveyDescription)) {
+
+    if (req.body.author && req.body.surveyTitle) {
         logger.debug(_.isEmpty(req.body.surveyTitle));
         let survey = await models.Survey.create({
             title: req.body.surveyTitle,
-            description: req.body.surveyDescription,
+            description: req.body.surveyDescription || '',
             startDate: new Date(),
             open: true,
             endDate: req.body.endDate ? new Date(req.body.endDate.split("-").join(",")) : new Date(new Date().getTime() + (15 * 24 * 60 * 60 * 1000))

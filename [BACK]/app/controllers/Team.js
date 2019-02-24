@@ -24,11 +24,10 @@ exports.getTeamList = async function (req, res) {
             }
             await models.Team.findAll({
                 where:{
-                    ManagerId:user.id,
+                    UserId:user.id,
                 },
                 limit:q,
-            }).then(data => {
-                const teams = data.map(team => team.teamName);
+            }).then(teams => {
                 return res.status(200).send(teams);
             } )
         }
