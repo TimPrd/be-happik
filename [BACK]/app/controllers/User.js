@@ -199,7 +199,7 @@ exports.login = function (req, res) {
             }
             user.password = undefined;
             const token = jwt.sign(JSON.stringify(user), 'HELLO');// @todo: process.env.JWT_TOKEN);
-            return res.send(200).json({user, token});
+            return res.status(200).json({user, token});
         });
     })(req, res);
 };
