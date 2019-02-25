@@ -18,7 +18,7 @@ class Initiator extends React.Component {
 
     try {
       // const response = await client.get('/me');
-      const me = await client.get('/user/me', {
+      const me = await client.get('/api/user/me', {
         headers: {
           Authorization: `Bearer ${loggedUser.token}`,
           'Content-Type': 'application/json',
