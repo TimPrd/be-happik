@@ -13,30 +13,66 @@ const logger = loggers.get('my-logger')
  * @apiName Register User
  * @apiGroup User
  *
- * @apiParam {Object[]} newUser users email and team id.
- * @apiParam {String} team the team that user will join.
- * @apiParam {Number} currentUserId ID of the current user who register.
+ * @apiParam {Object[]} User users email and team id.
+ * @apiParam {String} User.email email The mail of the user to add.
+ * @apiParam {Number} User.team team The id team the user will join.
+ *
+ * @apiParamExample {json} Request-Example:
+ *
+ *  [
+ *    {
+ *      "email": "harry@potter.com",
+ *      "team": 2
+ *    },
+ *    {
+ *      "email": "hermioner@granger.com",
+ *      "teamId": 4
+ *    }
+ *  ]
+ *
+ * @apiSuccess {String} res Users created
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "Users created"
+ *     }
+ *
+ * @apiError ServerError (5XX) Problem with authentification on server.
+ * @apiError WrongParams (4XX) No email have been found.
+ * @apiError UserNotFound (4XX) You are not authorize to perform this operation.
+ * @apiError WrongParams (4XX) The data you sent is not what expected.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 400 Not Found
+ *     {
+ *       "The data you sent is not what expected"
+ *     }
+ *
  */
 exports.register = async function (req, res) {
     passport.authenticate('jwt', {session: false}, async (err, user, info) => {
         if (err) {
-            return res.status(520).json({err: err});
+            return res.status(520).json(err);
+        }
+
+        if (!Array.isArray(req.body)) {
+            res.status(400).json('The data you sent is not what expected')
         }
 
         //remove non valid email
         let newUsers = req.body.filter(x => /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(x.email));
         //remove duplicates
         newUsers = newUsers.filter((user, index, self) =>
-            index === self.findIndex((u) => (
-                u.email === user.email
-            ))
+            index === self.findIndex((u) =>
+                (u.email === user.email && typeof user.email === 'string' && typeof user.team === 'number'))
         );
 
         if (newUsers.length) {
             newUsers.forEach(async newUser => {
                 const token = require('crypto').randomBytes(10).toString('hex');
                 console.log("token : ", token);
-                if (user.RoleId == 2) {
+                if (user.RoleId === 2) {
                     let userInDb = await models.User.find({
                         where: {email: newUser.email, isRegistered: false}
                     });
@@ -63,13 +99,13 @@ exports.register = async function (req, res) {
                         await recover.setUser(createdUser.id);
                     }
                 } else {
-                    res.status(401).send({msg: "You are not authorize to perform this operation"});
+                    res.status(401).json("You are not authorize to perform this operation");
                 }
             })
         } else {
-            res.status(404).send({msg: "No email have been found"});
+            res.status(404).json("No email have been found");
         }
-        res.status(201).send({msg: "Users created"});
+        res.status(201).json("Users created");
     })(req, res);
 };
 
