@@ -57,74 +57,6 @@ const surveyMock = {
   ],
 };
 
-const allUserSurvey = [
-  {
-    id: 1,
-    title: 'Repas de noël',
-    description: null,
-    startDate: '2019-02-09T17:28:37.397Z',
-    endDate: '2019-02-25T17:28:37.397Z',
-    open: false,
-    createdAt: '2019-02-09T17:28:37.397Z',
-    updatedAt: '2019-02-09T17:28:37.397Z',
-    AuthorId: undefined,
-    author: 'Super Manager',
-    status: 'done',
-  },
-  {
-    id: 2,
-    title: 'Soirée bowling',
-    description: null,
-    startDate: '2019-02-09T17:28:37.397Z',
-    endDate: '2019-02-25T17:28:37.397Z',
-    open: false,
-    createdAt: '2019-02-09T17:28:37.397Z',
-    updatedAt: '2019-02-09T17:28:37.397Z',
-    AuthorId: undefined,
-    author: 'Jean Jack',
-    status: 'waiting',
-  },
-  {
-    id: 3,
-    title: 'Future Interactions Officer',
-    description: null,
-    startDate: '2019-02-09T17:28:37.397Z',
-    endDate: '2019-02-25T17:28:37.397Z',
-    open: false,
-    createdAt: '2019-02-09T17:28:37.397Z',
-    updatedAt: '2019-02-09T17:28:37.397Z',
-    AuthorId: undefined,
-    author: 'Jon Doe',
-    status: 'done',
-  },
-  {
-    id: 4,
-    title: 'Plus de force !',
-    description: null,
-    startDate: '2019-02-09T17:28:37.397Z',
-    endDate: '2019-02-25T17:28:37.397Z',
-    open: false,
-    createdAt: '2019-02-09T17:28:37.397Z',
-    updatedAt: '2019-02-09T17:28:37.397Z',
-    AuthorId: undefined,
-    author: 'Han Solo',
-    status: 'waiting',
-  },
-  {
-    id: 2,
-    title: 'Semaine Harry potter',
-    description: null,
-    startDate: '2019-02-09T17:28:37.397Z',
-    endDate: '2019-02-05T17:28:37.397Z',
-    open: false,
-    createdAt: '2019-02-09T17:28:37.397Z',
-    updatedAt: '2019-02-09T17:28:37.397Z',
-    AuthorId: undefined,
-    author: 'Albus Dumbledore',
-    status: 'done',
-  },
-];
-
 const allMoods = [
   {
     title: 'Très satisfait',
@@ -158,4 +90,4 @@ const allMoods = [
   },
 ];
 
-export { surveyMock, allUserSurvey, allMoods };
+export { surveyMock, allMoods };

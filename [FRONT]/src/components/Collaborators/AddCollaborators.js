@@ -84,7 +84,7 @@ class Addcollaborators extends React.Component {
             const loggedUser = JSON.parse(localStorage.getItem('user'));
 
             try {
-              const response = await client.post('/api/register/', values, {
+              const response = await client.post('/api/user/register', values, {
                 headers: {
                   Authorization: `Bearer ${loggedUser.token}`,
                   'Content-Type': 'application/json',

@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { Formik } from 'formik';
 import React from 'react';
 import { Col, Row } from 'react-flexbox-grid';
@@ -10,15 +9,18 @@ import { toast } from 'react-toastify';
 
 import LoginHeader from '../components/Login/LoginHeader';
 import AuthLayout from './AuthLayout';
+import client from '../api';
 
 const SignupSchema = Yup.object().shape({
   email: Yup.string()
-    .email('Invalid email')
-    .required('Required'),
+    .email('Email non valide')
+    .required('Requis'),
+  token: Yup.string()
+    .required('Requis'),
   password: Yup.string()
-    .min(2, 'Too Short!')
-    .max(50, 'Too Long!')
-    .required('Required'),
+    .min(2, 'Trop court!')
+    .max(50, 'Trop long!')
+    .required('Requis'),
   passwordConfirm: Yup.string()
     .oneOf([Yup.ref('password')], 'Mot de passe incorrect')
     .required('Requis!'),
@@ -78,7 +80,7 @@ const Submitbutton = styled.button`
 
 const LoginPage = ({ history }) => (
   <AuthLayout>
-    <Col xs={12} md={8} style={{ zIndex: 1 }}>
+    <Col xs={12} style={{ zIndex: 1 }}>
       <Row>
         <Col mdOffset={3} xs={12} md={6}>
           <LoginHeader
@@ -91,6 +93,7 @@ const LoginPage = ({ history }) => (
       <Formik
         initialValues={{
           email: '',
+          token: '',
           password: '',
           firstname: '',
           lastname: '',
@@ -98,10 +101,7 @@ const LoginPage = ({ history }) => (
         validationSchema={SignupSchema}
         onSubmit={async (values, actions) => {
           try {
-            await axios.post(`${process.env.REACT_APP_API_URL}/user/register`, {
-              email: values.email,
-              password: values.password,
-            });
+            await client.post('/api/user/subscribe', values);
 
             history.push('/');
           } catch (error) {
@@ -138,21 +138,21 @@ const LoginPage = ({ history }) => (
                   </Col>
 
                   <Col xs={12} mdOffset={3} md={6}>
-                    <Label htmlFor="tempPassword">
+                    <Label htmlFor="token">
                       Mot de passe temporaire
                       <br />
                       <Input
                         type="password"
                         onChange={handleChange}
                         onBlur={handleBlur}
-                        value={values.tempPassword}
-                        className={(errors.tempPassword && touched.tempPassword) ? 'error' : ''}
-                        name="tempPassword"
-                        id="tempPassword"
+                        value={values.token}
+                        className={(errors.token && touched.token) ? 'error' : ''}
+                        name="token"
+                        id="token"
                         placeholder="Votre mot de passe"
                       />
-                      {(errors.tempPassword && touched.tempPassword)
-                        && <InputError>{errors.tempPassword}</InputError>
+                      {(errors.token && touched.token)
+                        && <InputError>{errors.token}</InputError>
                       }
                     </Label>
                   </Col>
@@ -181,7 +181,7 @@ const LoginPage = ({ history }) => (
 
                   <Col xs={12} md={3}>
                     <Label htmlFor="passwordConfirm">
-                      Confirmation du mot de passe
+                      Confirmation
                       <br />
                       <Input
                         type="password"
@@ -190,7 +190,7 @@ const LoginPage = ({ history }) => (
                         className={(errors.passwordConfirm && touched.passwordConfirm) ? 'error' : ''}
                         name="passwordConfirm"
                         id="passwordConfirm"
-                        placeholder="Votre Prénom"
+                        placeholder="Confirmez votre mot de passe"
                       />
                       {(errors.passwordConfirm && touched.passwordConfirm)
                         && <InputError>{errors.passwordConfirm}</InputError>
