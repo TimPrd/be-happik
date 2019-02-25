@@ -36,7 +36,7 @@ exports.register = async function (req, res) {
             newUsers.forEach(async newUser => {
                 const token = require('crypto').randomBytes(10).toString('hex');
                 console.log("token : ", token);
-                if (user.RoleId == 2) {
+                if (user.RoleId == 1) {
                     let userInDb = await models.User.find({
                         where: {email: newUser.email, isRegistered: false}
                     });
@@ -45,7 +45,7 @@ exports.register = async function (req, res) {
                             email: newUser.email,
                             createdAt: new Date(),
                             updatedAt: new Date(),
-                            RoleId: 1,
+                            RoleId: 2,
                             TeamId: newUser.team
                         });
                         const userTeam = await createdUser.getTeam();
@@ -57,9 +57,9 @@ exports.register = async function (req, res) {
                             email: newUser.email,
                             team: userTeam.dataValues.teamName,
                             token: token,
-                            url: "www.behappik.com",
+                            url: "http://happik.herokuapp.com",
                         };
-                        //Mailer.send(newUser.email, 'd-3ddc12cac0664916b99d3a2af772d9f1', datas);
+                        Mailer.send(newUser.email, 'd-b515ade08268435c95794b613d845294', datas);
                         await recover.setUser(createdUser.id);
                     }
                 } else {
@@ -218,7 +218,7 @@ exports.secret = function (req, res) {
         if (user) {
             return res.status(200).send({user: user});
         } else
-            return res.status(401).json("You are not authorize");
+            return res.status(401).json({msg:"You are not authorize"});
     })(req, res);
 };
 
@@ -307,7 +307,7 @@ exports.me = function (req, res, next) {
         if (user) {
             return res.status(200).send(user);
         } else {
-            return res.status(403).json("You are not authorize");
+            return res.status(403).json({msg:"You are not authorize"});
         }
     })(req, res);
 };
@@ -324,7 +324,7 @@ exports.me = function (req, res, next) {
 exports.delete = function (req, res, next) {
     passport.authenticate('jwt', {session: false}, async (err, user, info) => {
         let msg = "";
-        if (user.RoleId === 2) {
+        if (user.RoleId === 1) {
              del = await models.User.destroy({
                 where: {
                     id: req.params.id
@@ -492,7 +492,7 @@ exports.getCollaborators = function (req, res) {
             return await res.status(200).json({employees : users, teams: teams})
         }
         else
-            return res.status(401).json("You are not authorize");
+            return res.status(401).json({msg:"You are not authorize"});
     })(req, res);
 };
 
@@ -549,7 +549,7 @@ exports.resetPassword =  function (req, res) {
             return await res.json({employees : users, teams: teams})
         }
         else {
-            return res.status(401).json("You are not authorize");
+            return res.status(401).json({msg:"You are not authorize"});
         }
     })(req, res);
 };

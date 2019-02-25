@@ -17,7 +17,7 @@ exports.getTeamList = async function (req, res) {
             return res.status(400).json(err);
         }
 
-        if (user && user.RoleId === 2) {
+        if (user && user.RoleId === 1) {
             let q = null;
             if (typeof req.query.q !== 'undefined') {
                 q = parseInt(req.query.q);
@@ -32,7 +32,7 @@ exports.getTeamList = async function (req, res) {
             } )
         }
         else
-            return res.status(403).json("You are not authorize");
+            return res.status(403).json({msg:"You are not authorize"});
     })(req, res);
 };
 
@@ -50,7 +50,7 @@ exports.postCreateTeams = async function (req, res) {
         }
 
         if (!user) {
-            return res.status(401).json("You are not authorize");
+            return res.status(401).json({msg:"You are not authorize"});
         }
 
         const u = await models.User.find({

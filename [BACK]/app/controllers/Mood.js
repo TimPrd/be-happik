@@ -53,7 +53,7 @@ exports.create = async function (req, res) {
                     return res.status(200).send(mood);
                 }
             } else {
-                return res.status(401).json("You are not authorize");
+                return res.status(401).json({msg:"You are not authorize"});
             }
         }
     )
