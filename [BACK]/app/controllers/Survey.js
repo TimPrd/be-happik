@@ -256,7 +256,7 @@ exports.getSurveysByUser = async function (req, res) {
 exports.getAllSurveys = async function (req, res) {
 
     if (typeof req.query.open === 'undefined' ||  typeof req.query.page === 'undefined') {
-        res.status(400).json("Please specify a state and page");
+        res.status(400).json("Please specify a state (open param) and page");
     }
 
     let limit = 9;   // number of records per page
@@ -272,7 +272,7 @@ exports.getAllSurveys = async function (req, res) {
         res.status(404).json("There is no surveys");
     }
 
-    const count = allSurveys.length;
+    const count = surveys.length;
     const pages = Math.ceil(count / limit);
     surveys = surveys.slice(0,limit)
 
