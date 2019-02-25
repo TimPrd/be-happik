@@ -341,11 +341,107 @@ exports.delete = function (req, res, next) {
 
 
 /**
- * @api {get} /collabors Get all user of a company or team and all teams.
+ * @api {get} /collaborators Get (all user of a company or team) and (all teams).
  * @apiName Get users and teams
  * @apiGroup User
  *
- * @apiSuccess (200) {Object} page the desired page with the survey
+ * @apiParam {String} team Specify which team you want ("All" to get all teams).
+ *
+ * @apiExample Example usage:
+ * http://localhost/api/collaborators?team=All
+ *
+ * @apiSuccess (200) {Object[]} employees All employees
+ * @apiSuccess (200) {Number} employees.id Id of the employee
+ * @apiSuccess (200) {String} employees.firstname Firstname of the employee
+ * @apiSuccess (200) {String} employees.lastname Lastname of the employee
+ * @apiSuccess (200) {String} employees.email Email of the employee
+ * @apiSuccess (200) {Date} employees.birthday Birthday of the employee
+ * @apiSuccess (200) {String} employees.avatar Avatar path of the employee
+ * @apiSuccess (200) {Object} employees.Team Team of the employee
+ * @apiSuccess (200) {Number} employees.Team.id Team id of the employee
+ * @apiSuccess (200) {String} employees.Team.teamName Team name of the employee
+ * @apiSuccess (200) {Number} employees.Team.UserId Team Manager Id of the employee
+ * @apiSuccess (200) {Object} employees.Role Role of the employee
+ * @apiSuccess (200) {Number} employees.Role.id Role id of the employee
+ * @apiSuccess (200) {String} employees.Role.roleName Role name of the employee
+ * @apiSuccess (200) {Object[]} teams All teams
+ * @apiSuccess (200) {Number} teams.id Id of the team
+ * @apiSuccess (200) {String} teams.teamName Name of the team
+ * @apiSuccessExample Success-Response:
+ *  HTTP/1.1 200 OK
+ *  {
+ *  "employees": [
+ *  {
+ *      "id": 15,
+ *      "firstName": "Tom",
+ *      "lastName": "Jedusor",
+ *      "email": "tom@jedusor.com",
+ *      "birthday": "21/12/1993",
+ *      "avatar": "/path/to/dir",
+ *      "Team": {
+ *          "id": 4,
+ *          "teamName": "Slytherin",
+ *          "UserId": 11
+ *      },
+ *      "Role": {
+ *          "id": 1,
+ *          "roleName": "Manager"
+ *       }
+ *  },
+ *  {
+ *      "id": 9,
+ *      "firstName": "Mimi",
+ *      "lastName": "Geignarde",
+ *      "email": "mimi@geignarde.com",
+ *      "birthday": "13/02/1987",
+ *      "avatar": "/path/to/dir",
+ *      "Team": {
+ *        "id": 3,
+ *        "teamName": "Ravenclaw",
+ *        "UserId": 8
+ *      },
+ *      "Role": {
+ *        "id": 1,
+ *        "roleName": "Manager"
+ *      }
+ *  },
+ * ],
+ * "teams": [
+ *  {
+ *    "id": 1,
+ *    "teamName": "Gryffindor"
+ *  },
+ *  {
+ *    "id": 2,
+ *    "teamName": "Hufflepuff"
+ *  },
+ * ]
+ * }
+ *
+ * @apiError (5XX) ServerError  Passport can't authentificate.
+ *
+ *  @apiError (4XX) WrongValue Team is not specified.
+ *  @apiError (4XX) TeamsNotFound There is no team matching the parameters.
+ *  @apiError (4XX) UserNotFound You are not Authorized.
+ *
+ *
+ *  @apiErrorExample ServerError:
+ *     HTTP/1.1 500 Error Server
+ *     {
+ *       "ServerError"
+ *     }
+ *
+ *  @apiErrorExample WrongValue:
+ *     HTTP/1.1 409 Conflict
+ *     {
+ *       "Please specify a team"
+ *     }
+ *
+ *  @apiErrorExample UserNotFound:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "You are not Authorized."
+ *     }
  */
 
 exports.getCollaborators = function (req, res) {
@@ -357,7 +453,7 @@ exports.getCollaborators = function (req, res) {
         if (user) {
 
             if (typeof req.query.team === 'undefined' || typeof req.query.team !== 'string' || typeof req.query.team == null) {
-                return res.status(409).json('Please specify a team');
+                return res.status(409).json('Please specify a team.');
             }
 
             const teamParams = req.query.team;
@@ -365,14 +461,18 @@ exports.getCollaborators = function (req, res) {
 
             if (teamParams === 'ALL') {
                 users = await models.User.findAll({
-                    attributes:['firstName', 'lastName', 'email', 'avatar', 'isRegistered']
+                    attributes:{exclude: ['updatedAt','createdAt','password','RoleId','TeamId']},
+                    include:[
+                        { model: models.Team, required: true, attributes:{exclude: ['updatedAt','createdAt',]}},
+                        { model: models.Role, required: true, attributes:{exclude: ['updatedAt','createdAt',]}},
+                    ]
                 })
             } else {
                 const team = await models.Team.find({
                     where: {
                         teamName: teamParams
                     }
-                })
+                });
 
                 if (!team) {
                     return res.status(404).json('There is no team for the name ' + teamParams);
