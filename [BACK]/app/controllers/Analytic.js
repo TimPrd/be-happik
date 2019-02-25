@@ -16,7 +16,7 @@ const Sequelize = require('sequelize');
 exports.moodPerWeek = async function (req, res) {
     passport.authenticate('jwt', {session: false}, async (err, user, info) => {
             //toString().split(' ')[0]; => get Mon, Tues, Wed
-            if (user && user.RoleId === 2) {
+            if (user && user.RoleId === 1) {
                 let endDate = new Date(req.body.date.split("-").join(","));
                 let startDate = new Date(req.body.date.split("-").join(","));
                 startDate.setDate(startDate.getDate() - 7);
@@ -62,7 +62,7 @@ exports.moodPerWeek = async function (req, res) {
                 }
                 return res.status(200).json(datas);
             } else {
-                return res.status(400).json("You are not authorize");
+                return res.status(400).json({msg:"You are not authorize"});
             }
         }
     )
@@ -78,7 +78,7 @@ exports.moodPerWeek = async function (req, res) {
  */
 exports.counts = async function (req, res) {
     passport.authenticate('jwt', {session: false}, async (err, user, info) => {
-            if (user && user.RoleId === 2) {
+            if (user && user.RoleId === 1) {
                 let teams = await models.Team.findAndCountAll({
                     where: {
                         UserId: user.id,
@@ -125,7 +125,7 @@ exports.counts = async function (req, res) {
                 };
                 return res.status(200).send(json);
             } else {
-                return res.status(400).json("You are not authorize");
+                return res.status(400).json({msg:"You are not authorize"});
             }
         }
     )
@@ -141,7 +141,7 @@ exports.counts = async function (req, res) {
  */
 exports.surveyResponse = async function (req, res) {
     passport.authenticate('jwt', {session: false}, async (err, user, info) => {
-            if (user && user.RoleId === 2) {
+            if (user && user.RoleId === 1) {
 
                 let surveys = await models.userSurvey.findAll({
                     where: {
@@ -153,7 +153,7 @@ exports.surveyResponse = async function (req, res) {
 
                 return res.status(200).send(surveys);
             } else {
-                return res.status(400).json("You are not authorize");
+                return res.status(400).json({msg:"You are not authorize"});
             }
         }
     )
@@ -178,7 +178,7 @@ exports.surveyResponse = async function (req, res) {
  */
 exports.surveyStatus = async function (req, res) {
     passport.authenticate('jwt', {session: false}, async (err, user, info) => {
-            if (user && user.RoleId === 2) {
+            if (user && user.RoleId === 1) {
 
                 let surveys = await models.Survey.findAll({
                     where: {
@@ -189,7 +189,7 @@ exports.surveyStatus = async function (req, res) {
                 });
                 return res.status(200).send(surveys);
             } else {
-                return res.status(400).json("You are not authorize");
+                return res.status(400).json({msg:"You are not authorize"});
             }
         }
     )

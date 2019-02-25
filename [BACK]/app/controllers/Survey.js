@@ -379,7 +379,7 @@ exports.getSurvey = function (req, res) {
 
             return await res.status(200).json(survey)
         } else
-            return res.status(401).json("You are not authorize");
+            return res.status(401).json({msg:"You are not authorize"});
     })(req, res);
 };
 
@@ -613,7 +613,7 @@ exports.postAnswers =  function (req, res) {
             return await res.status(200).json('Your answers have been created')
         }
         else
-            return res.status(401).json("You are not authorize");
+            return res.status(401).json({msg:"You are not authorize"});
     })(req, res);
 };
 
@@ -707,7 +707,7 @@ exports.putAnswers = function (req, res) {
 
             return await res.status(200).json('Your answers have been updated')
         } else
-            return res.status(401).json("You are not authorize");
+            return res.status(401).json({msg:"You are not authorize"});
     })(req, res);
 };
 

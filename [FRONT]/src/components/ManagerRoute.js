@@ -9,7 +9,7 @@ const ManagerRoute = ({ component: Component, ...rest }) => (
     {user => (
       <Route
         {...rest}
-        render={props => (user && user.RoleId === 2 ? (
+        render={props => (user && user.RoleId === 1 ? (
           <Component {...props} />
         ) : (
           <Redirect

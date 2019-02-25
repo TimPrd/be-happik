@@ -123,7 +123,7 @@ class CreateSurvey extends React.Component {
                 </Row>
               </Col>
 
-              {user.RoleId === 2 && (
+              {user.RoleId === 1 && (
                 <Col xs={6} sm={2}>
                   <Button label="Créer un sondate" handleClick={() => history.push('/survey/create')} type="submit" />
                 </Col>

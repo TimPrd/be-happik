@@ -59,7 +59,7 @@ app.io.on( "connection", function( socket )
 
 const routes = require('./routes/router');
 //TODO Remove line below
-app.use('/', routes);
+//app.use('/', routes);
 app.use(express.static(path.join(__dirname, '../public')));
 
 app.use('/api', routes);
