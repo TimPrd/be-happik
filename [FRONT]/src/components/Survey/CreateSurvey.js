@@ -170,7 +170,7 @@ class CreateSurvey extends React.Component {
               };
 
               try {
-                await client.post('/survey/validate', data);
+                await client.post('/api/survey/validate', data);
 
                 history.push('/');
               } catch (error) {

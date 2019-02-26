@@ -98,9 +98,12 @@ const LoginPage = ({ history }) => (
         validationSchema={SignupSchema}
         onSubmit={async (values, actions) => {
           try {
-            await axios.post(`${process.env.REACT_APP_API_URL}/user/register`, {
+            await axios.post(`/api/user/subscribe`, {
               email: values.email,
               password: values.password,
+              firstName: values.firstname,
+              lastName: values.lastname,
+              token: values.tempPassword
             });
 
             history.push('/');
