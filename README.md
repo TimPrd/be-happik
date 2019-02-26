@@ -1,5 +1,5 @@
 
-# Be-Happik [![Build Status](https://travis-ci.org/TimPrd/Be-Happik.svg?branch=master)](https://travis-ci.org/TimPrd/Be-Happik)
+# Be-Happik [![Build Status](https://travis-ci.org/TimPrd/Be-Happik.svg?branch=DEV)](https://travis-ci.org/TimPrd/Be-Happik)
 
 Project created for BeHappik.
 > Be Happik is a SAAS solution which offers to improve the wellbeing in company by proposing more commitment on the part of the collaborators
