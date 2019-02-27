@@ -93,10 +93,11 @@ exports.validate = async function(req, res) {
 					});
 					notif.setUser(user.id);
 					notif.setSender(author);
-					//var socket = req.app.get('usersSocket');
-					//socket[user.id /*user.id*/].emit('notification', 'A new survey is available ');
+					var socket = req.app.get('usersSocket');
+					socket[user.id /*user.id*/].emit('notification', 'A new survey is available ');
 
-					//var io = req.app.get('socketio');
+
+                    //var io = req.app.get('socketio');
 					//var sockets = req.app.get('usersSocket');
 					//sockets[1/*user.id*/]
 					//.emit('hi!', "important notification message");

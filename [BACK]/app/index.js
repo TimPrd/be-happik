@@ -43,11 +43,11 @@ app.io.on('connection', function(socket) {
 	socket.on('setUserId', function(userId) {
 		console.info('userid receive : ', userId);
 		users[userId] = socket;
-		app.set('usersSocket', users);
+        app.set('usersSocket', users);
 	});
 	socket.on('send', function(userId) {
 		//=> /survey/validate/
-		users[userId].emit('notification', 'important notification message for ' + userId);
+		//users[userId].emit('notification', 'important notification message for ' + userId);
 	});
 });
 
