@@ -6,7 +6,6 @@ import moment from 'moment';
 import PropTypes from 'prop-types';
 
 import client from '../../api';
-import { allUserSurvey } from './surveyMock';
 import Button from '../Buttons/Button';
 import { UserContext } from '../../contexts';
 
@@ -68,14 +67,14 @@ class CreateSurvey extends React.Component {
     const loggedUser = JSON.parse(localStorage.getItem('user'));
 
     try {
-      let surveys = await client.get(`/api/user/${loggedUser.user.id}/surveys/`, {
+      const result = await client.get(`/api/surveys/user/${loggedUser.user.id}`, {
         headers: {
           Authorization: `Bearer ${loggedUser.token}`,
           'Content-Type': 'application/json',
         },
       });
-
-      surveys = allUserSurvey;
+      const surveys = result.data;
+      console.log(surveys);
 
       return surveys;
     } catch (err) {
