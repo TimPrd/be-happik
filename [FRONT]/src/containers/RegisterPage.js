@@ -101,8 +101,13 @@ const LoginPage = ({ history }) => (
         validationSchema={SignupSchema}
         onSubmit={async (values, actions) => {
           try {
-            await client.post('/api/user/subscribe', values);
-
+            await axios.post(`/api/user/subscribe`, {
+              email: values.email,
+              password: values.password,
+              firstName: values.firstname,
+              lastName: values.lastname,
+              token: values.tempPassword
+            });
             history.push('/');
           } catch (error) {
             toast.error('error', {

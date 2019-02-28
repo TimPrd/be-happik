@@ -1,9 +1,9 @@
 const passport = require('passport');
 const Mailer = require('./Mailer');
 const models = require('../../models/');
-const {Op} = require('sequelize');
+const { Op } = require('sequelize');
 const _ = require('lodash');
-const {loggers} = require('winston');
+const { loggers } = require('winston');
 const logger = loggers.get('my-logger');
 /**
  * @api {post} /surveys/validate/ Save a new survey and notify users.
@@ -33,75 +33,81 @@ const logger = loggers.get('my-logger');
  */
 //todo : passport to check role & connexion (manager)
 //todo : docs
-exports.validate = async function (req, res) {
-    const author = req.body.author;
-    const teams = req.body.teams;
-    const questions = req.body.questions;
+exports.validate = async function(req, res) {
+	passport.authenticate('jwt', { session: false }, async (err, user, info) => {
+		const author = req.body.author;
+		const teams = req.body.teams;
+		const questions = req.body.questions;
 
-    if (req.body.author && req.body.surveyTitle) {
-        logger.debug(_.isEmpty(req.body.surveyTitle));
-        let survey = await models.Survey.create({
-            title: req.body.surveyTitle,
-            description: req.body.surveyDescription || '',
-            startDate: new Date(),
-            open: true,
-            endDate: req.body.endDate ? new Date(req.body.endDate.split("-").join(",")) : new Date(new Date().getTime() + (15 * 24 * 60 * 60 * 1000))
-        });
-        survey.setAuthor(author);
-        await questions.forEach(async question => {
-            let createdQuestion = await models.Question.create({
-                title: question.title,
-                description: question.description,
+		if (req.body.author && req.body.surveyTitle) {
+			let survey = await models.Survey.create({
+				title: req.body.surveyTitle,
+				description: req.body.surveyDescription || '',
+				startDate: new Date(),
+				open: true,
+				endDate: req.body.endDate
+					? new Date(req.body.endDate.split('-').join(','))
+					: new Date(new Date().getTime() + 15 * 24 * 60 * 60 * 1000)
             });
-            let questionSurvey = await models.Questionsurvey.create({
-                place: question.place
+            console.log(survey)
+			survey.setAuthor(author);
+			await questions.forEach(async (question) => {
+				let createdQuestion = await models.Question.create({
+					title: question.title,
+					description: question.description
+				});
+				let questionSurvey = await models.Questionsurvey.create({
+					place: question.place
+				});
+				await questionSurvey.setSurvey(survey.id);
+				await questionSurvey.setQuestion(createdQuestion.id);
+			});
+
+			const idTeams = await models.Team.findAll({
+				where: { id: teams }
             });
-            questionSurvey.setSurvey(survey.id);
-            questionSurvey.setQuestion(createdQuestion.id);
-        });
+            await console.log(idTeams)
+			await idTeams.forEach(async (idTeam) => {
+				logger.debug(idTeam.id);
+				let users = await models.User.findAll({ where: { TeamId: idTeam.id } });
+				users.forEach(async (user) => {
+					logger.debug(user.email);
+					const datas = {
+						name: user.firstName || user.email,
+						manager: user.firstName + ' ' + user.lastName,
+						id: survey.id,
+						url: 'http://happik.herokuapp.com/'
+					};
+					Mailer.send(user.email, 'd-0ea007d61f4a415a8dfc8ebc143e759e', datas);
+					//let usersurvey = await models.UserSurvey.create({
+					//generate id survey
+					//
+					//})
+					//usersurvey.setUser(user.id);
+					//
+					let notif = await models.Notification.create({
+						title: 'New Survey !',
+						survey: survey.title,
+						body: 'A new survey is available',
+						seen: false
+					});
+					notif.setUser(user.id);
+					notif.setSender(author);
+					//var socket = req.app.get('usersSocket');
+					//socket[user.id /*user.id*/].emit('notification', 'A new survey is available ');
 
-        const idTeams = await models.Team.findAll({
-            where: {id: teams}
-        });
-        idTeams.forEach(async idTeam => {
-            logger.debug(idTeam.id);
-            let users = await models.User.findAll({where: {TeamId: idTeam.id}});
-            users.forEach(async user => {
-                const datas = {
-                    email: user.email,
-                };
-                logger.debug(user.email);
-                //Mailer.send(user.email, 'd-0ea007d61f4a415a8dfc8ebc143e759e', datas);
-                //let usersurvey = await models.UserSurvey.create({
-                //generate id survey
-                //
-                //})
-                //usersurvey.setUser(user.id);
-                //
-                let notif = await models.Notification.create({
-                    title: "New Survey !",
-                    body: "A new survey is available",
-                    seen: false
-                });
-                notif.setUser(user.id);
-                notif.setSender(author);
-                var socket = req.app.get('usersSocket');
-                socket[user.id/*user.id*/].emit('notification', "important notification for U <3 ");
-
-                //var io = req.app.get('socketio');
-                //var sockets = req.app.get('usersSocket');
-                //sockets[1/*user.id*/]
-                //.emit('hi!', "important notification message");
-
-            });
-        });
-        res.status(204).json("Your survey have been created !");
-    } else {
-        res.status(409).json("Something went wrong with form data");
-    }
-}
-;
-
+					//var io = req.app.get('socketio');
+					//var sockets = req.app.get('usersSocket');
+					//sockets[1/*user.id*/]
+					//.emit('hi!', "important notification message");
+				});
+			});
+			res.status(204).json('Your survey have been created !');
+		} else {
+			res.status(409).json('Something went wrong with form data');
+		}
+	})(req, res);
+};
 
 /**
  * @api {get} /surveys/user/:idUser Get all the surveys that a user is related to.
@@ -162,23 +168,43 @@ exports.validate = async function (req, res) {
 //todo : add creator
 //todo : logs
 //todo : move to user ?
-exports.getSurveysByUser = async function (req, res) {
-    const userId = req.params.idUser;
-    if (!userId)
-        res.send("No user found").status(404);
-    let user = await models.User.findById(userId);
-    let surveys = await models.Teamsurvey.findAll({
-            where: {TeamId: user.TeamId}
-        }
-    ).then(async surveys => {
-        const ids = await surveys.map(s => s.SurveyId);
-        return await models.Survey.findAll({
-            where: {id: ids},
-        })
-    }).catch(error => {
-        res.send("An error occured, check logs").status(404);
-    });
-    res.send(surveys).status(200);
+exports.getSurveysByUser = async function(req, res) {
+	const userId = req.params.idUser;
+	if (!userId) res.send('No user found').status(404);
+	try {
+		let user = await models.User.findById(userId);
+		let surveysForTeam = await models.Teamsurvey.findAll({
+			where: { TeamId: user.TeamId }
+		});
+		const ids = await surveysForTeam.map((s) => s.SurveyId);
+		let surveys = await models.Survey.findAll({
+			where: { id: ids }
+		});
+		await surveys.forEach(async (survey) => {
+			console.log(survey.id);
+			let userSurvey = await models.userSurvey.findAll({
+				where: {
+					UserId: userId,
+					SurveyId: survey.id
+				},
+				include: [
+					{
+						model: models.Survey,
+						includes: [
+							{
+								model: models.User
+							}
+						]
+					}
+				]
+			});
+			console.log(userSurvey);
+			survey.isAnswered = await userSurvey.isAnswered;
+		});
+		res.send(surveys).status(200);
+	} catch (error) {
+		res.sendStatus(404);
+	}
 };
 
 /**
@@ -254,30 +280,29 @@ exports.getSurveysByUser = async function (req, res) {
  *         "There is no surveys"
  *     }
  */
-exports.getAllSurveys = async function (req, res) {
+exports.getAllSurveys = async function(req, res) {
+	if (typeof req.query.open === 'undefined' || typeof req.query.page === 'undefined') {
+		res.status(400).json('Please specify a state (open param) and page');
+	}
 
-    if (typeof req.query.open === 'undefined' ||  typeof req.query.page === 'undefined') {
-        res.status(400).json("Please specify a state (open param) and page");
-    }
+	let limit = 9; // number of records per page
+	let offset = limit * (req.query.page - 1);
+	let surveys = await models.Survey.findAll({
+		where: { open: req.query.open },
+		limit: limit,
+		offset: offset,
+		$sort: { id: 1 }
+	});
 
-    let limit = 9;   // number of records per page
-    let offset = limit * (req.query.page - 1);
-    let surveys = await models.Survey.findAll({
-        where: {open: req.query.open},
-        limit: limit,
-        offset: offset,
-        $sort: {id: 1}
-    });
+	if (surveys.length < 1) {
+		res.status(404).json('There is no surveys');
+	}
 
-    if (surveys.length < 1) {
-        res.status(404).json("There is no surveys");
-    }
+	const count = surveys.length;
+	const pages = Math.ceil(count / limit);
+	surveys = surveys.slice(0, limit);
 
-    const count = surveys.length;
-    const pages = Math.ceil(count / limit);
-    surveys = surveys.slice(0,limit)
-
-    res.status(200).json({'surveys': surveys, 'count': count, 'pages': pages});
+	res.status(200).json({ surveys: surveys, count: count, pages: pages });
 };
 
 /**
@@ -316,71 +341,66 @@ exports.getAllSurveys = async function (req, res) {
  * @apiError (401) UserNotFound You are not authorized
  */
 
-exports.getSurvey = function (req, res) {
-    passport.authenticate('jwt', {session: false}, async (err, user, info) => {
-        if (err) {
-            return res.status(500).json(err);
-        }
+exports.getSurvey = function(req, res) {
+	passport.authenticate('jwt', { session: false }, async (err, user, info) => {
+		if (err) {
+			return res.status(500).json(err);
+		}
 
-        if (user) {
-            const SurveyId = req.params.idSurvey;
+		if (user) {
+			const SurveyId = req.params.idSurvey;
+			const userSurvey = await models.userSurvey.find({
+				where: {
+					UserId: user.id,
+					SurveyId: SurveyId
+				},
+				include: [
+					{
+						model: models.Survey,
+						includes: [
+							{
+								model: models.User
+							}
+						]
+					}
+				]
+			});
 
-            const userSurvey = await models.userSurvey.find({
-                where: {
-                    UserId: user.id,
-                    SurveyId: SurveyId,
-                },
-                include:
-                    [
-                        {
-                            model: models.Survey,
-                            includes: [
-                                {
-                                    model: models.User
-                                }
-                            ]
+			if (!userSurvey) {
+				return res.status(400).json('There is not survey for this id');
+			}
 
-                        }
-                    ]
-            });
+			const Author = await models.User.find({
+				where: {
+					RoleId: 0,
+					id: userSurvey.Survey.AuthorId
+				},
+				attributes: [ 'firstName', 'lastName' ]
+			});
 
-            if (!userSurvey) {
-                return res.status(400).json('There is not survey for this id');
-            }
+			const questionsSurvey = await models.Questionsurvey.findAll({
+				where: {
+					SurveyId: userSurvey.SurveyId
+				},
+				include: [
+					{
+						model: models.Question
+					}
+				]
+			});
 
-            const Author = await models.User.find({
-                where: {
-                    RoleId: 0,
-                    id: userSurvey.Survey.AuthorId
-                },
-                attributes: ['firstName', 'lastName']
-            });
+			let surv = userSurvey.Survey;
 
-            const questionsSurvey = await models.Questionsurvey.findAll({
-                where: {
-                    SurveyId: userSurvey.SurveyId,
-                },
-                include: [
-                    {
-                        model: models.Question,
-                    },
-                ]
-            });
+			async function setSurv(survey, userSurvey, Author, questionsSurvey) {
+				survey.AuthorId = undefined;
+				return { survey: survey, author: Author, questions: questionsSurvey.map((q) => q.Question) };
+			}
 
-            let surv = userSurvey.Survey;
+			const survey = await setSurv(surv, userSurvey, Author, questionsSurvey);
 
-            async function setSurv(survey, userSurvey, Author, questionsSurvey) {
-
-                survey.AuthorId = undefined;
-                return {survey: survey, author: Author, questions: questionsSurvey.map(q => q.Question)};
-            }
-
-            const survey = await setSurv(surv, userSurvey, Author, questionsSurvey);
-
-            return await res.status(200).json(survey)
-        } else
-            return res.status(401).json({msg:"You are not authorize"});
-    })(req, res);
+			return await res.status(200).json(survey);
+		} else return res.status(401).json({ msg: 'You are not authorize' });
+	})(req, res);
 };
 
 /**
@@ -420,56 +440,53 @@ exports.getSurvey = function (req, res) {
  * @apiError (500) {Number} AuthenticateError Server can't authenticate you
  */
 
-exports.getSurveyWithAnswers = function (req, res) {
-    passport.authenticate('jwt', {session: false}, async (err, user, info) => {
-        if (err) {
-            return res.status(500).json(err);
-        }
+exports.getSurveyWithAnswers = function(req, res) {
+	passport.authenticate('jwt', { session: false }, async (err, user, info) => {
+		if (err) {
+			return res.status(500).json(err);
+		}
 
-        if (user) {
-            let q = null;
-            if (typeof req.query.q !== 'undefined') {
-                q = parseInt(req.query.q);
-            }
+		if (user) {
+			let q = null;
+			if (typeof req.query.q !== 'undefined') {
+				q = parseInt(req.query.q);
+			}
 
-            const SurveyId = req.params.idSurvey;
+			const SurveyId = req.params.idSurvey;
 
-            const userSurvey = await models.userSurvey.find({
-                where: {
-                    UserId: user.id,
-                    SurveyId: SurveyId,
-                },
-                include:
-                    [
-                        {
-                            model: models.Survey,
-                        }
-                    ]
-            });
+			const userSurvey = await models.userSurvey.find({
+				where: {
+					UserId: user.id,
+					SurveyId: SurveyId
+				},
+				include: [
+					{
+						model: models.Survey
+					}
+				]
+			});
 
-            if (!userSurvey) {
-                return res.status(400).json('There is not survey for this id');
-            }
+			if (!userSurvey) {
+				return res.status(400).json('There is not survey for this id');
+			}
 
-            const answer = await models.answer.findAll({
-                where: {
-                    UserId: userSurvey.UserId,
-                    SurveyId: userSurvey.SurveyId,
-                },
-                include:
-                    [
-                        {
-                            model: models.Question,
-                        },
-                    ],
-            });
+			const answer = await models.answer.findAll({
+				where: {
+					UserId: userSurvey.UserId,
+					SurveyId: userSurvey.SurveyId
+				},
+				include: [
+					{
+						model: models.Question
+					}
+				]
+			});
 
-            let surv = userSurvey.Survey;
+			let surv = userSurvey.Survey;
 
-            return await res.status(200).json({survey: surv, answers: answer})
-        } else
-            return res.sendStatus(401);
-    })(req, res);
+			return await res.status(200).json({ survey: surv, answers: answer });
+		} else return res.sendStatus(401);
+	})(req, res);
 };
 
 /**
@@ -502,119 +519,118 @@ exports.getSurveyWithAnswers = function (req, res) {
  * @apiError (500) {String} AuthenticationError Server can't authenticate you
  */
 
-exports.postAnswers =  function (req, res) {
-    passport.authenticate('jwt', {session: false}, async (err, user, info) => {
-        if (err) {
-            return res.send(500).send(err);
-        }
+exports.postAnswers = function(req, res) {
+	passport.authenticate('jwt', { session: false }, async (err, user, info) => {
+		if (err) {
+			return res.send(500).send(err);
+		}
 
-        if (user) {
-            const SurveyId = req.params.idSurvey;
+		if (user) {
+			const SurveyId = req.params.idSurvey;
 
-            const userSurvey = await models.userSurvey.find({
-                where:{
-                    UserId:user.id,
-                    SurveyId:SurveyId,
-                },
-                include:
-                    [
-                        {
-                            model: models.Survey,
-                            where: {
-                                open: true
-                            }
-                        }
-                    ]
-            });
+			const userSurvey = await models.userSurvey.find({
+				where: {
+					UserId: user.id,
+					SurveyId: SurveyId
+				},
+				include: [
+					{
+						model: models.Survey,
+						where: {
+							open: true
+						}
+					}
+				]
+			});
 
-            if (!userSurvey) {
-                return res.status(400).json('There is not survey for this id or this survey cannot be updated');
-            }
+			if (!userSurvey) {
+				return res.status(400).json('There is not survey for this id or this survey cannot be updated');
+			}
 
-            if (Array.isArray(req.body.answers) === false) {
-                return res.status(400).json('Answers format is not good.');
-            } else if (typeof req.body.answers[0] === "undefined") {
-                return res.status(400).json('You must add answers. ');
-            }
+			if (Array.isArray(req.body.answers) === false) {
+				return res.status(400).json('Answers format is not good.');
+			} else if (typeof req.body.answers[0] === 'undefined') {
+				return res.status(400).json('You must add answers. ');
+			}
 
-            let answersBody = req.body.answers;
-            const answerIds = answersBody.map(answer => answer.id);
+			let answersBody = req.body.answers;
+			const answerIds = answersBody.map((answer) => answer.id);
 
-            const answers = await models.answer.findAll({
-                where:{
-                    UserId:userSurvey.UserId,
-                    SurveyId:userSurvey.SurveyId,
-                },
-            });
+			const answers = await models.answer.findAll({
+				where: {
+					UserId: userSurvey.UserId,
+					SurveyId: userSurvey.SurveyId
+				}
+			});
 
-            if (answers.length > 0) {
-                return res.status(409).json('You already answer this survey')
-            }
+			if (answers.length > 0) {
+				return res.status(409).json('You already answer this survey');
+			}
 
-            const body = req.body;
+			const body = req.body;
 
-            const questions  = body.map(body => body.questionId);
+			const questions = body.map((body) => body.questionId);
 
-            const dd = await models.Questionsurvey.findAll({
-                where: {
-                    SurveyId: SurveyId
-                }
-            });
+			const dd = await models.Questionsurvey.findAll({
+				where: {
+					SurveyId: SurveyId
+				}
+			});
 
-            if (dd.length !== questions.length) {
-                return res.status(400).json('Questions id or surveys id is not good')
-            }
+			if (dd.length !== questions.length) {
+				return res.status(400).json('Questions id or surveys id is not good');
+			}
 
-            const jj = dd.map(d => d.QuestionId).sort();
+			const jj = dd.map((d) => d.QuestionId).sort();
 
-            for (i = 0; i < jj.length; i++) {
-                if (jj[i] !== questions[i]) {
-                    return res.status(400).json('Questions id or surveys id is not good')
-                }
-            }
+			for (i = 0; i < jj.length; i++) {
+				if (jj[i] !== questions[i]) {
+					return res.status(400).json('Questions id or surveys id is not good');
+				}
+			}
 
-            answersBody = req.body;
+			answersBody = req.body;
 
-            const results = answersBody
-                .filter(ans => typeof (ans.result) === 'number' )
-                .filter(ans => (0 <= ans.result &&  ans.result <= 100));
+			const results = answersBody
+				.filter((ans) => typeof ans.result === 'number')
+				.filter((ans) => 0 <= ans.result && ans.result <= 100);
 
-            if (results.length < 1 ) {
-                return res.status(400).json('Result should be a number between 0 and 100')
-            }
+			if (results.length < 1) {
+				return res.status(400).json('Result should be a number between 0 and 100');
+			}
 
-            results.forEach(async result => {
-                const answers = await models.answer.create({
-                    result: result.result
-                });
-                answers.setSurvey(userSurvey.SurveyId);
-                answers.setUser(userSurvey.UserId);
-                answers.setQuestion(result.questionId);
-                answers.save();
-            });
+			results.forEach(async (result) => {
+				const answers = await models.answer.create({
+					result: result.result
+				});
+				answers.setSurvey(userSurvey.SurveyId);
+				answers.setUser(userSurvey.UserId);
+				answers.setQuestion(result.questionId);
+				answers.save();
+			});
 
-            // Todo Make socket works
-            const notifications = await models.Notification.create({
-                title: "New Answers !",
-                body: "A survey have been answered",
-                seen: false
-            }).then(notif => {
-                notif.setUser(userSurvey.Survey.AuthorId);
-                notif.setSender(user.id);
-            });
-            //var io = req.app.get('socketio');
-            //var sockets = req.app.get('usersSocket');
-            //sockets[1/*user.id*/]
-            //.emit('hi!', "important notification message");
+			// Todo Make socket works
+			const notifications = await models.Notification
+				.create({
+					title: 'New Answers !',
+					body: 'A survey have been answered',
+					seen: false
+				})
+				.then((notif) => {
+					notif.setUser(userSurvey.Survey.AuthorId);
+					notif.setSender(user.id);
+				});
+			//var io = req.app.get('socketio');
+			//var sockets = req.app.get('usersSocket');
+			//sockets[1/*user.id*/]
+			//.emit('hi!', "important notification message");
 
-            userSurvey.update({
-                isAnswered: true
-            });
-            return await res.status(200).json('Your answers have been created')
-        }
-        else
-            return res.status(401).json({msg:"You are not authorize"});
-    })(req, res);
+			userSurvey.update({
+				isAnswered: true
+			});
+			return await res.status(200).json('Your answers have been created');
+		} else return res.status(401).json({ msg: 'You are not authorize' });
+	})(req, res);
 };
 
 /**
@@ -643,71 +659,67 @@ exports.postAnswers =  function (req, res) {
 
  */
 
-exports.putAnswers = function (req, res) {
-    passport.authenticate('jwt', {session: false}, async (err, user, info) => {
-        if (err) {
-            return res.status(500).json(err);
-        }
+exports.putAnswers = function(req, res) {
+	passport.authenticate('jwt', { session: false }, async (err, user, info) => {
+		if (err) {
+			return res.status(500).json(err);
+		}
 
-        if (user) {
-            const SurveyId = req.params.idSurvey;
+		if (user) {
+			const SurveyId = req.params.idSurvey;
 
-            const userSurvey = await models.userSurvey.find({
-                where: {
-                    UserId: user.id,
-                    SurveyId: SurveyId,
-                },
-                include:
-                    [
-                        {
-                            model: models.Survey,
-                            where: {
-                                open: true
-                            }
-                        }
-                    ]
-            });
+			const userSurvey = await models.userSurvey.find({
+				where: {
+					UserId: user.id,
+					SurveyId: SurveyId
+				},
+				include: [
+					{
+						model: models.Survey,
+						where: {
+							open: true
+						}
+					}
+				]
+			});
 
-            if (!userSurvey) {
-                return res.status(400).json('There is not survey for this id or this survey cannot be updated');
-            }
+			if (!userSurvey) {
+				return res.status(400).json('There is not survey for this id or this survey cannot be updated');
+			}
 
-            const answersBody = req.body.answers;
-            const answerIds = answersBody.map(answer => answer.id);
+			const answersBody = req.body.answers;
+			const answerIds = answersBody.map((answer) => answer.id);
 
-            const answers = await models.answer.findAll({
-                where: {
-                    UserId: userSurvey.UserId,
-                    id: answerIds,
-                    SurveyId: userSurvey.SurveyId,
-                },
-            });
+			const answers = await models.answer.findAll({
+				where: {
+					UserId: userSurvey.UserId,
+					id: answerIds,
+					SurveyId: userSurvey.SurveyId
+				}
+			});
 
-            if (!answers) {
-                return res.status(400).json("There is no answer with these id")
-            }
+			if (!answers) {
+				return res.status(400).json('There is no answer with these id');
+			}
 
-            const results = answersBody
-                .filter(ans => typeof (ans.result) === 'number')
-                .filter(ans => (0 <= ans.result && ans.result <= 100))
-                .filter(ans => (answers
-                    .map(a => a.id)
-                    .includes(ans.id))
-                );
+			const results = answersBody
+				.filter((ans) => typeof ans.result === 'number')
+				.filter((ans) => 0 <= ans.result && ans.result <= 100)
+				.filter((ans) => answers.map((a) => a.id).includes(ans.id));
 
-            if (results.length < 1 ) {
-                return res.status(400).json('Result should be a number between 0 and 100 and ids must match the survey answers')
-            }
+			if (results.length < 1) {
+				return res
+					.status(400)
+					.json('Result should be a number between 0 and 100 and ids must match the survey answers');
+			}
 
-            results.forEach(async result => {
-                await answers.forEach(async ans => {
-                    await ans.update({result: result.result, where: {id: result.id}})
-                })
-            });
+			results.forEach(async (result) => {
+				await answers.forEach(async (ans) => {
+					await ans.update({ result: result.result, where: { id: result.id } });
+				});
+			});
 
-            return await res.status(200).json('Your answers have been updated')
-        } else
-            return res.status(401).json({msg:"You are not authorize"});
-    })(req, res);
+			return await res.status(200).json('Your answers have been updated');
+		} else return res.status(401).json({ msg: 'You are not authorize' });
+	})(req, res);
 };
-

@@ -25,12 +25,11 @@ class Initiator extends React.Component {
         },
       });
 
-      /*const socket = await io.connect('http://localhost:4000/'); // TIP: io() with no args does auto-discovery
+      /*const socket = await io.connect('htt://happik.herokuapp.com/'); // TIP: io() with no args does auto-discovery
       await socket.on('welcome', () => {
         console.log('We are connected');
         socket.emit('setUserId', loggedUser.id);
         socket.emit('send', loggedUser.id);
-
         socket.on('notification', msg => console.log(msg));
       });*/
       // setInterval(async function(){ await client.post('/api/survey/validate',{}); }, 3000);

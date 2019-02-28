@@ -35,7 +35,6 @@ exports.register = async function (req, res) {
         if (newUsers.length) {
             newUsers.forEach(async newUser => {
                 const token = require('crypto').randomBytes(10).toString('hex');
-                console.log("token : ", token);
                 if (user.RoleId == 1) {
                     let userInDb = await models.User.find({
                         where: {email: newUser.email, isRegistered: false}
@@ -57,7 +56,8 @@ exports.register = async function (req, res) {
                             email: newUser.email,
                             team: userTeam.dataValues.teamName,
                             token: token,
-                            url: "http://happik.herokuapp.com",
+                            manager: user.firstName + " " + user.lastName,
+                            url: "http://happik.herokuapp.com/register",
                         };
                         Mailer.send(newUser.email, 'd-b515ade08268435c95794b613d845294', datas);
                         await recover.setUser(createdUser.id);
@@ -146,11 +146,10 @@ exports.reset = async function (req, res) {
                     destroyable: false,
                 }).then(recovery => {
                     const datas = {
-                        email: email,
+                        name: user.firstName || user.email,
                         token: token,
-                        url: "www.behappik.com",
                     };
-                    Mailer.send(email, 'd-3ddc12cac0664916b99d3a2af772d9f1', datas);
+                    Mailer.send(user.email, 'd-de6946ef2e3748f0ac27878caa95d74a', datas);
                     recovery.setUser(user.id);
                     res.sendStatus(204);
                 });
@@ -266,7 +265,6 @@ exports.subscribe = async function (req, res, next) {
                     return res.json(checkPassword);
                 } else {
                     const hash = bcrypt.hashSync(password);
-                    console.log(hash);
                     await models.User.update(
                         {
                             password: hash,
@@ -276,8 +274,13 @@ exports.subscribe = async function (req, res, next) {
                         {
                             where: {email: email}
                         });
+                    const datas = {
+                        name: firstName,
+                        url: "http://happik.herokuapp.com/login",
+                    };
+                    Mailer.send(email, 'd-3ddc12cac0664916b99d3a2af772d9f1', datas);
                     recover.update({destroyable: true});
-                    return res.status(200).json(password);
+                    return res.status(200).json("Password updated");
                 }
             }).catch((err, req, res, next) => {
                 console.log(err);
