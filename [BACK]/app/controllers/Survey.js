@@ -79,12 +79,13 @@ exports.validate = async function (req, res) {
                         url: 'http://happik.herokuapp.com/'
                     };
                     Mailer.send(user.email, 'd-0ea007d61f4a415a8dfc8ebc143e759e', datas);
-                    //let usersurvey = await models.UserSurvey.create({
-                    //generate id survey
-                    //
-                    //})
-                    //usersurvey.setUser(user.id);
-                    //
+                    let usersurvey = await models.UserSurvey.create({
+                        isAnswered: false,
+                        UserId: user.id,
+                        SurveyId: survey.id
+
+                    })
+
                     let notif = await models.Notification.create({
                         title: 'New Survey !',
                         survey: survey.title,
@@ -217,7 +218,7 @@ exports.getSurveysByUser = async function (req, res) {
  * @apiParam {String} status Query param to indicate the desired state done/expired/waiting.
  *
  * @apiExample Example usage:
- * http://localhost/surveys?page=1&status=waiting
+ * http://localhost/surveys?page=1
  *
  * @apiSuccess (200) {Object[]} surveys All the survey
  * @apiSuccess (200) {Number} surveys.id id of the survey
@@ -274,17 +275,12 @@ exports.getSurveysByUser = async function (req, res) {
  *     }
  *
  * @apiError {String} SurveyNotFound There is no surveys
- * @apiError {String} WrongParams Please specify a state and page
- * @apiErrorExample {json} Error-Response:
- *     HTTP/1.1 404 Not Found
- *     {
- *         "There is no surveys"
- *     }
+ * @apiError {String} WrongParams Please specify a page in your query
  */
 exports.getAllSurveys = async function (req, res) {
     passport.authenticate('jwt', {session: false}, async (err, user, info) => {
         if (typeof req.query.page === 'undefined') {
-            res.status(400).json('Please specify a status and page in your query');
+            res.status(400).json('Please specify a page in your query');
         }
         let limit = 9; // number of records per page
         let offset = limit * (req.query.page - 1);
