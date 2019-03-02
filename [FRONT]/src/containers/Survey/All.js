@@ -8,13 +8,7 @@ import AllSurveys from '../../components/Survey/AllSurveys';
 const CreateSurveyPage = () => (
   <Layout>
     <Grid fluid>
-      <Row>
-        <Col xs={12}>
-          <Grid>
-            <AllSurveys />
-          </Grid>
-        </Col>
-      </Row>
+      <AllSurveys />
     </Grid>
   </Layout>
 );

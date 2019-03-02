@@ -12,8 +12,10 @@ import { UserContext } from '../../contexts';
 
 const Items = styled(Link)`
   width: 100%;
-  height: ${props => props.theme.height.xlHeight}px;
+  min-height: ${props => props.theme.height.xlHeight}px;
   display: flex;
+  flex-wrap:wrap;
+  justify-content: center;
   align-items: center;
   border-bottom: 3px solid #f1f1f3;
   font-size: ${props => props.theme.custom.bigtext}px;
@@ -22,6 +24,7 @@ const Items = styled(Link)`
   color: #4d4d4d;
 
   text-decoration: none;
+  padding: 10px 0;
 
   &:hover h3 {
     font-weight: 600;
@@ -39,7 +42,7 @@ const Title = styled.h3`
 `;
 
 const Status = styled.div`
-  width: 100%;
+  width: 70px;
   height: ${props => props.theme.height.xsHeight}px;
   display: flex;
   align-items: center;
@@ -74,9 +77,9 @@ class CreateSurvey extends React.Component {
           'Content-Type': 'application/json',
         },
       });
-     
-    return surveys
-      
+
+      return surveys
+
     } catch (err) {
       return null;
     }
@@ -84,7 +87,7 @@ class CreateSurvey extends React.Component {
 
   componentDidMount = async () => {
     const surveys = await this.fetchSurvey();
-   
+
 
     this.setState({ surveys });
   };
@@ -132,40 +135,43 @@ class CreateSurvey extends React.Component {
             </Row>
 
             {surveys && surveys.data['surveys'].map((survey, index) => (
-        
+
               <Row key={index.toString()}>
-                <Col xs={12}>
-                  <Items to={`/survey/reply/${survey.id}`}>
-                    <Col sm={6}>
-                      <Title>{survey.title}</Title>
-                    </Col>
-                    <Col sm={1}>
-                      <Status className={this.getStatus(survey, 'class')}>
-                        {this.getStatus(survey, 'noClass')}
+                <Items to={`/survey/reply/${survey.id}`}>
+                  <Col xs={10} sm={10} md={6}>
+                    <Title>{survey.title}</Title>
+
+                  </Col>
+                  <Col xs={2} sm={2} md={2}>
+                    <Status className={this.getStatus(survey, 'class')}>
+                      {this.getStatus(survey, 'noClass')}
                       </Status>
-                    </Col>
-                    <Col sm={2}>
-                      <p>
-                        Auteur :&nbsp;
+                  </Col>
+                  <Col xs={12} sm={4} md={2}>
+                    <p>
+                      Auteur :&nbsp;
                         {survey.author}
-                      </p>
-                    </Col>
-                    <Col sm={3}>
-                      <Col sm={12}>
+                    </p>
+                  </Col>
+                  <Col xs={12} sm={8} md={2}>
+                    <Row>
+                      <Col xs={12} sm={6} md={12}>
                         Création : &nbsp;
                         {moment(survey.createdAt).format('D MMMM YYYY')}
                       </Col>
-                      <Col sm={12}>
+                      <Col xs={12} sm={6} md={12}>
                         Expire : &nbsp;
                         {moment(survey.endDate).format('D MMMM YYYY')}
                       </Col>
-                    </Col>
-                  </Items>
-                </Col>
+                    </Row>
+                  </Col>
+                </Items>
               </Row>
+
             ))}
           </div>
         )}
+
       </UserContext.Consumer>
     );
   }

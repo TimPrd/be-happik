@@ -26,7 +26,6 @@ const Header = styled.div`
 
 const Aside = styled.div`
   width: 250px;
-  height: 100vh;
   z-index: 1;
   position: absolute;
 `;
