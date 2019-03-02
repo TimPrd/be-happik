@@ -6,15 +6,7 @@ import ReplySurvey from '../../components/Survey/ReplySurvey';
 
 const ReplySurveyPage = () => (
   <Layout>
-    <Grid fluid>
-      <Row>
-        <Col xs={12}>
-          <Grid>
-            <ReplySurvey />
-          </Grid>
-        </Col>
-      </Row>
-    </Grid>
+    <ReplySurvey />
   </Layout>
 );
 

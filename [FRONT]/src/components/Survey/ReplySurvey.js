@@ -14,7 +14,7 @@ import client from '../../api';
 import Button from '../Buttons/Button';
 
 const AnswerContainer = styled.div`
-  height: 110px;
+  min-height: 110px;
   box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.04);
   text-align: left;
   padding:
@@ -29,10 +29,11 @@ const SurveyTitle = styled.h1`
   line-height: 1.25;
   text-align: center;
   margin: 0;
+  
 `;
 
 const QuestionTitle = styled.p`
-  margin: 0;
+  margin: 0 0 10px;
   font-size: ${props => props.theme.custom.mediumtext}px;
   font-weight: 600;
   line-height: 1.79;
@@ -41,8 +42,7 @@ const QuestionTitle = styled.p`
 `;
 
 const ChoiceContainer = styled.div`
-  width: 80px;
-  height: 60px;
+
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -210,7 +210,7 @@ class ReplySurvey extends React.Component {
                                     && values.questions[index].mood === mood.mood;
 
                                   return (
-                                    <Col md={2} key={newIndex.toString()}>
+                                    <Col xs={2} key={newIndex.toString()}>
                                       <ChoiceContainer>
                                         <input
                                           name={`question.${newIndex}`}
