@@ -111,9 +111,10 @@ class ReplySurvey extends React.Component {
       });
 
       // fake mock for survey;
-      survey = surveyMock;
-
-      return survey;
+      //survey = surveyMock;
+      console.log(survey);
+    return survey;
+     // return survey;
     } catch (err) {
       return null;
     }
@@ -139,7 +140,13 @@ class ReplySurvey extends React.Component {
                 const answers = values.questions;
 
                 try {
-                  await client.post('/api/survey/:idSurvey/answers/', answers);
+                  const { match } = this.props;
+                 // const loggedUser = JSON.parse(localStorage.getItem('user'));
+                  const surveyId = match.params.id || null;
+
+                  //Tentative correction Url surveyreply
+
+                  await client.post(`/api/survey/${surveyId}/answers/`, answers);
 
                   toast.success('Réponse soumise avec succes', {
                     position: toast.POSITION.TOP_RIGHT,
@@ -160,7 +167,7 @@ class ReplySurvey extends React.Component {
                     <Col md={6}>
                       <Row>
                         <Col xs={12}>
-                          <SurveyTitle>{survey.survey.title}</SurveyTitle>
+                          <SurveyTitle>{survey.data['survey'].title}</SurveyTitle>
                         </Col>
 
                         <Col xs={6}>
@@ -172,7 +179,7 @@ class ReplySurvey extends React.Component {
                         <Col xs={6}>
                           <p>
                             Date d’expiration :&nbsp;
-                            {moment(survey.survey.endDate).format('D MMMM YYYY')}
+                            {moment(survey.data['survey'].endDate).format('D MMMM YYYY')}
                           </p>
                         </Col>
                       </Row>
@@ -187,7 +194,7 @@ class ReplySurvey extends React.Component {
                     render={arrayHelpers => (
                       <Row>
                         <Col xs={12}>
-                          {survey.questions.map((question, index) => (
+                          {survey.data['questions'].map((question, index) => (
                             <AnswerContainer key={index.toString()}>
                               <Row start="xs">
                                 <Col md={6}>
