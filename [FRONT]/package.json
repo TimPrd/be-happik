@@ -6,21 +6,27 @@
     "axios": "^0.18.0",
     "chart.js": "^2.7.3",
     "formik": "^1.4.2",
+    "moment": "^2.24.0",
     "prop-types": "^15.6.2",
     "react": "^16.6.3",
     "react-dom": "^16.6.3",
     "react-flexbox-grid": "^2.1.2",
+    "react-modal": "^3.8.1",
     "react-router-dom": "^4.3.1",
-    "react-scripts": "^2.1.3",
+    "react-scripts": "^2.1.5",
+    "react-select": "^2.3.0",
+    "react-toastify": "^4.5.2",
     "socket.io-client": "^2.2.0",
     "styled-components": "^4.1.3",
     "yup": "^0.26.6"
   },
   "scripts": {
-    "start": "REACT_APP_API_URL=http://localhost:3000 react-scripts start",
+    "start": "REACT_APP_API_URL=http://localhost:4000 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "lint": "./node_modules/.bin/eslint . --ignore-path .gitignore",
+    "eject": "react-scripts eject",
+    "postbuild": "rm -rf ../[BACK]/public/ && cp -R ./build/ ../[BACK]/public/"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -32,7 +38,7 @@
     "not op_mini all"
   ],
   "devDependencies": {
-    "eslint": "^5.5.0",
+    "eslint": "5.12.0",
     "eslint-config-airbnb": "^17.1.0",
     "eslint-plugin-jsx-a11y": "^6.1.2",
     "eslint-plugin-react": "^7.11.1",

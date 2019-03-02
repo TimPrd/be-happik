@@ -1,2 +1,2 @@
 FROM postgres:9.6
-
+#RUN make && make db-install

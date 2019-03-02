@@ -16,24 +16,37 @@ var appDir = path.dirname(require.main.filename);
 
 /********************************************
  *             ROADS : Users                *
+ *             Many Instances               *
  ********************************************/
 
-router.post("/user/subscribe", controller.User.subscribe);
 
 router.get("/users", async function (req, res, next) {
     const users = await models.User.findAll({});
+    res.send(users[0].dataValues);
 });
 
-router.post("/user/register", controller.User.register);
-router.post("/user/reset/", controller.User.reset);
-router.post("/user/recover/", controller.User.recover);
-router.get("/user/:id/surveys", controller.Survey.getSurveyByUser);
+router
+    .get("/user/secret", controller.User.secret)
+    .post("/user/register", controller.User.register)
+    .post("/user/reset", controller.User.reset)
+    .post("/user/recover", controller.User.recover);
 
-router.post("/user/register", controller.User.register);
-router.post("/user/reset/", controller.User.reset);
-router.post("/user/recover/", controller.User.recover);
+
 router.get("/question/predefined/", controller.Question.getPredefined);
-router.get("/team/list/", controller.Team.getTeamList);
+
+
+/********************************************
+ *             ROADS : User                 *
+ *             One Instance                 *
+ ********************************************/
+router
+    .get("/user/me", controller.User.me)
+    .post("/user/register", controller.User.register)
+    .post("/user/reset", controller.User.reset)
+    .post("/user/recover", controller.User.recover)
+    .post("/user/subscribe", controller.User.subscribe)
+    .delete("/user/:id", controller.User.delete)
+    .get("/collaborators", controller.User.getCollaborators);
 
 
 /********************************************
@@ -41,15 +54,46 @@ router.get("/team/list/", controller.Team.getTeamList);
  ********************************************/
 
 router.post("/login", controller.User.login);
-router.get("/user/:id/me", controller.User.me)
+//TODO Create me route (replace login)
+//router.get("/user/:id", controller.User.login)
 
 
 /********************************************
  *             ROADS : Survey               *
  ********************************************/
-router.post("/survey/validate", controller.Survey.validate);
-router.get("/surveys", controller.Survey.getAll);
+router
+    .get("/surveys", controller.Survey.getAllSurveys)
+    .get("/surveys/user/:idUser", controller.Survey.getSurveysByUser)
+    .get("/survey/:idSurvey/answers", controller.Survey.getSurveyWithAnswers)
+    .get("/survey/:idSurvey", controller.Survey.getSurvey)
+    .post("/survey/:idSurvey/answers", controller.Survey.postAnswers)
+    .post("/survey/validate", controller.Survey.validate)
+    .put("/survey/:idSurvey/answers", controller.Survey.putAnswers);
 
+/********************************************
+ *              ROADS : Mood                *
+ ********************************************/
+router
+//.get('/user/:id/moods')
+//.get('/users/moods')
+    .post('/user/:id/mood', controller.Mood.create);
+
+/********************************************
+ *             ROADS : Teams                *
+ ********************************************/
+
+router
+    .get("/team/list", controller.Team.getTeamList)
+    .post("/team", controller.Team.postCreateTeams);
+
+/********************************************
+ *             ROADS : Stats                *
+ ********************************************/
+router
+    .get('/analytic/mood', controller.Analytic.moodPerWeek)
+    .get('/analytic/count', controller.Analytic.counts)
+    .get('/analytic/survey/response', controller.Analytic.surveyResponse)
+    .get('/analytic/survey/status', controller.Analytic.surveyStatus);
 
 module.exports = router;
 

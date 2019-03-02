@@ -1,0 +1,10 @@
+#build:
+#  docker:
+#    web: Dockerfile
+#    postgres: Dockerfile
+
+build:
+  languages:
+    - node
+run:
+  web: npm i && npm run build && npm run prod:install

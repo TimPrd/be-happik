@@ -12,9 +12,15 @@ const Container = styled.div`
   z-index: 0;
 `;
 
+const Items = styled.div`
+  margin-left:auto;
+  margin-right:0;
+`;
+
 const NavBar = () => (
   <Container>
     hello world
+    <Items />
   </Container>
 );
 

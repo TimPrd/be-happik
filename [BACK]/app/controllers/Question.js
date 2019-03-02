@@ -5,7 +5,7 @@ const models = require('../../models/');
  * @apiName Predefined questions
  * @apiGroup Questions
  *
- * @apiParam {String} q number of questions to fetch.
+ * @apiParam {Number} q number of questions to fetch.
  *
  * @apiSuccess (200) {String} predefined questions fetched
  */
@@ -15,13 +15,14 @@ exports.getPredefined = function (req, res) {
     if (typeof req.query.q !== 'undefined') {
         q = parseInt(req.query.q);
     }
+
     models.Question.findAll({
-        where:{
-            predefined:true
+        where: {
+            predefined: true
         },
-        limit:q,
+        limit: q,
     }).then(data => {
         const questions = data.map(question => question.title);
-        res.send(questions).status(200);
-    } )
+        res.status(200).json(questions);
+    })
 }

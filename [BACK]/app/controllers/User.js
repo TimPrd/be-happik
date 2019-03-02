@@ -4,6 +4,8 @@ const models = require('../../models/');
 const Utils = require('./Utils');
 const bcrypt = require('bcrypt-nodejs');
 const Mailer = require('./Mailer');
+const {loggers} = require('winston')
+const logger = loggers.get('my-logger')
 
 
 /**
@@ -11,62 +13,66 @@ const Mailer = require('./Mailer');
  * @apiName Register User
  * @apiGroup User
  *
- * @apiParam {String[]} email users email.
+ * @apiParam {Object[]} newUser users email and team id.
  * @apiParam {String} team the team that user will join.
  * @apiParam {Number} currentUserId ID of the current user who register.
  */
 exports.register = async function (req, res) {
-    const rawEmails = req.body.email;
-    const rawteam = req.body.team;
-    const currentUser = req.body.currentUserId;
+    passport.authenticate('jwt', {session: false}, async (err, user, info) => {
+        if (err) {
+            return res.status(520).json({err: err});
+        }
 
-    const sortedEmail = [...new Set(rawEmails.filter(x => /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(x)))];
-    let users = [];
-    let team = await models.Team.findOne({where: {teamName: rawteam}});
+        //remove non valid email
+        let newUsers = req.body.filter(x => /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(x.email));
+        //remove duplicates
+        newUsers = newUsers.filter((user, index, self) =>
+            index === self.findIndex((u) => (
+                u.email === user.email
+            ))
+        );
 
-    sortedEmail.forEach(async function (mail) {
-        const token = require('crypto').randomBytes(10).toString('hex');
-        console.log("token : ", token)
-        models.User.findOne({
-            where: {id: currentUser, RoleId: 0}
-        }).then(async currentUsr => {
-            if (currentUsr) {
-                console.log("current : ", currentUsr)
-                await models.User.find({
-                    where: {email: mail, isRegistered: false}
-                }).then(async user => {
-                    if (!user) {
-                        console.log("usr : ", user)
-                        await models.User.create({
-                            email: mail,
+        if (newUsers.length) {
+            newUsers.forEach(async newUser => {
+                const token = require('crypto').randomBytes(10).toString('hex');
+                if (user.RoleId == 1) {
+                    let userInDb = await models.User.find({
+                        where: {email: newUser.email, isRegistered: false}
+                    });
+                    if (!userInDb) {
+                        let createdUser = await models.User.create({
+                            email: newUser.email,
                             createdAt: new Date(),
                             updatedAt: new Date(),
-                        }).then(async created => {
-                            created.setTeam(team.id);
-                            models.Recovery.create({
-                                token: token,
-                                destroyable: false,
-                            }).then(recovery => {
-                                return recovery.setUser(created.id)
-                            })
+                            RoleId: 2,
+                            TeamId: newUser.team
                         });
+                        const userTeam = await createdUser.getTeam();
+                        let recover = await models.Recovery.create({
+                            token: token,
+                            destroyable: false,
+                        });
+                        const datas = {
+                            email: newUser.email,
+                            team: userTeam.dataValues.teamName,
+                            token: token,
+                            manager: user.firstName + " " + user.lastName,
+                            url: "http://happik.herokuapp.com/register",
+                        };
+                        Mailer.send(newUser.email, 'd-b515ade08268435c95794b613d845294', datas);
+                        await recover.setUser(createdUser.id);
                     }
-                }).catch(error => {
-                    console.log(error)// Ooops, do some error-handling
-                });
-            }
-        });
-
-        const datas = {
-            email: mail,
-            team: team.teamName,
-            token: token,
-            url: "www.behappik.com",
-        };
-        Mailer.send(mail, 'd-3ddc12cac0664916b99d3a2af772d9f1', datas)
-    });
-    res.end();
+                } else {
+                    res.status(401).send({msg: "You are not authorize to perform this operation"});
+                }
+            })
+        } else {
+            res.status(404).send({msg: "No email have been found"});
+        }
+        res.status(201).send({msg: "Users created"});
+    })(req, res);
 };
+
 
 /**
  * @api {post} /user/recover User changes its password.
@@ -140,11 +146,10 @@ exports.reset = async function (req, res) {
                     destroyable: false,
                 }).then(recovery => {
                     const datas = {
-                        email: email,
+                        name: user.firstName || user.email,
                         token: token,
-                        url: "www.behappik.com",
                     };
-                    Mailer.send(email, 'd-3ddc12cac0664916b99d3a2af772d9f1', datas);
+                    Mailer.send(user.email, 'd-de6946ef2e3748f0ac27878caa95d74a', datas);
                     recovery.setUser(user.id);
                     res.sendStatus(204);
                 });
@@ -185,34 +190,34 @@ exports.reset = async function (req, res) {
 exports.login = function (req, res) {
     passport.authenticate('local', {session: false}, (err, user, info) => {
         if (err || !user) {
-            return res.status(400).json({
-                message: err
-            });
+            return res.status(400).json(err);
         }
         req.login(user, {session: false}, (err) => {
             if (err) {
-                res.send(err);
+                res.status(500).send(err);
             }
+            user.password = undefined;
             const token = jwt.sign(JSON.stringify(user), 'HELLO');// @todo: process.env.JWT_TOKEN);
-            return res.json({user, token});
+            return res.status(200).json({user, token});
         });
     })(req, res);
 };
 
 
 exports.secret = function (req, res) {
+
+
     res.setHeader('Content-Type', 'application/json');
     console.log('secret')
     passport.authenticate('jwt', {session: false}, (err, user, info) => {
+        logger.debug(user);
         if (err) {
-            return res.json({msg: err});
+            return res.status(500).json(err);
         }
         if (user) {
-            return res.send({user:user,msg: "You are authorized"});
-        }
-
-        else
-            return res.json({msg: "You are not authorize"});
+            return res.status(200).send({user: user});
+        } else
+            return res.status(401).json({msg:"You are not authorize"});
     })(req, res);
 };
 
@@ -254,15 +259,12 @@ exports.subscribe = async function (req, res, next) {
                 where: {UserId: user.id, token: token, destroyable: false}
             }).then(async recover => {
                 if (!recover)
-                    res.status(400).send({error: "Aucune entrée correspondante"});
+                    res.status(400).send("No matching data");
                 const checkPassword = Utils.checkFormControl(user, password, req, res);
                 if (checkPassword !== "success") {
-                    return res.send(JSON.stringify({
-                        checkPassword
-                    }));
+                    return res.json(checkPassword);
                 } else {
                     const hash = bcrypt.hashSync(password);
-                    console.log(hash);
                     await models.User.update(
                         {
                             password: hash,
@@ -272,18 +274,285 @@ exports.subscribe = async function (req, res, next) {
                         {
                             where: {email: email}
                         });
+                    const datas = {
+                        name: firstName,
+                        url: "http://happik.herokuapp.com/login",
+                    };
+                    Mailer.send(email, 'd-3ddc12cac0664916b99d3a2af772d9f1', datas);
                     recover.update({destroyable: true});
-                    return res.send(JSON.stringify(password));
+                    return res.status(200).json("Password updated");
                 }
             }).catch((err, req, res, next) => {
                 console.log(err);
+                return res.status(500).json('There is some problem');
             });
         } else {
-            return res.send(JSON.stringify({
-                error: "Identifiant ou mot de passe temporaire incorrect",
-            }));
+            return res.status(401).json("Wrong email or temporary password");
         }
     });
 
 };
 
+/**
+ * @api {get} /user/me/ Get the current logged user's info
+ * @apiName Get user info
+ * @apiGroup User
+ *
+ * @apiSuccess {Object} user User data.
+ * @apiError UserNotFound No connected user was not found.
+ */
+exports.me = function (req, res, next) {
+    passport.authenticate('jwt', {session: false}, async (err, user, info) => {
+        if (err) {
+            return res.status(500).json(err);
+        }
+
+        if (user) {
+            return res.status(200).send(user);
+        } else {
+            return res.status(403).json({msg:"You are not authorize"});
+        }
+    })(req, res);
+};
+
+/**
+ * @api {delete} /user/:id Delete an user.
+ * @apiName Delete an user
+ * @apiGroup User
+ *
+ * @apiParam {Number} id user id.
+
+ * @apiSuccess (202) {String} msg the returned message
+ */
+exports.delete = function (req, res, next) {
+    passport.authenticate('jwt', {session: false}, async (err, user, info) => {
+        let msg = "";
+        if (user.RoleId === 1) {
+             del = await models.User.destroy({
+                where: {
+                    id: req.params.id
+                }
+            });
+            if (del)
+                msg = "User deleted";
+            else
+                msg = "Not deleted";
+        }
+        res.status(202).send(msg);
+    })(req, res);
+};
+
+
+/**
+ * @api {get} /collaborators Get (all user of a company or team) and (all teams).
+ * @apiName Get users and teams
+ * @apiGroup User
+ *
+ * @apiParam {String} team Specify which team you want ("All" to get all teams).
+ *
+ * @apiExample Example usage:
+ * http://localhost/api/collaborators?team=All
+ *
+ * @apiSuccess (200) {Object[]} employees All employees
+ * @apiSuccess (200) {Number} employees.id Id of the employee
+ * @apiSuccess (200) {String} employees.firstname Firstname of the employee
+ * @apiSuccess (200) {String} employees.lastname Lastname of the employee
+ * @apiSuccess (200) {String} employees.email Email of the employee
+ * @apiSuccess (200) {Date} employees.birthday Birthday of the employee
+ * @apiSuccess (200) {String} employees.avatar Avatar path of the employee
+ * @apiSuccess (200) {Object} employees.Team Team of the employee
+ * @apiSuccess (200) {Number} employees.Team.id Team id of the employee
+ * @apiSuccess (200) {String} employees.Team.teamName Team name of the employee
+ * @apiSuccess (200) {Number} employees.Team.UserId Team Manager Id of the employee
+ * @apiSuccess (200) {Object} employees.Role Role of the employee
+ * @apiSuccess (200) {Number} employees.Role.id Role id of the employee
+ * @apiSuccess (200) {String} employees.Role.roleName Role name of the employee
+ * @apiSuccess (200) {Object[]} teams All teams
+ * @apiSuccess (200) {Number} teams.id Id of the team
+ * @apiSuccess (200) {String} teams.teamName Name of the team
+ * @apiSuccessExample Success-Response:
+ *  HTTP/1.1 200 OK
+ *  {
+ *  "employees": [
+ *  {
+ *      "id": 15,
+ *      "firstName": "Tom",
+ *      "lastName": "Jedusor",
+ *      "email": "tom@jedusor.com",
+ *      "birthday": "21/12/1993",
+ *      "avatar": "/path/to/dir",
+ *      "Team": {
+ *          "id": 4,
+ *          "teamName": "Slytherin",
+ *          "UserId": 11
+ *      },
+ *      "Role": {
+ *          "id": 1,
+ *          "roleName": "Manager"
+ *       }
+ *  },
+ *  {
+ *      "id": 9,
+ *      "firstName": "Mimi",
+ *      "lastName": "Geignarde",
+ *      "email": "mimi@geignarde.com",
+ *      "birthday": "13/02/1987",
+ *      "avatar": "/path/to/dir",
+ *      "Team": {
+ *        "id": 3,
+ *        "teamName": "Ravenclaw",
+ *        "UserId": 8
+ *      },
+ *      "Role": {
+ *        "id": 1,
+ *        "roleName": "Manager"
+ *      }
+ *  },
+ * ],
+ * "teams": [
+ *  {
+ *    "id": 1,
+ *    "teamName": "Gryffindor"
+ *  },
+ *  {
+ *    "id": 2,
+ *    "teamName": "Hufflepuff"
+ *  },
+ * ]
+ * }
+ *
+ * @apiError (5XX) ServerError  Passport can't authentificate.
+ *
+ *  @apiError (4XX) WrongValue Team is not specified.
+ *  @apiError (4XX) TeamsNotFound There is no team matching the parameters.
+ *  @apiError (4XX) UserNotFound You are not Authorized.
+ *
+ *
+ *  @apiErrorExample ServerError:
+ *     HTTP/1.1 500 Error Server
+ *     {
+ *       "ServerError"
+ *     }
+ *
+ *  @apiErrorExample WrongValue:
+ *     HTTP/1.1 409 Conflict
+ *     {
+ *       "Please specify a team"
+ *     }
+ *
+ *  @apiErrorExample UserNotFound:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "You are not Authorized."
+ *     }
+ */
+
+exports.getCollaborators = function (req, res) {
+    passport.authenticate('jwt', {session: false}, async (err, user, info) => {
+        if (err) {
+            return res.status(520).json(err);
+        }
+
+        if (user) {
+
+            if (typeof req.query.team === 'undefined' || typeof req.query.team !== 'string' || typeof req.query.team == null) {
+                return res.status(409).json('Please specify a team.');
+            }
+
+            const teamParams = req.query.team;
+            let users;
+
+            if (teamParams === 'ALL') {
+                users = await models.User.findAll({
+                    attributes:{exclude: ['updatedAt','createdAt','password','RoleId','TeamId']},
+                    include:[
+                        { model: models.Team, required: true, attributes:{exclude: ['updatedAt','createdAt',]}},
+                        { model: models.Role, required: true, attributes:{exclude: ['updatedAt','createdAt',]}},
+                    ]
+                })
+            } else {
+                const team = await models.Team.find({
+                    where: {
+                        teamName: teamParams
+                    }
+                });
+
+                if (!team) {
+                    return res.status(404).json('There is no team for the name ' + teamParams);
+                }
+
+                users = await models.User.findAll({
+                    where: {
+                        TeamId: team.id
+                    }, attributes:['firstName', 'lastName', 'email', 'avatar', 'isRegistered']
+                })
+            }
+
+            const teams = await models.Team.findAll({
+                attributes:['id', 'teamName']
+            });
+
+            return await res.status(200).json({employees : users, teams: teams})
+        }
+        else
+            return res.status(401).json({msg:"You are not authorize"});
+    })(req, res);
+};
+
+/**
+ * @api {post} /user/password/reset Reset the password of a user
+ * @apiName Reset password
+ * @apiGroup User
+ *
+ * @apiSuccess (200) {Object    } page the desired page with the survey
+ */
+
+exports.resetPassword =  function (req, res) {
+    passport.authenticate('jwt', {session: false}, async (err, user, info) => {
+        if (err) {
+            return res.status(520).json(err);
+        }
+
+        if (user) {
+
+            if (typeof req.query.team === 'undefined' || typeof req.query.team !== 'string' || typeof req.query.team == null) {
+                return res.status(409).json('Please specify a team');
+            }
+
+            const teamParams = req.query.team;
+            let users;
+
+            if (teamParams === 'ALL') {
+                users = await models.User.findAll({
+                    attributes: ['firstName', 'lastName', 'email', 'avatar', 'isRegistered']
+                })
+            } else {
+                const team = await models.Team.find({
+                    where: {
+                        teamName: teamParams
+                    }
+                })
+
+                if (!team) {
+                    return res.status(404).json('There is no team for the name ' + teamParams);
+                }
+
+                users = await models.User.findAll({
+                    where: {
+                        TeamId: team.id
+                    }, attributes: ['firstName', 'lastName', 'email', 'avatar', 'isRegistered']
+                })
+            }
+
+            const teams = await models.Team.findAll({
+                attributes: ['id', 'teamName']
+            });
+
+
+            return await res.json({employees : users, teams: teams})
+        }
+        else {
+            return res.status(401).json({msg:"You are not authorize"});
+        }
+    })(req, res);
+};

@@ -21,6 +21,8 @@ ENV PORT 4000
 
 ENV NODE_ENV development
 
+ENV SENDGRID_API_KEY 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
+
 # Expose port from container so host can access 3000
 EXPOSE 4000
 
