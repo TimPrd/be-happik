@@ -56,4 +56,4 @@ after_script:
   - docker-compose down
 
 after_success:
-  - docker exec -it bh_node npm run coveralls
+#  - docker exec -it bh_node npm run coveralls
