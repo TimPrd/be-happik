@@ -61,10 +61,6 @@ const Dashboard = () => (
             {`${user.firstName} ${user.lastName}`}
           </HeadTitle>
 
-          <HeadSubTitle>
-            Ici un text descriptif sur un theme !!
-          </HeadSubTitle>
-
           <Row>
             <Col xs={12} md={4}>
               <ActionButton
@@ -81,7 +77,7 @@ const Dashboard = () => (
                 icon={SurveyIcon}
                 title="Consulter les sondages"
                 text="Accéder aux sondages terminés"
-                path="/survey/all"
+                path="/surveys"
                 color="greenc9"
               />
             </Col>
