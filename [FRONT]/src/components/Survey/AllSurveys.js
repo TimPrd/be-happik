@@ -66,18 +66,17 @@ class CreateSurvey extends React.Component {
 
   fetchSurvey = async () => {
     const loggedUser = JSON.parse(localStorage.getItem('user'));
-
+    const wantedPage = 1;
     try {
-      let surveys = await client.get(`/api/user/${loggedUser.user.id}/surveys/`, {
+      let surveys = await client.get(`/api/surveys?page=${wantedPage}&open=true`, {
         headers: {
           Authorization: `Bearer ${loggedUser.token}`,
           'Content-Type': 'application/json',
         },
       });
-
-      surveys = allUserSurvey;
-
-      return surveys;
+     
+    return surveys
+      
     } catch (err) {
       return null;
     }
@@ -85,6 +84,7 @@ class CreateSurvey extends React.Component {
 
   componentDidMount = async () => {
     const surveys = await this.fetchSurvey();
+   
 
     this.setState({ surveys });
   };
@@ -126,12 +126,13 @@ class CreateSurvey extends React.Component {
 
               {user.RoleId === 1 && (
                 <Col xs={6} sm={2}>
-                  <Button label="Créer un sondate" handleClick={() => history.push('/survey/create')} type="submit" />
+                  <Button label="Créer un sondage" handleClick={() => history.push('/survey/create')} type="submit" />
                 </Col>
               )}
             </Row>
 
-            {surveys && surveys.map((survey, index) => (
+            {surveys && surveys.data['surveys'].map((survey, index) => (
+        
               <Row key={index.toString()}>
                 <Col xs={12}>
                   <Items to={`/survey/reply/${survey.id}`}>
