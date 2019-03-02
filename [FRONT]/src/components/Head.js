@@ -1,9 +1,4 @@
-import PropTypes from 'prop-types';
 import React from 'react';
-
-import client from '../api';
-import {UserContext} from '../contexts';
-
 import Loading from './Loading';
 import io from "socket.io-client";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
@@ -20,7 +15,6 @@ class Head extends React.Component {
     state = {
         loading: true,
         user: null,
-        notif: false,
         sondageName: ""
     };
 
@@ -31,7 +25,7 @@ class Head extends React.Component {
         socket.emit('setUserId', loggedUser.user.id);
         socket.on('notification', sondageName => {
             //socket.emit('send', 6);
-            this.setState({notif:true,sondageName})
+            this.setState({sondageName})
         });
         return {user: loggedUser.user, loading: false}
     };
@@ -42,7 +36,7 @@ class Head extends React.Component {
     };
 
     render() {
-        const {user, loading, notif, sondageName} = this.state;
+        const {user, loading, sondageName} = this.state;
 
         console.log(user);
 

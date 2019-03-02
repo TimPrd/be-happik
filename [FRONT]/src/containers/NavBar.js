@@ -15,16 +15,6 @@ const Container = styled.div`
   box-shadow: 0 0px 7px 0px grey;
 `;
 
-
-
-
-const loggedUser = JSON.parse(localStorage.getItem('user'));
-
-
-
-
-
-console.log()
 const NavBar = () => (
     <Container>
        <Head/>
