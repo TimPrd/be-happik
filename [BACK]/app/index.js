@@ -9,6 +9,7 @@ const bodyParser = require('body-parser');
 const socketIo = require('socket.io');
 const { format, loggers, transports } = require('winston');
 // app.js
+const cron = require('./middlewares/cron');
 
 var cors = require('cors');
 
@@ -80,5 +81,8 @@ app.use(function(err, req, res, next) {
 	res.status(err.status || 500);
 	res.json(err);
 });
+
+cron.updateSurveyStatus();
+
 
 module.exports = app;

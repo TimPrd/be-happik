@@ -44,7 +44,7 @@ exports.validate = async function(req, res) {
 				title: req.body.surveyTitle,
 				description: req.body.surveyDescription || '',
 				startDate: new Date(),
-				open: true,
+                status: 'waiting',
 				endDate: req.body.endDate
 					? new Date(req.body.endDate.split('-').join(','))
 					: new Date(new Date().getTime() + 15 * 24 * 60 * 60 * 1000)
@@ -121,7 +121,7 @@ exports.validate = async function(req, res) {
  * @apiSuccess (200) {String} surveys.description description of the survey
  * @apiSuccess (200) {Date} surveys.startDate starting date of the survey
  * @apiSuccess (200) {Date} surveys.endDate ending date of the survey
- * @apiSuccess (200) {Boolean} surveys.open Status to know if the survey is open or not
+ * @apiSuccess (200) {Boolean} surveys.status Status to know state of the survey
  * @apiSuccess (200) {Date} surveys.createdAt creating date of the survey
  * @apiSuccess (200) {Date} surveys.updatedAt updated date of the survey
  * @apiSuccess (200) {Number} surveys.AuthorId id of the author fot the survey
@@ -135,7 +135,7 @@ exports.validate = async function(req, res) {
             "description": null,
             "startDate": "2019-02-16T13:03:51.242Z",
             "endDate": "2019-03-03T13:03:51.242Z",
-            "open": true,
+            "status": "waiting",
             "createdAt": "2019-02-16T13:03:51.242Z",
             "updatedAt": "2019-02-16T13:03:51.242Z",
             "AuthorId": 1
@@ -146,7 +146,7 @@ exports.validate = async function(req, res) {
             "description": null,
             "startDate": "2019-02-16T13:03:51.242Z",
             "endDate": "2019-03-03T13:03:51.242Z",
-            "open": true,
+            "status": "waiting",
             "createdAt": "2019-02-16T13:03:51.242Z",
             "updatedAt": "2019-02-16T13:03:51.242Z",
             "AuthorId": 1
@@ -157,7 +157,7 @@ exports.validate = async function(req, res) {
             "description": null,
             "startDate": "2019-02-16T13:03:51.242Z",
             "endDate": "2019-03-03T13:03:51.242Z",
-            "open": true,
+            "status": "waiting",
             "createdAt": "2019-02-16T13:03:51.242Z",
             "updatedAt": "2019-02-16T13:03:51.242Z",
             "AuthorId": 1
@@ -214,10 +214,10 @@ exports.getSurveysByUser = async function(req, res) {
  * @apiGroup Surveys
  *
  * @apiParam {Number} page Query param to indicate the desired page .
- * @apiParam {Boolean} open Query param to indicate the desired state (true=open/false=closed).
+ * @apiParam {String} status Query param to indicate the desired state done/expired/waiting.
  *
  * @apiExample Example usage:
- * http://localhost/surveys?page=1&open=true
+ * http://localhost/surveys?page=1&status=waiting
  *
  * @apiSuccess (200) {Object[]} surveys All the survey
  * @apiSuccess (200) {Number} surveys.id id of the survey
@@ -225,7 +225,7 @@ exports.getSurveysByUser = async function(req, res) {
  * @apiSuccess (200) {String} surveys.description Description of the survey
  * @apiSuccess (200) {String} surveys.startDate Starting date of the survey
  * @apiSuccess (200) {String} surveys.endDate Ending Date of the survey
- * @apiSuccess (200) {Boolean} surveys.open Status to know if the survey is opened or not
+ * @apiSuccess (200) {Boolean} surveys.waiting Status to know the state of survey
  * @apiSuccess (200) {Number} surveys.AuthorId Id of the survey author
  * @apiSuccess (200) {Number} count The number of all surveys
  * @apiSuccess (200) {Number} page The total number of pages
@@ -240,7 +240,7 @@ exports.getSurveysByUser = async function(req, res) {
           "description": null,
           "startDate": "2019-02-16T13:03:51.242Z",
           "endDate": "2019-03-03T13:03:51.242Z",
-          "open": true,
+          "status": "waiting",
           "createdAt": "2019-02-16T13:03:51.242Z",
           "updatedAt": "2019-02-16T13:03:51.242Z",
           "AuthorId": 13
@@ -251,7 +251,7 @@ exports.getSurveysByUser = async function(req, res) {
           "description": null,
           "startDate": "2019-02-16T13:03:51.242Z",
           "endDate": "2019-03-03T13:03:51.242Z",
-          "open": true,
+          "status": "waiting",
           "createdAt": "2019-02-16T13:03:51.242Z",
           "updatedAt": "2019-02-16T13:03:51.242Z",
           "AuthorId": 1
@@ -262,7 +262,7 @@ exports.getSurveysByUser = async function(req, res) {
           "description": null,
           "startDate": "2019-02-16T13:03:51.242Z",
           "endDate": "2019-03-03T13:03:51.242Z",
-          "open": true,
+          "status": "waiting",
           "createdAt": "2019-02-16T13:03:51.242Z",
           "updatedAt": "2019-02-16T13:03:51.242Z",
           "AuthorId": 1
@@ -282,14 +282,14 @@ exports.getSurveysByUser = async function(req, res) {
  *     }
  */
 exports.getAllSurveys = async function(req, res) {
-	if (typeof req.query.open === 'undefined' || typeof req.query.page === 'undefined') {
-		res.status(400).json('Please specify a state (open param) and page');
+	if (typeof req.query.status === 'undefined' || typeof req.query.page === 'undefined') {
+		res.status(400).json('Please specify a status and page in your query');
 	}
 
 	let limit = 9; // number of records per page
 	let offset = limit * (req.query.page - 1);
 	let surveys = await models.Survey.findAll({
-		where: { open: req.query.open },
+		where:{status: req.query.status},
 		limit: limit,
 		offset: offset,
 		$sort: { id: 1 }
@@ -317,7 +317,7 @@ exports.getAllSurveys = async function(req, res) {
  * @apiSuccess (200) {String} survey.description Description of the survey
  * @apiSuccess (200) {String} survey.startDate Starting date of the survey
  * @apiSuccess (200) {String} survey.endDate Ending Date of the survey
- * @apiSuccess (200) {Boolean} survey.open Status to know if the survey is opened or not
+ * @apiSuccess (200) {String} survey.status Status to know if the survey is "waiting/done or expired"
  * @apiSuccess (200) {String} author Author of the survey
  * @apiSuccess (200) {Object[]} questions Questions of a survey
  * @apiSuccess (200) {Number} questions.id id of the question
@@ -329,7 +329,7 @@ exports.getAllSurveys = async function(req, res) {
  *     HTTP/1.1 200 OK
  *     {
  *       "survey": {"id": 1,"title": "Measure of happiness", "description": We want the best for you. That's why we want to know if you are happy,
- *                  "startDate":"2019-02-16T13:03:51.241Z","endDate":"2019-03-16T13:03:51.241Z", "open":true},
+ *                  "startDate":"2019-02-16T13:03:51.241Z","endDate":"2019-03-16T13:03:51.241Z", "status":"waiting"},
  *       "author": Jacques Chirac,
  *       "questions": [
  *          {"id": 54,"title": "Principal Infrastructure Coordinator","description": "Dicta voluptatem voluptate nisi culpa et doloribus magni.","predefined": false},
@@ -537,9 +537,7 @@ exports.postAnswers = function(req, res) {
 				include: [
 					{
 						model: models.Survey,
-						where: {
-							open: true
-						}
+						where: {status: 'waiting'}
 					}
 				]
 			});
@@ -677,10 +675,9 @@ exports.putAnswers = function(req, res) {
 				include: [
 					{
 						model: models.Survey,
-						where: {
-							open: true
-						}
-					}
+                        where: {status: 'done'}
+
+                    }
 				]
 			});
 
