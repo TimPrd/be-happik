@@ -345,67 +345,71 @@ exports.getAllSurveys = async function (req, res) {
  * @apiError (400) There is no survey for this id
  * @apiError (401) UserNotFound You are not authorized
  */
+exports.getSurvey = function(req, res) {
+	passport.authenticate('jwt', { session: false }, async (err, user, info) => {
+		if (err) {
+			return res.status(500).json(err);
+		}
 
-exports.getSurvey = function (req, res) {
-    passport.authenticate('jwt', {session: false}, async (err, user, info) => {
-        if (err) {
-            return res.status(500).json(err);
-        }
+		if (user) {
+			const SurveyId = req.params.idSurvey;
+			const userSurvey = await models.userSurvey.find({
+				where: {
+					UserId: user.id,
+					SurveyId: SurveyId
+				},
+				include: [
+					{
+						model: models.Survey,
+						includes: [
+							{
+								model: models.User
+							}
+						]
+					}
+				]
+			});
 
-        if (user) {
-            const SurveyId = req.params.idSurvey;
-            const userSurvey = await models.userSurvey.find({
-                where: {
-                    UserId: user.id,
-                    SurveyId: SurveyId
-                },
-                include: [
-                    {
-                        model: models.Survey,
-                        includes: [
-                            {
-                                model: models.User
-                            }
-                        ]
-                    }
-                ]
-            });
+			if (!userSurvey) {
+				return res.status(400).json('There is not survey for this id');
+			}
 
-            if (!userSurvey) {
-                return res.status(400).json('There is not survey for this id');
-            }
+			const Author = await models.User.find({
+				where: {
+					RoleId: 0,
+					id: userSurvey.Survey.AuthorId
+				},
+				attributes: [ 'firstName', 'lastName' ]
+			});
 
-            const Author = await models.User.find({
-                where: {
-                    RoleId: 0,
-                    id: userSurvey.Survey.AuthorId
-                },
-                attributes: ['firstName', 'lastName']
-            });
+			let questionsSurvey = await models.Questionsurvey.findAll({
+				where: {
+					SurveyId: userSurvey.SurveyId
+				},
+				include: [
+					{
+						model: models.Question
+					}
+				]
+			});
 
-            const questionsSurvey = await models.Questionsurvey.findAll({
-                where: {
-                    SurveyId: userSurvey.SurveyId
-                },
-                include: [
-                    {
-                        model: models.Question
-                    }
-                ]
-            });
 
-            let surv = userSurvey.Survey;
+			if (questionsSurvey) {
+			    questionsSurvey = questionsSurvey.filter((el, i, a) => i === a.indexOf(el));
+			}
 
-            async function setSurv(survey, userSurvey, Author, questionsSurvey) {
-                survey.AuthorId = undefined;
-                return {survey: survey, author: Author, questions: questionsSurvey.map((q) => q.Question)};
-            }
+			let surv = userSurvey.Survey;
 
-            const survey = await setSurv(surv, userSurvey, Author, questionsSurvey);
+			async function setSurv(survey, userSurvey, Author, questionsSurvey) {
+				survey.authorId = undefined;
+				return { survey: survey, author: Author, questions: questionsSurvey.map((q) => q.Question) };
+			}
 
-            return await res.status(200).json(survey);
-        } else return res.status(401).json({msg: 'You are not authorize'});
-    })(req, res);
+			const survey = await setSurv(surv, userSurvey, Author, questionsSurvey);
+
+			return await res.status(200).json(survey);
+		} else return res.status(401).json({ msg: 'You are not authorize' });
+	})(req, res);
 };
 
 /**
