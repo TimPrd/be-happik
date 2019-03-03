@@ -226,8 +226,9 @@ exports.getSurveysByUser = async function (req, res) {
  * @apiSuccess (200) {String} surveys.description Description of the survey
  * @apiSuccess (200) {String} surveys.startDate Starting date of the survey
  * @apiSuccess (200) {String} surveys.endDate Ending Date of the survey
- * @apiSuccess (200) {Boolean} surveys.waiting Status to know the state of survey
- * @apiSuccess (200) {Number} surveys.AuthorId Id of the survey author
+ * @apiSuccess (200) {Boolean} surveys.open Status to know if the survey is opened or not
+ * @apiSuccess (200) {Number} surveys.authorId Id of the survey author
+ * @apiSuccess (200) {Number} surveys.authorName Name of the survey author
  * @apiSuccess (200) {Number} count The number of all surveys
  * @apiSuccess (200) {Number} page The total number of pages
  *
@@ -244,7 +245,8 @@ exports.getSurveysByUser = async function (req, res) {
           "status": "waiting",
           "createdAt": "2019-02-16T13:03:51.242Z",
           "updatedAt": "2019-02-16T13:03:51.242Z",
-          "AuthorId": 13
+          "authorId": 1
+          "authorName": Harry Potter
         },
         {
           "id": 12,
@@ -255,7 +257,8 @@ exports.getSurveysByUser = async function (req, res) {
           "status": "waiting",
           "createdAt": "2019-02-16T13:03:51.242Z",
           "updatedAt": "2019-02-16T13:03:51.242Z",
-          "AuthorId": 1
+          "authorId": 1
+          "authorName": Harry Potter
         },
         {
           "id": 13,
@@ -266,7 +269,8 @@ exports.getSurveysByUser = async function (req, res) {
           "status": "waiting",
           "createdAt": "2019-02-16T13:03:51.242Z",
           "updatedAt": "2019-02-16T13:03:51.242Z",
-          "AuthorId": 1
+          "authorId": 1,
+          "authorName": Harry Potter,
         }
        ],
       "count": 9,
@@ -304,7 +308,6 @@ exports.getAllSurveys = async function (req, res) {
         surveys = surveys.slice(0, limit);
         res.status(200).json({surveys: surveys, count: count, pages: pages});
     })(req, res);
-
 };
 
 /**
