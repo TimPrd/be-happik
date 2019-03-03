@@ -378,7 +378,7 @@ exports.getSurvey = function(req, res) {
 				attributes: [ 'firstName', 'lastName' ]
 			});
 
-			const questionsSurvey = await models.Questionsurvey.findAll({
+			let questionsSurvey = await models.Questionsurvey.findAll({
 				where: {
 					SurveyId: userSurvey.SurveyId
 				},
@@ -388,6 +388,11 @@ exports.getSurvey = function(req, res) {
 					}
 				]
 			});
+
+
+			if (questionsSurvey) {
+			    questionsSurvey = questionsSurvey.filter((el, i, a) => i === a.indexOf(el));
+			}
 
 			let surv = userSurvey.Survey;
 
