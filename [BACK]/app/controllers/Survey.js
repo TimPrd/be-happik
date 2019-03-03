@@ -225,7 +225,8 @@ exports.getSurveysByUser = async function(req, res) {
  * @apiSuccess (200) {String} surveys.startDate Starting date of the survey
  * @apiSuccess (200) {String} surveys.endDate Ending Date of the survey
  * @apiSuccess (200) {Boolean} surveys.open Status to know if the survey is opened or not
- * @apiSuccess (200) {Number} surveys.AuthorId Id of the survey author
+ * @apiSuccess (200) {Number} surveys.authorId Id of the survey author
+ * @apiSuccess (200) {Number} surveys.authorName Name of the survey author
  * @apiSuccess (200) {Number} count The number of all surveys
  * @apiSuccess (200) {Number} page The total number of pages
  *
@@ -242,7 +243,8 @@ exports.getSurveysByUser = async function(req, res) {
           "open": true,
           "createdAt": "2019-02-16T13:03:51.242Z",
           "updatedAt": "2019-02-16T13:03:51.242Z",
-          "AuthorId": 13
+          "authorId": 1
+          "authorName": Harry Potter
         },
         {
           "id": 12,
@@ -253,7 +255,8 @@ exports.getSurveysByUser = async function(req, res) {
           "open": true,
           "createdAt": "2019-02-16T13:03:51.242Z",
           "updatedAt": "2019-02-16T13:03:51.242Z",
-          "AuthorId": 1
+          "authorId": 1
+          "authorName": Harry Potter
         },
         {
           "id": 13,
@@ -264,7 +267,8 @@ exports.getSurveysByUser = async function(req, res) {
           "open": true,
           "createdAt": "2019-02-16T13:03:51.242Z",
           "updatedAt": "2019-02-16T13:03:51.242Z",
-          "AuthorId": 1
+          "authorId": 1,
+          "authorName": Harry Potter,
         }
        ],
       "count": 9,
@@ -289,14 +293,22 @@ exports.getAllSurveys = async function(req, res) {
 	let offset = limit * (req.query.page - 1);
 	let surveys = await models.Survey.findAll({
 		where: { open: req.query.open },
+        raw: true,
 		limit: limit,
 		offset: offset,
-		$sort: { id: 1 }
+		$sort: { id: 1 },
+        include: [{model: models.User, as: 'author', required:true, attributes: ['firstName', 'lastName']}]
 	});
 
 	if (surveys.length < 1) {
 		res.status(404).json('There is no surveys');
 	}
+
+	surveys.forEach(survey => {
+        survey.authorName = `${survey['author.firstName']} ${survey['author.lastName']}`;
+        survey['author.firstName'] = undefined;
+        survey['author.lastName'] = undefined;
+    });
 
 	const count = surveys.length;
 	const pages = Math.ceil(count / limit);

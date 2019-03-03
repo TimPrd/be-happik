@@ -16,7 +16,7 @@ module.exports = {
                 startDate: new Date(),
                 endDate: new Date(new Date().getTime()+(15*24*60*60*1000)),
                 open: i % 18 !== 0,
-                AuthorId: randomManager,
+                authorId: randomManager,
                 createdAt: new Date(),
                 updatedAt: new Date()
             };

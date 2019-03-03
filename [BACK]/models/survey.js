@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
         open: DataTypes.BOOLEAN
     }, {});
     Survey.associate = function (models) {
-        Survey.belongsTo(models.User, {as: "Author"});
+        Survey.belongsTo(models.User, {as: "author"});
     };
     return Survey;
 };
