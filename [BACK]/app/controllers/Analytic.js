@@ -155,12 +155,11 @@ exports.surveyResponse = async function (req, res) {
                 let response = [];
                 let surveys = await models.Survey.findAll({
                     where: {
-                        AuthorId: user.id
+                        authorId: user.id
                     },
                     attributes: ['id', 'title', 'status', 'startDate', 'endDate'],
                 });
                 for (const survey of await surveys) {
-                    console.log(survey.id)
                     let answers = await models.userSurvey.findAll({
                         where: {
                             SurveyId: survey.id,
@@ -172,7 +171,7 @@ exports.surveyResponse = async function (req, res) {
                     let totalCount = await models.userSurvey.findAndCountAll({where: {SurveyId: survey.id}});
                     response.push({
                         info: survey,
-                        answers: answers[0].dataValues.count,
+                        answers: answers.length ? answers[0].dataValues.count : 0,
                         total: totalCount.count
                     })
                 }
@@ -206,7 +205,7 @@ exports.surveyStatus = async function (req, res) {
             if (user && user.RoleId === 1) {
                 let surveys = await models.Survey.findAll({
                     where: {
-                        AuthorId: user.id,
+                        authorId: user.id,
                     },
                     attributes: ['status', [Sequelize.fn('count', 'status'), 'count']],
                     group: ['status']
