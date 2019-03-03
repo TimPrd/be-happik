@@ -5,10 +5,13 @@ module.exports = (sequelize, DataTypes) => {
         description: DataTypes.STRING,
         startDate: DataTypes.DATE,
         endDate: DataTypes.DATE,
-        open: DataTypes.BOOLEAN
+        status: {
+            type: DataTypes.ENUM('done', 'waiting', 'expired'),
+            defaultValue: 'waiting'
+        },
     }, {});
     Survey.associate = function (models) {
-        Survey.belongsTo(models.User, {as: "Author"});
+        Survey.belongsTo(models.User, {as: "author"});
     };
     return Survey;
 };

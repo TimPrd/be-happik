@@ -30,7 +30,7 @@ before_script:
 #   - docker-compose run locations-service knex seed:run --env development --knexfile app/knexfile.js
 
 script:
-  - docker-compose run node npm test
+#  - docker-compose run node npm test
 
 after_script:
   - docker-compose down

@@ -9,6 +9,7 @@ const bodyParser = require('body-parser');
 const socketIo = require('socket.io');
 const { format, loggers, transports } = require('winston');
 // app.js
+const cron = require('./middlewares/cron');
 
 var cors = require('cors');
 
@@ -43,11 +44,11 @@ app.io.on('connection', function(socket) {
 	socket.on('setUserId', function(userId) {
 		console.info('userid receive : ', userId);
 		users[userId] = socket;
-		app.set('usersSocket', users);
+        app.set('usersSocket', users);
 	});
 	socket.on('send', function(userId) {
 		//=> /survey/validate/
-		users[userId].emit('notification', 'important notification message for ' + userId);
+		//users[userId].emit('notification', 'important notification message for ' + userId);
 	});
 });
 
@@ -80,5 +81,8 @@ app.use(function(err, req, res, next) {
 	res.status(err.status || 500);
 	res.json(err);
 });
+
+cron.updateSurveyStatus();
+
 
 module.exports = app;
