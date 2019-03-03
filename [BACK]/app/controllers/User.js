@@ -23,6 +23,10 @@ exports.register = async function (req, res) {
             return res.status(520).json({err: err});
         }
 
+        if (!Array.isArray(req.body)) {
+            res.status(400).json('Data you send are not good"')
+        }
+
         //remove non valid email
         let newUsers = req.body.filter(x => /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(x.email));
         //remove duplicates
@@ -32,10 +36,14 @@ exports.register = async function (req, res) {
             ))
         );
 
+        newUsers = newUsers
+            .filter(user => user.email.length > 0)
+            .filter(user => user.team.length > 0);
+
         if (newUsers.length) {
             newUsers.forEach(async newUser => {
                 const token = require('crypto').randomBytes(10).toString('hex');
-                if (user.RoleId == 1) {
+                if (user.RoleId === 1) {
                     let userInDb = await models.User.find({
                         where: {email: newUser.email, isRegistered: false}
                     });

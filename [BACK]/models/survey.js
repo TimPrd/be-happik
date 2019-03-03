@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
         },
     }, {});
     Survey.associate = function (models) {
-        Survey.belongsTo(models.User, {as: "Author"});
+        Survey.belongsTo(models.User, {as: "author"});
     };
     return Survey;
 };

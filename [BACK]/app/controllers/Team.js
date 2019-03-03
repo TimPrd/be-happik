@@ -40,6 +40,10 @@ exports.getTeamList = async function (req, res) {
 /**
  * @api {post} /team/ Create a / plural new team (max 10)
  * @apiName Create a new team
+ *
+ * @apiParam {Object[]} teams Teams array which include all team names
+ * @apiParam {String} teams.name Name of the team
+ *
  * @apiGroup Team
  * @apiParam {String[]} teams names of all the concerned teams.
  */
@@ -68,6 +72,14 @@ exports.postCreateTeams = async function (req, res) {
         if (teamsBody.length > 10) {
             return res.status(400).json("You can't add more than 10 teams.");
         }
+
+        teamsBody.forEach(
+            team => {
+                if (typeof team !== 'string' || team.length < 1) {
+                    return res.status(400).json("Data you send are not good");
+                }
+            }
+        );
 
         let teams = [];
         let i = 0;

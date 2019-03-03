@@ -17,8 +17,8 @@ module.exports = {
                 title: faker.name.title(),
                 startDate: new Date(),
                 endDate: new Date(new Date().getTime()+(15*24*60*60*1000)),
+                authorId: randomManager,
                 status: i % 18 !== 0 ? 'waiting' : 'done',
-                AuthorId: randomManager,
                 createdAt: new Date(),
                 updatedAt: new Date()
             };
