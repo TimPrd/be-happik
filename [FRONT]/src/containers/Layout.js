@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 
 import SideBar from './SideBar';
 import NavBar from './NavBar';
-
 const LayoutContainer = styled.div`
   widht: 100%;
 `;

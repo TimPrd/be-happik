@@ -204,7 +204,7 @@ module.exports = {
                 createdAt: new Date(),
                 updatedAt: new Date(),
                 password: "lilypotter",
-                RoleId: 2,
+                RoleId: 1,
                 TeamId: 4
             }], {});
         await queryInterface.sequelize.query('update "Teams" SET "UserId" = 16 where id = 1;')

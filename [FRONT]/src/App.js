@@ -24,6 +24,10 @@ import ReplySurveyPage from './containers/Survey/Reply';
 import french from './Locales';
 import Collaborators from './containers/Collaborators';
 
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faBell, faEnvelope, faKey } from '@fortawesome/free-solid-svg-icons';
+
+library.add(faEnvelope,faBell, faKey);
 const GlobalStyle = createGlobalStyle`
   @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700');
 
