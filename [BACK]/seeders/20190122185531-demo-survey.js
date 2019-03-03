@@ -7,7 +7,9 @@ module.exports = {
         let recordsTeamSurvey = [];
         let recordsQuestion =  [];
         let recordsQuestionSurvey = [];
-        let userManagers = [1, 6, 9, 13];
+        let userManagers = [1, 6, 9, 16];
+        let randomUser =[ [2,3], [4,5], [7,8], [11,12,13,14] ];
+        let recordsUserSurvey = [];
 
         for (let i = 0; i < 20; i++) {
             let randomManager = userManagers[Math.floor(Math.random() * userManagers.length)];
@@ -20,6 +22,17 @@ module.exports = {
                 createdAt: new Date(),
                 updatedAt: new Date()
             };
+            let team = userManagers.indexOf(randomManager) + 1;
+            for (const uId of randomUser[team-1])
+            {
+                recordsUserSurvey.push({
+                    isAnswered: !(i % 6 !== 0),
+                    UserId: uId,
+                    SurveyId: i+1,
+                    createdAt: new Date(),
+                    updatedAt: new Date()
+                })
+            }
             recordsTeamSurvey[i] = {
                 SurveyId: i + 1,
                 TeamId: userManagers.indexOf(randomManager) + 1,
@@ -50,6 +63,7 @@ module.exports = {
 
         await queryInterface.bulkInsert('Surveys', recordsSurvey, {});
         await queryInterface.bulkInsert('Questions', recordsQuestion,{});
+        await queryInterface.bulkInsert('userSurveys', recordsUserSurvey, {});
 
         await queryInterface.bulkInsert('Questionsurveys', recordsQuestionSurvey, {});
 

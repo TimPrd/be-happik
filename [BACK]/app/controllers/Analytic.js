@@ -152,15 +152,31 @@ exports.counts = async function (req, res) {
 exports.surveyResponse = async function (req, res) {
     passport.authenticate('jwt', {session: false}, async (err, user, info) => {
             if (user && user.RoleId === 1) {
-                let surveys = await models.userSurvey.findAll({
+                let response = [];
+                let surveys = await models.Survey.findAll({
                     where: {
-                        SurveyId: 1,
+                        AuthorId: user.id
                     },
-                    attributes: ['isAnswered', [Sequelize.fn('count', 'isAnswered'), 'count']],
-                    group: ['isAnswered']
+                    attributes: ['id', 'title', 'status', 'startDate', 'endDate'],
                 });
-
-                return res.status(200).send(surveys);
+                for (const survey of await surveys) {
+                    console.log(survey.id)
+                    let answers = await models.userSurvey.findAll({
+                        where: {
+                            SurveyId: survey.id,
+                            isAnswered: true
+                        },
+                        attributes: ['isAnswered', [Sequelize.fn('count', 'isAnswered'), 'count']],
+                        group: ['isAnswered'],
+                    });
+                    let totalCount = await models.userSurvey.findAndCountAll({where: {SurveyId: survey.id}});
+                    response.push({
+                        info: survey,
+                        answers: answers[0].dataValues.count,
+                        total: totalCount.count
+                    })
+                }
+                return res.status(200).json({surveyAnalytics: response});
             } else {
                 return res.status(400).json({msg: "You are not authorize"});
             }
