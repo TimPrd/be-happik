@@ -1,7 +1,5 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-
-import io from 'socket.io-client';
 import client from '../api';
 import { UserContext } from '../contexts';
 

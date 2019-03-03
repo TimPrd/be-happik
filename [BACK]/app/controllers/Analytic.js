@@ -62,7 +62,7 @@ exports.moodPerWeek = async function (req, res) {
                 }
                 return res.status(200).json(datas);
             } else {
-                return res.status(400).json({msg:"You are not authorize"});
+                return res.status(400).json({msg: "You are not authorize"});
             }
         }
     )
@@ -91,10 +91,16 @@ exports.counts = async function (req, res) {
                         }),
                     }
                 });
-                let surveys = await models.Survey.findAndCountAll({
+                let surveysDone = await models.Survey.findAndCountAll({
                     where: {
                         AuthorId: user.id,
-                        open: true
+                        status: "done"
+                    }
+                });
+                let surveysWait = await models.Survey.findAndCountAll({
+                    where: {
+                        AuthorId: user.id,
+                        status: "waiting"
                     }
                 });
                 let notifications = await models.Notification.findAndCountAll({
@@ -113,9 +119,13 @@ exports.counts = async function (req, res) {
                         count: users.count,
                         datas: users.rows
                     },
-                    surveys: {
-                        count: surveys.count,
-                        datas: surveys.rows
+                    surveysDone: {
+                        count: surveysDone.count,
+                        datas: surveysDone.rows
+                    },
+                    surveysWait: {
+                        count: surveysWait.count,
+                        datas: surveysWait.rows
                     },
                     notifications: {
                         count: notifications.count,
@@ -125,7 +135,7 @@ exports.counts = async function (req, res) {
                 };
                 return res.status(200).send(json);
             } else {
-                return res.status(400).json({msg:"You are not authorize"});
+                return res.status(400).json({msg: "You are not authorize"});
             }
         }
     )
@@ -142,7 +152,6 @@ exports.counts = async function (req, res) {
 exports.surveyResponse = async function (req, res) {
     passport.authenticate('jwt', {session: false}, async (err, user, info) => {
             if (user && user.RoleId === 1) {
-
                 let surveys = await models.userSurvey.findAll({
                     where: {
                         SurveyId: 1,
@@ -153,7 +162,7 @@ exports.surveyResponse = async function (req, res) {
 
                 return res.status(200).send(surveys);
             } else {
-                return res.status(400).json({msg:"You are not authorize"});
+                return res.status(400).json({msg: "You are not authorize"});
             }
         }
     )
@@ -179,17 +188,16 @@ exports.surveyResponse = async function (req, res) {
 exports.surveyStatus = async function (req, res) {
     passport.authenticate('jwt', {session: false}, async (err, user, info) => {
             if (user && user.RoleId === 1) {
-
                 let surveys = await models.Survey.findAll({
                     where: {
-                        AuthorId: 9,
+                        AuthorId: user.id,
                     },
-                    attributes: ['open', [Sequelize.fn('count', 'open'), 'count']],
-                    group: ['open']
+                    attributes: ['status', [Sequelize.fn('count', 'status'), 'count']],
+                    group: ['status']
                 });
                 return res.status(200).send(surveys);
             } else {
-                return res.status(400).json({msg:"You are not authorize"});
+                return res.status(400).json({msg: "You are not authorize"});
             }
         }
     )

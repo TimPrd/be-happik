@@ -26,5 +26,7 @@ exports.regex = async function (inputRegex, str) {
     return regex.test(str);
 };
 
-
+exports.formatDateYMD = async function (date) {
+    return await date.toISOString().split('T')[0]
+};
 
