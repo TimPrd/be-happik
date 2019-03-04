@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c21677e6-760e-4593-b0e6-3bb6b2f04f0d" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../[BACK]/app/controllers/Analytic.js" beforeDir="false" afterPath="$PROJECT_DIR$/../[BACK]/app/controllers/Analytic.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../[BACK]/app/controllers/User.js" beforeDir="false" afterPath="$PROJECT_DIR$/../[BACK]/app/controllers/User.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../[BACK]/test/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/../[BACK]/test/index.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
@@ -243,7 +244,6 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.27110156" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />

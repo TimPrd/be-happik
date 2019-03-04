@@ -35,11 +35,7 @@ exports.register = async function (req, res) {
                 u.email === user.email
             ))
         );
-
-        newUsers = newUsers
-            .filter(user => user.email.length > 0)
-            .filter(user => user.team.length > 0);
-
+        console.log(newUsers);
         if (newUsers.length) {
             newUsers.forEach(async newUser => {
                 const token = require('crypto').randomBytes(10).toString('hex');
@@ -138,7 +134,6 @@ exports.recover = async function (req, res) {
  * @apiParam {String} email user email.
 
  * @apiSuccess (200) {String} 204
- * @apiError Forbidden.
  */
 exports.reset = async function (req, res) {
     const email = req.body.email;
@@ -512,7 +507,7 @@ exports.getCollaborators = function (req, res) {
  * @apiName Reset password
  * @apiGroup User
  *
- * @apiSuccess (200) {Object    } page the desired page with the survey
+ * @apiSuccess (200) {Object} page the desired page with the survey
  */
 
 exports.resetPassword =  function (req, res) {
@@ -539,7 +534,7 @@ exports.resetPassword =  function (req, res) {
                     where: {
                         teamName: teamParams
                     }
-                })
+                });
 
                 if (!team) {
                     return res.status(404).json('There is no team for the name ' + teamParams);
