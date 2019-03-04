@@ -33,9 +33,9 @@ before_script:
   - npm install
   - docker-compose build
   - docker-compose up -d
- # - docker exec -it bh_node npm install
-  - docker exec -it bh_node /usr/local/lib/node_modules/sequelize-cli/bin/sequelize db:migrate
-  - docker exec -it bh_node /usr/local/lib/node_modules/.bin/sequelize db:seed:all
+  - docker exec -it bh_node npm install
+  - docker exec -it bh_node /usr/local/bin/node_modules/sequelize-cli/bin/sequelize db:migrate
+  - docker exec -it bh_node /usr/local/bin/node_modules/.bin/sequelize db:seed:all
   - cd ../[FRONT]
   - npm install
   - npm install terser@3.14.1 --save-dev
