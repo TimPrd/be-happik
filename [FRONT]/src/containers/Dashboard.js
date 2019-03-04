@@ -15,6 +15,7 @@ import SpinIcon from '../assets/img/icons/Icon-Spin.svg';
 import ChronoIcon from '../assets/img/icons/Icon-Clock.svg';
 import WarningIcon from '../assets/img/icons/Icon-NotifWarning.svg';
 import { UserContext } from '../contexts';
+import ChartSurvey from '../components/Dashboard/ChartSurvey';
 
 const HeadTitle = styled.h1`
   width: 100%;
@@ -93,15 +94,22 @@ const Dashboard = () => (
             </Col>
           </Row>
 
-
           <Row>
             <Col xs={12} lg={4}>
               <DashboardInfos dataInfos={DashboardInformations} />
             </Col>
+
             <Col xs={12} lg={8}>
               <ChartEmploye />
             </Col>
           </Row>
+
+          <Row>
+            
+              <ChartSurvey></ChartSurvey>
+    
+          </Row>
+
         </Grid>
       </Layout>
     )}

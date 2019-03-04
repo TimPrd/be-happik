@@ -65,7 +65,7 @@ const Card = (props) => {
     <CardItem>
       <AvatarContainer className={user.isRegistered ? '' : 'isNotRegistered'}>
         <Avatar
-          src={user.img ? user.img : UserIcon}
+          src={user.avatar ? user.img : UserIcon}
           className={user.isRegistered ? '' : 'isNotRegistered'}
         />
       </AvatarContainer>
@@ -77,7 +77,7 @@ const Card = (props) => {
           {user.lastName}
         </Name>
         <Details>
-          Team Marketing
+          {user.Team.teamName}
         </Details>
         <Details>
           {user.email}

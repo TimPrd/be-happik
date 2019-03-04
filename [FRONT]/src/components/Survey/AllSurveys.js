@@ -137,7 +137,9 @@ class CreateSurvey extends React.Component {
             {surveys && surveys.data['surveys'].map((survey, index) => (
 
               <Row key={index.toString()}>
-                <Items to={`/survey/reply/${survey.id}`}>
+            
+                  <Items to={survey.status == 'done'? `/survey/${survey.id}/answers` : `/survey/reply/${survey.id}`}>
+               
                   <Col xs={10} sm={10} md={6}>
                     <Title>{survey.title}</Title>
 
