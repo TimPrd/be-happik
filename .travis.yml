@@ -40,17 +40,14 @@ before_script:
   - npm run test
   - npm run build
 #  - docker-compose run node sequelize db:migrate
-#  - docker exec -it bh_node ./node_modules/sequelize-cli/bin/sequelize db:migrate
-# - docker exec -it bh_node node_modules/.bin/sequelize db:seed:all
-
-# - docker-compose run users-service knex seed:run --env development --knexfile app/knexfile.js
-#   - docker-compose run locations-service knex migrate:latest --env development --knexfile app/knexfile.js
-#   - docker-compose run locations-service knex seed:run --env development --knexfile app/knexfile.js
+  - docker exec -it bh_node ./node_modules/sequelize-cli/bin/sequelize db:migrate
+  - docker exec -it bh_node node_modules/.bin/sequelize db:seed:all
 
 script:
 # - docker exec -it bh_node node_modules/.bin/sequelize db:migrate
 # - npm run travis
   - docker ps
+  - docker exec -it bh_node npm run test
 
 after_script:
   - docker-compose down
