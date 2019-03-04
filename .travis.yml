@@ -33,21 +33,20 @@ before_script:
   - npm install
   - docker-compose build
   - docker-compose up -d
-  - docker exec -it bh_node npm install
+ # - docker exec -it bh_node npm install
+  - docker exec -it bh_node /usr/local/lib/node_modules/sequelize-cli/bin/sequelize db:migrate
+  - docker exec -it bh_node /usr/local/lib/node_modules/.bin/sequelize db:seed:all
   - cd ../[FRONT]
   - npm install
   - npm install terser@3.14.1 --save-dev
   - npm run test
   - npm run build
-#  - docker-compose run node sequelize db:migrate
-  - docker exec -it bh_node ./node_modules/sequelize-cli/bin/sequelize db:migrate
-  - docker exec -it bh_node node_modules/.bin/sequelize db:seed:all
-
+  
 script:
 # - docker exec -it bh_node node_modules/.bin/sequelize db:migrate
 # - npm run travis
   - docker ps
-  - docker exec -it bh_node npm run test
+# - docker exec -it bh_node npm run test
 
 after_script:
   - docker-compose down
