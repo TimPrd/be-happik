@@ -7,13 +7,14 @@ import ButtonNextIcon from '../../assets/img/icons/Icon-ButtonNext.svg';
 const titleColor = color => props => props.theme.colors[color];
 
 const Btn = styled.div`
-  max-height: 85px;
+  min-height: 85px;
   display: flex;
   justify-content: space-between;
-  padding: 15px;
+  padding: 10px;
   box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.04);
   border-radius: 2px;
-
+  align-items: center;
+  margin: 0 0 40px;
   @media screen and (max-width: 640px) {
     max-height: 100px;
     margin-top: 16px;
@@ -21,8 +22,8 @@ const Btn = styled.div`
 `;
 
 const Icon = styled.img`
-  width: 50px;
-  height: 50px;
+  width: 35px;
+  height: 35px;
 `;
 
 const BtnText = styled.div`

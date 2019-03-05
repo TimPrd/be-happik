@@ -22,14 +22,38 @@
   color: #61dafb;
 }
 
-@media screen and (max-width: 640px) {
+
+@media screen and (max-width: 991px) {
+
+  .app__layout-container {
+    display: grid;
+    grid-template-columns: 1fr; 
+    grid-template-rows: 70px 1fr 50px;
+    grid-template-areas:
+      'header'
+      'main'
+      'footer';
+    height: 100vh;
+  }
+
   .app__sideBar {
-    width: 0;
-    min-height: 0;
-    position: relative;
+    position: absolute;
+  }
+
+
+  .sidebar__open {
+    left: 0;
   }
 
   .app__header, .app__container {
     width: 100vw;
   }
+
+
+  
+}
+
+
+@media screen and (max-width: 700px) {
+  
 }

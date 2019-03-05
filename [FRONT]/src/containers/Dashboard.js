@@ -17,6 +17,8 @@ import WarningIcon from '../assets/img/icons/Icon-NotifWarning.svg';
 import { UserContext } from '../contexts';
 import ChartSurvey from '../components/Dashboard/ChartSurvey';
 
+import Theme from '../utils/Theme';
+
 const HeadTitle = styled.h1`
   width: 100%;
   font-size: ${props => props.theme.custom.title}px;
@@ -24,10 +26,6 @@ const HeadTitle = styled.h1`
   padding: 0;
 `;
 
-const HeadSubTitle = styled.div`
-  font-size: ${props => props.theme.custom.bigtext}px;
-  padding: 0;
-`;
 
 const DashboardInformations = [
   {
@@ -105,9 +103,11 @@ const Dashboard = () => (
           </Row>
 
           <Row>
-            
-              <ChartSurvey></ChartSurvey>
-    
+            <Col xs={12}>
+              <h3>Statistiques sur vos sondages</h3>
+            </Col>
+            <ChartSurvey></ChartSurvey>
+
           </Row>
 
         </Grid>

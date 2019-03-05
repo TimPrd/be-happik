@@ -11,6 +11,16 @@ const Canvas = styled.canvas`
   height: 100%;
 `;
 
+const Container = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.04);
+  padding: 20px;
+
+  box-sizing: border-box;
+`;
+
 class ChartEmploye extends React.Component {
   constructor(props) {
     super(props);
@@ -27,7 +37,7 @@ class ChartEmploye extends React.Component {
     return new Chart(ctx, {
       type: 'bar',
       data: {
-        labels: ['Lundi', 'Mardi', 'Merdi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'],
+        labels: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'],
         datasets: [
           {
             label: 'Insatisfait',
@@ -67,8 +77,11 @@ class ChartEmploye extends React.Component {
           display: true,
           text: 'Satisfaction de vos collaborateurs',
           fontSize: Theme.custom.subtitle,
+          fontColor: Theme.colors.grey5c,
           fontStyle: 'normal',
+          fontFamily: Theme.custom.font,
           position: 'top',
+          padding: 20
         },
         scales: {
           xAxes: [{
@@ -83,7 +96,7 @@ class ChartEmploye extends React.Component {
             stacked: true,
             ticks: {
               beginAtZero: true,
-              max: 500,
+              max: 400,
             },
             gridLines: {
               drawBorder: false,
@@ -104,6 +117,7 @@ class ChartEmploye extends React.Component {
           labels: {
             fontSize: Theme.custom.bigtext,
             fontColor: Theme.colors.grey5c,
+            fontFamily: Theme.custom.font,
 
             generateLabels(chart) {
               const { data } = chart;
@@ -135,7 +149,11 @@ class ChartEmploye extends React.Component {
   }
 
   render() {
-    return <Canvas id="myChart" ref={this.canvasRef} />;
+    return (
+      <Container>
+        <Canvas id="myChart" ref={this.canvasRef} />
+      </Container>
+    );
   }
 }
 

@@ -1,13 +1,10 @@
 import React from 'react';
 import Loading from './Loading';
 import io from "socket.io-client";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import styled from "styled-components";
 
 const Items = styled.div`
-  margin-left:auto;
-  margin-right:15px;
-  padding-top:20px;
 
 `;
 
@@ -25,9 +22,9 @@ class Head extends React.Component {
         socket.emit('setUserId', loggedUser.user.id);
         socket.on('notification', sondageName => {
             //socket.emit('send', 6);
-            this.setState({sondageName})
+            this.setState({ sondageName })
         });
-        return {user: loggedUser.user, loading: false}
+        return { user: loggedUser.user, loading: false }
     };
 
     componentDidMount = async () => {
@@ -36,24 +33,26 @@ class Head extends React.Component {
     };
 
     render() {
-        const {user, loading, sondageName} = this.state;
+        const { user, loading, sondageName } = this.state;
 
         console.log(user);
 
-        if (loading) return <Loading/>;
+        if (loading) return <Loading />;
 
-        return (<Items>
-            {sondageName ?
-                "Un nouveau sondage est disponible " : ""}
-            <FontAwesomeIcon
-                icon="bell"
-                color={this.state.notif ? "red" : "grey"}
-                size="lg"
-            />
+        return (
+            <Items>
+                {sondageName ?
+                    "Un nouveau sondage est disponible " : ""}
+                <FontAwesomeIcon
+                    icon="bell"
+                    color={this.state.notif ? "red" : "grey"}
+                    size="lg"
+                />
 
-            {' '} | {' '}
-            {(user.firstName + ' ' + user.lastName) || user.email}
-        </Items>);
+                {' '} | {' '}
+                {(user.firstName + ' ' + user.lastName) || user.email}
+            </Items>
+        );
     }
 }
 

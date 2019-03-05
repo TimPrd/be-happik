@@ -3,9 +3,10 @@ import styled from 'styled-components';
 import Chart from 'chart.js';
 import client from '../../api';
 import Theme from '../../utils/Theme';
-import { Grid, Col, Row } from 'react-flexbox-grid';
-import { isEmptyChildren } from 'formik';
+import { Col } from 'react-flexbox-grid';
+
 import PropTypes from 'prop-types';
+import { toast } from 'react-toastify';
 
 const Canvas = styled.canvas`
   width: 100%;
@@ -13,7 +14,15 @@ const Canvas = styled.canvas`
 `;
 
 
-
+const Container = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.04);
+  padding: 10px;
+  margin: 10px;
+  box-sizing: border-box;
+`;
 
 
 class ChartSurvey extends React.Component {
@@ -41,8 +50,10 @@ class ChartSurvey extends React.Component {
 
             return analyticsSurvey;
 
-        } catch (err) {
-            return null;
+        } catch (error) {
+            toast.error('error' + error, {
+                position: toast.POSITION.TOP_RIGHT,
+            });
         }
     };
 
@@ -75,7 +86,9 @@ class ChartSurvey extends React.Component {
                     display: true,
                     text: analytic['info']['title'],
                     fontSize: Theme.custom.subtitle,
+                    fontColor: Theme.colors.grey5c,
                     fontStyle: 'normal',
+                    fontFamily: Theme.custom.font,
                     position: 'top',
                 },
                 layout: {
@@ -93,21 +106,18 @@ class ChartSurvey extends React.Component {
 
     }
 
-    componentDidUpdate = async () => {
-        var analytics = this.state.analytics;
-
-        analytics.map((analytic, index) => (
-
-            this.renderChart(analytic, index)
-
-        ))
-    }
     componentDidMount = async () => {
 
         var analyticsSurvey = await this.fetchAnalytics();
         var analytics = analyticsSurvey["data"]["surveyAnalytics"];
 
         this.setState({ analytics: analytics });
+
+        analytics.map((analytic, index) => (
+
+            this.renderChart(analytic, index)
+
+        ))
 
     }
 
@@ -119,8 +129,10 @@ class ChartSurvey extends React.Component {
 
         return (analytics.map((result, index) => (
 
-            <Col xs={4} key={index} >
-                <Canvas id={"surveyChart" + index} key={index} />
+            <Col xs={12} md={6} key={index} >
+                <Container>
+                    <Canvas id={"surveyChart" + index} key={index} />
+                </Container>
             </Col>
         ))
 

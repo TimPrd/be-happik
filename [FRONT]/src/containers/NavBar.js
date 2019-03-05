@@ -4,15 +4,18 @@ import Head from '../components/Head'
 const Container = styled.div`
   width: 100%;
   height: 70px;
-  position: relative;
+  position: fixed;
+  top: 0;
+  right: 0;
   display: flex;
   flex-wrap: wrap;
   padding: 0;
   color:black;
   font-size:14px;
-  background-color: ${props => props.theme.white};
-  z-index: 0;
-  box-shadow: 0 0px 7px 0px grey;
+  background-color: #ffffff;
+  box-shadow: 1px 2px 13px 0px rgba(0,0,0,0.1);
+  align-items: center;
+  flex-direction: row-reverse;
 `;
 
 const NavBar = () => (
