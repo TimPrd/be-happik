@@ -51,7 +51,7 @@ const App = () => (
               <PrivateRoute exact path="/dashboard" component={Dashboard} />
               <PrivateRoute exact path="/" component={Dashboard} />
 
-              <PrivateRoute exact path="/survey" component={AllSurveys} />
+              <PrivateRoute exact path="/surveys" component={AllSurveys} />
               <ManagerRoute exact path="/survey/create" component={CreateSurveyPage} />
               <EmployeeRoute exact path="/survey/reply/:id" component={ReplySurveyPage} />
 

@@ -1,4 +1,5 @@
 const theme = {
+  
   colors: {
     white: '#FFFFFF',
     black: '#000000',
@@ -26,6 +27,7 @@ const theme = {
     bigtext: 16,
     mediumtext: 13,
     text: 11,
+    font: 'Source Sans Pro',
   },
   height: {
     xsHeight: 25,

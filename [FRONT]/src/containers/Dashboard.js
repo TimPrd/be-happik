@@ -15,6 +15,8 @@ import SpinIcon from '../assets/img/icons/Icon-Spin.svg';
 import ChronoIcon from '../assets/img/icons/Icon-Clock.svg';
 import WarningIcon from '../assets/img/icons/Icon-NotifWarning.svg';
 import { UserContext } from '../contexts';
+import ChartSurvey from '../components/Dashboard/ChartSurvey';
+
 
 const HeadTitle = styled.h1`
   width: 100%;
@@ -23,10 +25,6 @@ const HeadTitle = styled.h1`
   padding: 0;
 `;
 
-const HeadSubTitle = styled.div`
-  font-size: ${props => props.theme.custom.bigtext}px;
-  padding: 0;
-`;
 
 const DashboardInformations = [
   {
@@ -61,10 +59,6 @@ const Dashboard = () => (
             {`${user.firstName} ${user.lastName}`}
           </HeadTitle>
 
-          <HeadSubTitle>
-            Ici un text descriptif sur un theme !!
-          </HeadSubTitle>
-
           <Row>
             <Col xs={12} md={4}>
               <ActionButton
@@ -81,7 +75,7 @@ const Dashboard = () => (
                 icon={SurveyIcon}
                 title="Consulter les sondages"
                 text="Accéder aux sondages terminés"
-                path="/survey/all"
+                path="/surveys"
                 color="greenc9"
               />
             </Col>
@@ -97,15 +91,24 @@ const Dashboard = () => (
             </Col>
           </Row>
 
-
           <Row>
             <Col xs={12} lg={4}>
               <DashboardInfos dataInfos={DashboardInformations} />
             </Col>
+
             <Col xs={12} lg={8}>
               <ChartEmploye />
             </Col>
           </Row>
+
+          <Row>
+            <Col xs={12}>
+              <h3>Statistiques sur vos sondages</h3>
+            </Col>
+            <ChartSurvey></ChartSurvey>
+
+          </Row>
+
         </Grid>
       </Layout>
     )}

@@ -176,7 +176,7 @@ const LoginPage = ({ history }) => (
                 <form onSubmit={handleSubmit}>
                   <Col xs={12} mdOffset={3} md={6}>
                     <Label htmlFor="email">
-                      dresse e-mail
+                      Adresse e-mail
                       <br />
                       <Input
                         type="text"

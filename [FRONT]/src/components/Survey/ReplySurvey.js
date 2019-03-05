@@ -7,14 +7,14 @@ import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 
-import { surveyMock, allMoods } from './surveyMock';
+import { allMoods } from './surveyMock';
 
 import client from '../../api';
 
 import Button from '../Buttons/Button';
 
 const AnswerContainer = styled.div`
-  height: 110px;
+  min-height: 110px;
   box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.04);
   text-align: left;
   padding:
@@ -29,10 +29,11 @@ const SurveyTitle = styled.h1`
   line-height: 1.25;
   text-align: center;
   margin: 0;
+  
 `;
 
 const QuestionTitle = styled.p`
-  margin: 0;
+  margin: 0 0 10px;
   font-size: ${props => props.theme.custom.mediumtext}px;
   font-weight: 600;
   line-height: 1.79;
@@ -41,8 +42,7 @@ const QuestionTitle = styled.p`
 `;
 
 const ChoiceContainer = styled.div`
-  width: 80px;
-  height: 60px;
+
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -111,9 +111,10 @@ class ReplySurvey extends React.Component {
       });
 
       // fake mock for survey;
-      survey = surveyMock;
-
-      return survey;
+      //survey = surveyMock;
+      console.log(survey);
+    return survey;
+     // return survey;
     } catch (err) {
       return null;
     }
@@ -139,7 +140,13 @@ class ReplySurvey extends React.Component {
                 const answers = values.questions;
 
                 try {
-                  await client.post('/api/survey/:idSurvey/answers/', answers);
+                  const { match } = this.props;
+                 // const loggedUser = JSON.parse(localStorage.getItem('user'));
+                  const surveyId = match.params.id || null;
+
+                  //Tentative correction Url surveyreply
+
+                  await client.post(`/api/survey/${surveyId}/answers/`, answers);
 
                   toast.success('Réponse soumise avec succes', {
                     position: toast.POSITION.TOP_RIGHT,
@@ -160,7 +167,7 @@ class ReplySurvey extends React.Component {
                     <Col md={6}>
                       <Row>
                         <Col xs={12}>
-                          <SurveyTitle>{survey.survey.title}</SurveyTitle>
+                          <SurveyTitle>{survey.data['survey'].title}</SurveyTitle>
                         </Col>
 
                         <Col xs={6}>
@@ -172,7 +179,7 @@ class ReplySurvey extends React.Component {
                         <Col xs={6}>
                           <p>
                             Date d’expiration :&nbsp;
-                            {moment(survey.survey.endDate).format('D MMMM YYYY')}
+                            {moment(survey.data['survey'].endDate).format('D MMMM YYYY')}
                           </p>
                         </Col>
                       </Row>
@@ -187,7 +194,7 @@ class ReplySurvey extends React.Component {
                     render={arrayHelpers => (
                       <Row>
                         <Col xs={12}>
-                          {survey.questions.map((question, index) => (
+                          {survey.data['questions'].map((question, index) => (
                             <AnswerContainer key={index.toString()}>
                               <Row start="xs">
                                 <Col md={6}>
@@ -203,7 +210,7 @@ class ReplySurvey extends React.Component {
                                     && values.questions[index].mood === mood.mood;
 
                                   return (
-                                    <Col md={2} key={newIndex.toString()}>
+                                    <Col xs={2} key={newIndex.toString()}>
                                       <ChoiceContainer>
                                         <input
                                           name={`question.${newIndex}`}

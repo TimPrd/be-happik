@@ -5,11 +5,12 @@ import PropTypes from 'prop-types';
 import SideBar from './SideBar';
 import NavBar from './NavBar';
 const LayoutContainer = styled.div`
-  widht: 100%;
+
+  height: 100vh;
 `;
 
 const Header = styled.div`
-  width: 100vw;
+  
   height: 70px;
   display: flex;
   flex-direction: column;
@@ -17,29 +18,33 @@ const Header = styled.div`
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
-  position: fixed;
-  left: 0;
-  top: 0;
-  z-index: 0;
+
+  z-index: 1;
 `;
 
 const Aside = styled.div`
-  width: 250px;
-  height: 100vh;
-  z-index: 1;
-  position: absolute;
+
+ position: relative;
+ z-index: 2;
+ with: 200px;
 `;
 
 const Content = styled.div`
-  width: 100%;
-  height: auto;
-  margin-top: 100px;
+
+z-index: 0;
+margin-left: 200px;
+max-width: 100vw;
+@media screen and (max-width: 991px) {
+  margin-left: 0;
+}
+  
 `;
 
+
 const Layout = ({ children }) => (
-  <LayoutContainer>
+  <LayoutContainer className="app__layout-container">
     <Aside className="app__sideBar">
-      <SideBar />
+      <SideBar/>
     </Aside>
 
     <Header className="app__header">
