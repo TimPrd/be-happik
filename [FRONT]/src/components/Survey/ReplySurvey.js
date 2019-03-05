@@ -7,7 +7,7 @@ import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 
-import { surveyMock, allMoods } from './surveyMock';
+import { allMoods } from './surveyMock';
 
 import client from '../../api';
 

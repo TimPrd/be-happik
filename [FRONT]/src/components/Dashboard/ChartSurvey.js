@@ -5,7 +5,6 @@ import client from '../../api';
 import Theme from '../../utils/Theme';
 import { Col } from 'react-flexbox-grid';
 
-import PropTypes from 'prop-types';
 import { toast } from 'react-toastify';
 
 const Canvas = styled.canvas`
@@ -26,9 +25,6 @@ const Container = styled.div`
 
 
 class ChartSurvey extends React.Component {
-    constructor(props) {
-        super(props);
-    }
 
     state = {
         analytics: [],
@@ -37,7 +33,7 @@ class ChartSurvey extends React.Component {
 
 
     fetchAnalytics = async () => {
-        const { match } = this.props;
+        
         const loggedUser = JSON.parse(localStorage.getItem('user'));
 
         try {

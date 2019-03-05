@@ -3,11 +3,8 @@ import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 
 import { ReactComponent as DashboardIcon } from '../assets/img/icons/Icon-dashboard.svg';
-import { ReactComponent as MessageIcon } from '../assets/img/icons/Icon-Message.svg';
 import { ReactComponent as SurveyIcon } from '../assets/img/icons/icon_SurveyGrey.svg';
 import { ReactComponent as UserIcon } from '../assets/img/icons/Icon-UserGrey.svg';
-import { ReactComponent as HelpIcon } from '../assets/img/icons/Icon-Support.svg';
-import { ReactComponent as SettingsIcon } from '../assets/img/icons/Icon-Setting.svg';
 import { ReactComponent as CloseIcon } from '../assets/img/icons/Icon-Close.svg';
 import { ReactComponent as MenuIcon } from '../assets/img/icons/Icon-open-menu.svg';
 import logo from '../assets/img/icons/logo.svg';

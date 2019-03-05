@@ -17,7 +17,6 @@ import WarningIcon from '../assets/img/icons/Icon-NotifWarning.svg';
 import { UserContext } from '../contexts';
 import ChartSurvey from '../components/Dashboard/ChartSurvey';
 
-import Theme from '../utils/Theme';
 
 const HeadTitle = styled.h1`
   width: 100%;

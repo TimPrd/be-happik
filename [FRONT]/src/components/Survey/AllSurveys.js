@@ -6,7 +6,6 @@ import moment from 'moment';
 import PropTypes from 'prop-types';
 
 import client from '../../api';
-import { allUserSurvey } from './surveyMock';
 import Button from '../Buttons/Button';
 import { UserContext } from '../../contexts';
 
@@ -138,7 +137,7 @@ class CreateSurvey extends React.Component {
 
               <Row key={index.toString()}>
             
-                  <Items to={survey.status == 'done'? `/survey/${survey.id}/answers` : `/survey/reply/${survey.id}`}>
+                  <Items to={survey.status === 'done'? `/survey/${survey.id}/answers` : `/survey/reply/${survey.id}`}>
                
                   <Col xs={10} sm={10} md={6}>
                     <Title>{survey.title}</Title>
