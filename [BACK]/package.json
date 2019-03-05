@@ -8,7 +8,7 @@
     },
     "scripts": {
         "start": "node ./node_modules/.bin/nodemon -L bin/www",
-        "test": "./node_modules/.bin/mocha",
+        "test": "./node_modules/.bin/mocha --exit",
         "cover": "./node_modules/.bin/istanbul cover node_modules/mocha/bin/_mocha test/index.js",
         "travis": "./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha -- -R spec ./test/*",
         "coveralls": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
