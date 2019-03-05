@@ -79,12 +79,11 @@ exports.validate = async function (req, res) {
                         url: 'http://happik.herokuapp.com/'
                     };
                     Mailer.send(user.email, 'd-0ea007d61f4a415a8dfc8ebc143e759e', datas);
-                    let usersurvey = await models.UserSurvey.create({
+                    let usersurvey = await models.userSurvey.create({
                         isAnswered: false,
                         UserId: user.id,
                         SurveyId: survey.id
-
-                    })
+                    });
 
                     let notif = await models.Notification.create({
                         title: 'New Survey !',

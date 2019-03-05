@@ -33,7 +33,8 @@ checkMoodScore = (score) => {
  */
 exports.create = async function (req, res) {
     passport.authenticate('jwt', {session: false}, async (err, user, info) => {
-            if (user && user.id === req.params.id) {
+            if (user && user.id == req.params.id) {
+                console.log(user);
                 if (!req.body.mood || checkMoodScore(req.body.mood) === undefined) {
                     return res.status(400).json("Your mood score cannot be recognized.")
                 } else {
@@ -41,7 +42,7 @@ exports.create = async function (req, res) {
                     let mood = await models.userMood.findOrCreate({
                         where: {
                             UserId: user.id,
-                            createdAt: new Date()
+                            createdAt: new Date(date)
                         },
                         defaults:
                             {

@@ -89,17 +89,18 @@ exports.counts = async function (req, res) {
                         TeamId: teams.rows.map((item) => {
                             return item["id"];
                         }),
-                    }
+                    },
+                    attributes: { exclude: ["password"] }
                 });
                 let surveysDone = await models.Survey.findAndCountAll({
                     where: {
-                        AuthorId: user.id,
+                        authorId: user.id,
                         status: "done"
                     }
                 });
                 let surveysWait = await models.Survey.findAndCountAll({
                     where: {
-                        AuthorId: user.id,
+                        authorId: user.id,
                         status: "waiting"
                     }
                 });
