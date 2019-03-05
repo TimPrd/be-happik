@@ -35,7 +35,6 @@ describe('User', () => {
                 .get('/api/user/me')
                 .set('Authorization', 'Bearer ' + token)
                 .end((err, res) => {
-                    console.log(res.body);
                     res.should.have.status(200);
                     done();
                 });
