@@ -7,8 +7,8 @@ import AllSurveys from '../../components/Survey/AllSurveys';
 
 const CreateSurveyPage = () => (
   <Layout>
-    <Grid fluid>
-      <AllSurveys />
+    <Grid>
+      <AllSurveys/>
     </Grid>
   </Layout>
 );

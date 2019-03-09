@@ -1,6 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
-import PropTypes from 'prop-types';
+import { toast } from 'react-toastify';
+import client from '../../api';
+import UserNumber from '../../assets/img/icons/Icon-AddUser.svg';
+import SpinIcon from '../../assets/img/icons/Icon-Spin.svg';
+
 
 const Container = styled.div`
   width: 100%;
@@ -12,8 +16,8 @@ const Container = styled.div`
 `;
 
 const Icon = styled.img`
-  width: 50px;
-  height: 50px;
+  width: 35px;
+  height: 35px;
 `;
 
 const InfosTitle = styled.h2`
@@ -51,29 +55,112 @@ const InfosSectionsNumber = styled.div`
   font-size: ${props => props.theme.custom.bigtext}px;
 `;
 
-const DashboardInfos = ({ dataInfos }) => (
-  <Container>
-    <InfosTitle>
-      Informations générales
-    </InfosTitle>
+class GlobalInfo extends React.Component {
 
-    {dataInfos.map((info, index) => (
-      <InfosSections key={index.toString()}>
-        <Icon src={info.picto} />
+  state = {
+    surveysDone: [],
+    teams: [],
+    collaborator: []
+  };
 
-        <InfosSectionsText>
-          {info.title}
-        </InfosSectionsText>
-        <InfosSectionsNumber>
-          {info.number}
-        </InfosSectionsNumber>
-      </InfosSections>
-    ))}
-  </Container>
-);
 
-DashboardInfos.propTypes = {
-  dataInfos: PropTypes.arrayOf(PropTypes.object).isRequired,
-};
+  fetchData = async () => {
 
-export default DashboardInfos;
+    const loggedUser = JSON.parse(localStorage.getItem('user'));
+
+    try {
+      let globalInfos = await client.get(`/api/analytic/count`, {
+        headers: {
+          Authorization: `Bearer ${loggedUser.token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      return globalInfos;
+
+    } catch (error) {
+      toast.error('error' + error, {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    }
+  };
+
+  componentDidMount = async () => {
+
+    var globalInfos = await this.fetchData();
+
+    this.setState({
+      collaborator: globalInfos.data.collaborators,
+      surveysDone: globalInfos.data.surveysDone,
+      teams: globalInfos.data.teams
+    });
+
+  }
+
+
+  render() {
+
+    const surveysDone = this.state.surveysDone;
+    const teams = this.state.teams;
+    const collaborators = this.state.collaborator
+
+
+    return (
+      <div>
+
+        <Container>
+          <InfosTitle>
+            Informations générales
+          </InfosTitle>
+
+          <InfosSections>
+
+            <Icon src={SpinIcon} />
+
+            <InfosSectionsText>
+              Nombre de sondages terminés
+              </InfosSectionsText>
+            <InfosSectionsNumber>
+              {surveysDone["count"]}
+            </InfosSectionsNumber>
+
+          </InfosSections>
+
+          <InfosSections>
+
+            <Icon src={SpinIcon} />
+
+            <InfosSectionsText>
+              Nombre d'équipes
+              </InfosSectionsText>
+            <InfosSectionsNumber>
+              {teams["count"]}
+            </InfosSectionsNumber>
+
+          </InfosSections>
+
+          <InfosSections>
+
+            <Icon src={UserNumber} />
+
+            <InfosSectionsText>
+              Nombre d'employés
+            </InfosSectionsText>
+            <InfosSectionsNumber>
+              {collaborators["count"]}
+            </InfosSectionsNumber>
+
+          </InfosSections>
+
+
+        </Container>
+
+
+      </div>
+
+    )
+  }
+
+}
+
+export default GlobalInfo;

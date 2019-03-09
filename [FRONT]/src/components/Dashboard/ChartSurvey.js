@@ -10,17 +10,7 @@ import { toast } from 'react-toastify';
 const Canvas = styled.canvas`
   width: 100%;
   height: 100%;
-`;
-
-
-const Container = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.04);
-  padding: 10px;
-  margin: 10px;
-  box-sizing: border-box;
+  padding: 20px;
 `;
 
 
@@ -74,6 +64,7 @@ class ChartSurvey extends React.Component {
             },
             options: {
                 responsive: true,
+                aspectRatio: 1,
                 animation: {
                     animateRotate: true,
                     animateScale: true
@@ -124,12 +115,15 @@ class ChartSurvey extends React.Component {
         var analytics = this.state.analytics;
 
         return (analytics.map((result, index) => (
-
-            <Col xs={12} md={6} key={index} >
-                <Container>
+          
+                
+                <Col xs={12} md={6} key={index} >
+                
                     <Canvas id={"surveyChart" + index} key={index} />
-                </Container>
-            </Col>
+                        
+                </Col>
+        
+            
         ))
 
         )

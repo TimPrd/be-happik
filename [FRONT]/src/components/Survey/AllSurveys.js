@@ -10,11 +10,11 @@ import Button from '../Buttons/Button';
 import { UserContext } from '../../contexts';
 
 const Items = styled(Link)`
+  position: relative;
   width: 100%;
   min-height: ${props => props.theme.height.xlHeight}px;
   display: flex;
   flex-wrap:wrap;
-  justify-content: center;
   align-items: center;
   border-bottom: 3px solid #f1f1f3;
   font-size: ${props => props.theme.custom.bigtext}px;
@@ -41,6 +41,9 @@ const Title = styled.h3`
 `;
 
 const Status = styled.div`
+  position: absolute;
+  right: 0;
+  top: 10px;
   width: 70px;
   height: ${props => props.theme.height.xsHeight}px;
   display: flex;
@@ -114,7 +117,7 @@ class CreateSurvey extends React.Component {
         {user => (
           <div>
             <Row>
-              <Col xs={6} sm={10}>
+              <Col xs={6} sm={9} md={10}>
                 <Row start="xs">
                   <Col xs={12}>
                     <PageTitle>Liste des sondages</PageTitle>
@@ -127,49 +130,53 @@ class CreateSurvey extends React.Component {
               </Col>
 
               {user.RoleId === 1 && (
-                <Col xs={6} sm={2}>
+                <Col xs={6} sm={3} md={2}>
                   <Button label="Créer un sondage" handleClick={() => history.push('/survey/create')} type="submit" />
                 </Col>
               )}
             </Row>
+            <div className={"margin-up"}>
+              {surveys && surveys.data['surveys'].map((survey, index) => (
 
-            {surveys && surveys.data['surveys'].map((survey, index) => (
+                <Row key={index.toString()}>
+                  <Col xs={12}>
+                    <Items to={survey.status === 'done' ? `/survey/${survey.id}/answers` : `/survey/reply/${survey.id}`}>
 
-              <Row key={index.toString()}>
-            
-                  <Items to={survey.status === 'done'? `/survey/${survey.id}/answers` : `/survey/reply/${survey.id}`}>
-               
-                  <Col xs={10} sm={10} md={6}>
-                    <Title>{survey.title}</Title>
+                      <Col xs={10} sm={10} md={6}>
+                        <Title>{survey.title}</Title>
 
-                  </Col>
-                  <Col xs={2} sm={2} md={2}>
-                    <Status className={this.getStatus(survey, 'class')}>
-                      {this.getStatus(survey, 'noClass')}
-                      </Status>
-                  </Col>
-                  <Col xs={12} sm={4} md={2}>
-                    <p>
-                      Auteur :&nbsp;
+                        <Status className={this.getStatus(survey, 'class')}>
+                          {this.getStatus(survey, 'noClass')}
+                        </Status>
+
+                      </Col>
+
+
+
+                      <Col xs={12} sm={4} md={2}>
+                        <p>
+                          Auteur :&nbsp;
                         {survey.author}
-                    </p>
-                  </Col>
-                  <Col xs={12} sm={8} md={2}>
-                    <Row>
-                      <Col xs={12} sm={6} md={12}>
-                        Création : &nbsp;
+                        </p>
+                      </Col>
+                      <Col xs={12} sm={8} md={2}>
+                        <Row>
+                          <Col xs={12} sm={6} md={12}>
+                            Création : &nbsp;
                         {moment(survey.createdAt).format('D MMMM YYYY')}
-                      </Col>
-                      <Col xs={12} sm={6} md={12}>
-                        Expire : &nbsp;
+                          </Col>
+                          <Col xs={12} sm={6} md={12}>
+                            Expire : &nbsp;
                         {moment(survey.endDate).format('D MMMM YYYY')}
+                          </Col>
+                        </Row>
                       </Col>
-                    </Row>
+                    </Items>
                   </Col>
-                </Items>
-              </Row>
+                </Row>
 
-            ))}
+              ))}
+            </div>
           </div>
         )}
 

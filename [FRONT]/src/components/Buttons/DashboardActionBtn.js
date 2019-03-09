@@ -17,7 +17,7 @@ const Btn = styled.div`
   margin: 0 0 40px;
   @media screen and (max-width: 640px) {
     max-height: 100px;
-    margin-top: 16px;
+    margin: 0 0 15px;
   }
 `;
 

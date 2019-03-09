@@ -4,7 +4,7 @@ import NeutralIcon from '../../assets/img/icons/Icon-Neutral.svg';
 import SadIcon from '../../assets/img/icons/Icon-Sad.svg';
 import SmileIcon from '../../assets/img/icons/Icon-Smile.svg';
 
-const surveyMock = {
+/*const surveyMock = {
   author: 'Super Manager',
   survey: {
     id: 1,
@@ -124,7 +124,7 @@ const allUserSurvey = [
     status: 'done',
   },
 ];
-
+*/
 const allMoods = [
   {
     title: 'Très satisfait',
@@ -158,4 +158,5 @@ const allMoods = [
   },
 ];
 
-export { surveyMock, allUserSurvey, allMoods };
+//export { surveyMock, allUserSurvey, allMoods };
+export { allMoods };

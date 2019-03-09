@@ -12,6 +12,7 @@ import { allMoods } from './surveyMock';
 import client from '../../api';
 
 import Button from '../Buttons/Button';
+import BorderedButton from '../Buttons/BorderedButton';
 
 const AnswerContainer = styled.div`
   min-height: 110px;
@@ -113,8 +114,8 @@ class ReplySurvey extends React.Component {
       // fake mock for survey;
       //survey = surveyMock;
       console.log(survey);
-    return survey;
-     // return survey;
+      return survey;
+      // return survey;
     } catch (err) {
       return null;
     }
@@ -141,12 +142,17 @@ class ReplySurvey extends React.Component {
 
                 try {
                   const { match } = this.props;
-                 // const loggedUser = JSON.parse(localStorage.getItem('user'));
+                  const loggedUser = JSON.parse(localStorage.getItem('user'));
                   const surveyId = match.params.id || null;
 
-                  //Tentative correction Url surveyreply
 
-                  await client.post(`/api/survey/${surveyId}/answers/`, answers);
+
+                  await client.post(`/api/survey/${surveyId}/answers/`, answers, {
+                    headers: {
+                      Authorization: `Bearer ${loggedUser.token}`,
+                      'Content-Type': 'application/json',
+                    },
+                  });
 
                   toast.success('Réponse soumise avec succes', {
                     position: toast.POSITION.TOP_RIGHT,
@@ -160,16 +166,17 @@ class ReplySurvey extends React.Component {
               render={({ values, handleChange, handleSubmit }) => (
                 <Form>
                   <Row middle="xs">
-                    <Col md={3}>
-                      <Button label="Go Back" handleClick={history.goBack} type="submit" />
+                    <Col md={2}>
+                      <BorderedButton label="Précédent" handleClick={history.goBack} type="submit" />
                     </Col>
 
-                    <Col md={6}>
+                    <Col md={8}>
                       <Row>
                         <Col xs={12}>
                           <SurveyTitle>{survey.data['survey'].title}</SurveyTitle>
                         </Col>
-
+                      </Row>
+                      <Row>
                         <Col xs={6}>
                           <p>
                             Auteur :&nbsp;
@@ -185,8 +192,9 @@ class ReplySurvey extends React.Component {
                       </Row>
                     </Col>
 
-                    <Col md={3}>
-                      <Button label="Submit" handleClick={handleSubmit} type="submit" />
+
+                    <Col md={2}>
+                      <Button label="Soumettre" handleClick={handleSubmit} type="submit" />
                     </Col>
                   </Row>
                   <FieldArray

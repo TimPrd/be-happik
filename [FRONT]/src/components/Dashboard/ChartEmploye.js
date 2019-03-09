@@ -7,8 +7,6 @@ import Theme from '../../utils/Theme';
 // import PropTypes from 'prop-types';
 
 const Canvas = styled.canvas`
-  width: 100%;
-  height: 100%;
 `;
 
 const Container = styled.div`
@@ -73,6 +71,7 @@ class ChartEmploye extends React.Component {
       },
       options: {
         responsive: true,
+        aspectRatio: 1,
         title: {
           display: true,
           text: 'Satisfaction de vos collaborateurs',
