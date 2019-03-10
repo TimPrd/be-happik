@@ -298,14 +298,13 @@ exports.getAllSurveys = async function (req, res) {
                 id:
                     Array.from(srv, x => x.SurveyId)
             },
-            limit: limit,
             offset: offset,
             $sort: {id: 1}
         });
         const count = surveys.length;
         const pages = Math.ceil(count / limit);
         surveys = surveys.slice(0, limit);
-        res.status(200).json({surveys: surveys, count: count, pages: pages});
+        res.status(200).json({surveys: surveys, count: count, current: req.query.page, pages: pages});
     })(req, res);
 };
 
@@ -344,71 +343,71 @@ exports.getAllSurveys = async function (req, res) {
  * @apiError (400) There is no survey for this id
  * @apiError (401) UserNotFound You are not authorized
  */
-exports.getSurvey = function(req, res) {
-	passport.authenticate('jwt', { session: false }, async (err, user, info) => {
-		if (err) {
-			return res.status(500).json(err);
-		}
+exports.getSurvey = function (req, res) {
+    passport.authenticate('jwt', {session: false}, async (err, user, info) => {
+        if (err) {
+            return res.status(500).json(err);
+        }
 
-		if (user) {
-			const SurveyId = req.params.idSurvey;
-			const userSurvey = await models.userSurvey.find({
-				where: {
-					UserId: user.id,
-					SurveyId: SurveyId
-				},
-				include: [
-					{
-						model: models.Survey,
-						includes: [
-							{
-								model: models.User
-							}
-						]
-					}
-				]
-			});
+        if (user) {
+            const SurveyId = req.params.idSurvey;
+            const userSurvey = await models.userSurvey.find({
+                where: {
+                    UserId: user.id,
+                    SurveyId: SurveyId
+                },
+                include: [
+                    {
+                        model: models.Survey,
+                        includes: [
+                            {
+                                model: models.User
+                            }
+                        ]
+                    }
+                ]
+            });
 
-			if (!userSurvey) {
-				return res.status(400).json('There is not survey for this id');
-			}
+            if (!userSurvey) {
+                return res.status(400).json('There is not survey for this id');
+            }
 
-			const Author = await models.User.find({
-				where: {
-					RoleId: 0,
-					id: userSurvey.Survey.AuthorId
-				},
-				attributes: [ 'firstName', 'lastName' ]
-			});
+            const Author = await models.User.find({
+                where: {
+                    RoleId: 0,
+                    id: userSurvey.Survey.authorId
+                },
+                attributes: ['firstName', 'lastName']
+            });
 
-			let questionsSurvey = await models.Questionsurvey.findAll({
-				where: {
-					SurveyId: userSurvey.SurveyId
-				},
-				include: [
-					{
-						model: models.Question
-					}
-				]
-			});
+            let questionsSurvey = await models.Questionsurvey.findAll({
+                where: {
+                    SurveyId: userSurvey.SurveyId
+                },
+                include: [
+                    {
+                        model: models.Question
+                    }
+                ]
+            });
 
 
-			if (questionsSurvey) {
-			    questionsSurvey = questionsSurvey.filter((el, i, a) => i === a.indexOf(el));
-			}
+            if (questionsSurvey) {
+                questionsSurvey = questionsSurvey.filter((el, i, a) => i === a.indexOf(el));
+            }
 
-			let surv = userSurvey.Survey;
+            let surv = userSurvey.Survey;
 
-			async function setSurv(survey, userSurvey, Author, questionsSurvey) {
-				survey.authorId = undefined;
-				return { survey: survey, author: Author, questions: questionsSurvey.map((q) => q.Question) };
-			}
+            async function setSurv(survey, userSurvey, Author, questionsSurvey) {
+                survey.authorId = undefined;
+                return {survey: survey, author: Author, questions: questionsSurvey.map((q) => q.Question)};
+            }
 
-			const survey = await setSurv(surv, userSurvey, Author, questionsSurvey);
+            const survey = await setSurv(surv, userSurvey, Author, questionsSurvey);
 
-			return await res.status(200).json(survey);
-		} else return res.status(401).json({ msg: 'You are not authorize' });
-	})(req, res);
+            return await res.status(200).json(survey);
+        } else return res.status(401).json({msg: 'You are not authorize'});
+    })(req, res);
 };
 
 /**
@@ -530,7 +529,8 @@ exports.getSurveyWithAnswers = function (req, res) {
 exports.postAnswers = function (req, res) {
     passport.authenticate('jwt', {session: false}, async (err, user, info) => {
         if (err) {
-            return res.send(500).send(err);
+            console.log(err);
+            res.send(500).send(err);
         }
 
         if (user) {
@@ -559,8 +559,8 @@ exports.postAnswers = function (req, res) {
                 return res.status(400).json('You must add answers. ');
             }
 
+
             let answersBody = req.body.answers;
-            const answerIds = answersBody.map((answer) => answer.id);
 
             const answers = await models.answer.findAll({
                 where: {
@@ -569,33 +569,21 @@ exports.postAnswers = function (req, res) {
                 }
             });
 
-            if (answers.length > 0) {
+            if (answers.length >= 1) {
                 return res.status(409).json('You already answer this survey');
             }
 
-            const body = req.body;
-
-            const questions = body.map((body) => body.questionId);
+            const questions = answersBody.map((body) => body.questionId);
 
             const dd = await models.Questionsurvey.findAll({
                 where: {
-                    SurveyId: SurveyId
+                    SurveyId: SurveyId,
                 }
             });
 
             if (dd.length !== questions.length) {
-                return res.status(400).json('Questions id or surveys id is not good');
+                return res.status(400).json('One or more questions are not part of this survey');
             }
-
-            const jj = dd.map((d) => d.QuestionId).sort();
-
-            for (i = 0; i < jj.length; i++) {
-                if (jj[i] !== questions[i]) {
-                    return res.status(400).json('Questions id or surveys id is not good');
-                }
-            }
-
-            answersBody = req.body;
 
             const results = answersBody
                 .filter((ans) => typeof ans.result === 'number')
@@ -623,7 +611,7 @@ exports.postAnswers = function (req, res) {
                     seen: false
                 })
                 .then((notif) => {
-                    notif.setUser(userSurvey.Survey.AuthorId);
+                    notif.setUser(userSurvey.Survey.authorId);
                     notif.setSender(user.id);
                 });
             //var io = req.app.get('socketio');
