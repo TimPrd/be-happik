@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-import { toast } from 'react-toastify';
 import client from '../../api';
 import UserNumber from '../../assets/img/icons/Icon-AddUser.svg';
 import SpinIcon from '../../assets/img/icons/Icon-Spin.svg';
@@ -60,15 +59,18 @@ class GlobalInfo extends React.Component {
   state = {
     surveysDone: [],
     teams: [],
-    collaborator: []
+    collaborator: [],
+    status : null
   };
 
 
   fetchData = async () => {
 
     const loggedUser = JSON.parse(localStorage.getItem('user'));
-    console.log(loggedUser);
+    this.setState({ roleId: loggedUser.RoleId })
+
     try {
+
       let globalInfos = await client.get(`/api/analytic/count`, {
         headers: {
           Authorization: `Bearer ${loggedUser.token}`,
@@ -76,100 +78,100 @@ class GlobalInfo extends React.Component {
         },
       });
 
-     return globalInfos
+      return globalInfos
 
     } catch (error) {
-      toast.error('error' + error, {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-    }
-  };
+      this.setState({ status : false})
+    };
+
+  }
+
 
   componentDidMount = async () => {
-    const loggedUser = JSON.parse(localStorage.getItem('user'));
-    if (loggedUser.user.RoleId === "1") {
 
-
-      var globalInfos = await this.fetchData();
-
+    const globalInfos = await this.fetchData();
+   
+    if (this.state.status !== false) {
       this.setState({
         collaborator: globalInfos.data.collaborators,
         surveysDone: globalInfos.data.surveysDone,
         teams: globalInfos.data.teams
       });
     }
+
   }
 
 
   render() {
-    const loggedUser = JSON.parse(localStorage.getItem('user'));
-    if (loggedUser.user.RoleId === "1") {
+    if (this.state.status !== false) {
     const surveysDone = this.state.surveysDone;
     const teams = this.state.teams;
     const collaborators = this.state.collaborator
 
- 
+    
+      return (
+        <div>
 
-    return (
-      <div>
+          <Container>
+            <InfosTitle>
+              Informations générales
+            </InfosTitle>
 
-        <Container>
-          <InfosTitle>
-            Informations générales
-          </InfosTitle>
+            <InfosSections>
 
-          <InfosSections>
+              <Icon src={SpinIcon} />
 
-            <Icon src={SpinIcon} />
+              <InfosSectionsText>
+                Nombre de sondages terminés
+                </InfosSectionsText>
+              <InfosSectionsNumber>
+                {surveysDone["count"]}
+              </InfosSectionsNumber>
 
-            <InfosSectionsText>
-              Nombre de sondages terminés
+            </InfosSections>
+
+            <InfosSections>
+
+              <Icon src={SpinIcon} />
+
+              <InfosSectionsText>
+                Nombre d'équipes
+                </InfosSectionsText>
+              <InfosSectionsNumber>
+                {teams["count"]}
+              </InfosSectionsNumber>
+
+            </InfosSections>
+
+            <InfosSections>
+
+              <Icon src={UserNumber} />
+
+              <InfosSectionsText>
+                Nombre d'employés
               </InfosSectionsText>
-            <InfosSectionsNumber>
-              {surveysDone["count"]}
-            </InfosSectionsNumber>
+              <InfosSectionsNumber>
+                {collaborators["count"]}
+              </InfosSectionsNumber>
 
-          </InfosSections>
-
-          <InfosSections>
-
-            <Icon src={SpinIcon} />
-
-            <InfosSectionsText>
-              Nombre d'équipes
-              </InfosSectionsText>
-            <InfosSectionsNumber>
-              {teams["count"]}
-            </InfosSectionsNumber>
-
-          </InfosSections>
-
-          <InfosSections>
-
-            <Icon src={UserNumber} />
-
-            <InfosSectionsText>
-              Nombre d'employés
-            </InfosSectionsText>
-            <InfosSectionsNumber>
-              {collaborators["count"]}
-            </InfosSectionsNumber>
-
-          </InfosSections>
+            </InfosSections>
 
 
-        </Container>
+          </Container>
 
 
-      </div>
-
-    )
-
+        </div>
+      )
     } else {
-      return false
-    }
-  }
 
+      return false
+
+    }
+
+
+  }
 }
+
+
 
 export default GlobalInfo;

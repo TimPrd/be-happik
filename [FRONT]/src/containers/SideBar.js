@@ -131,6 +131,11 @@ const MenuMock = [
     pageName: 'Collaborateurs',
     Icon: UserIcon,
     url: '/collaborators',
+  },
+  {
+    pageName: 'Déconnexion',
+    Icon: CloseIcon,
+    url: '/logout',
   }
 ];
 class SideBar extends React.Component {

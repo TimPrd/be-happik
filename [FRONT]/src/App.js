@@ -12,6 +12,7 @@ import NotFoundPage from './containers/404Page';
 import Theme from './utils/Theme';
 import './App.css';
 import LoginPage from './containers/LoginPage';
+import Logout from './containers/Logout';
 import RegisterPage from './containers/RegisterPage';
 import PrivateRoute from './components/PrivateRoute';
 import PublicRoute from './components/PublicRoute';
@@ -53,11 +54,13 @@ const App = () => (
               <PrivateRoute exact path="/" component={Dashboard} />
 
               <PrivateRoute exact path="/surveys" component={AllSurveys} />
-              <ManagerRoute exact path="/survey/create" component={CreateSurveyPage} />
+              <PrivateRoute exact path="/survey/create" component={CreateSurveyPage} />
               <PrivateRoute exact path="/survey/reply/:id" component={ReplySurveyPage} />
               <PrivateRoute exact path="/survey/:id/answers" component={AnsweredSurveyPage} />
 
-              <ManagerRoute exact path="/collaborators" component={Collaborators} />
+              <PrivateRoute exact path="/collaborators" component={Collaborators} />
+
+              <PrivateRoute exact path="/logout" component={Logout} />
 
               <PublicRoute exact path="/login" component={LoginPage} />
               <Route exact path="/register" component={RegisterPage} />

@@ -5,8 +5,6 @@ import client from '../../api';
 import Theme from '../../utils/Theme';
 import { Row, Col } from 'react-flexbox-grid';
 
-import { toast } from 'react-toastify';
-
 const Canvas = styled.canvas`
   width: 100%;
   height: 100%;
@@ -18,7 +16,7 @@ class ChartSurvey extends React.Component {
 
     state = {
         analytics: [],
-        loggedUser : null
+        status: null
     };
 
 
@@ -26,7 +24,7 @@ class ChartSurvey extends React.Component {
     fetchAnalytics = async () => {
 
         const loggedUser = JSON.parse(localStorage.getItem('user'));
-        
+
         try {
             let analyticsSurvey = await client.get(`/api/analytic/survey/response`, {
                 headers: {
@@ -38,9 +36,7 @@ class ChartSurvey extends React.Component {
             return analyticsSurvey;
 
         } catch (error) {
-            toast.error('error' + error, {
-                position: toast.POSITION.TOP_RIGHT,
-            });
+            this.setState({ status: false })
         }
     };
 
@@ -95,13 +91,12 @@ class ChartSurvey extends React.Component {
     }
 
     componentDidMount = async () => {
-        const loggedUser = JSON.parse(localStorage.getItem('user'));
-        if (loggedUser.user.RoleId === 1) {
 
+        var analyticsSurvey = await this.fetchAnalytics();
+        if (this.state.status !== false) {
 
-            var analyticsSurvey = await this.fetchAnalytics();
-            var analytics = analyticsSurvey["data"]["surveyAnalytics"];
-
+        var analytics = analyticsSurvey["data"]["surveyAnalytics"];
+      
             this.setState({ analytics: analytics });
 
             analytics.map((analytic, index) => (
@@ -109,15 +104,17 @@ class ChartSurvey extends React.Component {
                 this.renderChart(analytic, index)
 
             ))
-
         }
+
     }
 
 
 
+
     render() {
-        const loggedUser = JSON.parse(localStorage.getItem('user'));
-        if (loggedUser.user.RoleId === 1) {
+
+        if (this.state.status !== false) {
+
             var analytics = this.state.analytics;
 
             return (
@@ -143,8 +140,11 @@ class ChartSurvey extends React.Component {
                     </Row>
                 </div>
             )
+
         } else {
+
             return false
+
         }
     }
 }

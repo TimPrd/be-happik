@@ -108,7 +108,12 @@ class CreateSurvey extends React.Component {
       }
 
       return newdata;
-    } catch (err) {
+    } catch (error) {
+
+      toast.error('error' + error, {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+
       return null;
     }
   };
@@ -125,7 +130,12 @@ class CreateSurvey extends React.Component {
       });
 
       return teams.data.msg === 'You are not authorize' ? null : teams.data.map(team => ({ value: team.id, label: team.teamName }));
-    } catch (err) {
+    } catch (error) {
+
+      toast.error('error' + error, {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+
       return null;
     }
   };
@@ -179,6 +189,10 @@ class CreateSurvey extends React.Component {
 
               try {
                 await client.post('/api/survey/validate', data);
+                
+                toast.success('Votre sondage a été envoyé  !', {
+                  position: toast.POSITION.TOP_RIGHT,
+                });
 
                 history.push('/');
               } catch (error) {
