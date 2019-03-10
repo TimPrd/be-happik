@@ -105,16 +105,8 @@ const Dashboard = () => (
             </Col>
           </Row>
 
-          <Row>
-            <Col xs={12}>
-              <h3>Statistiques sur vos sondages</h3>
-            </Col>
-
-          </Row>
-
-          <Row>
             <ChartSurvey></ChartSurvey>
-          </Row>
+        
        
         </Grid>
       </Layout>

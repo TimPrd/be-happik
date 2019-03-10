@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import Chart from 'chart.js';
 import client from '../../api';
 import Theme from '../../utils/Theme';
-import { Col } from 'react-flexbox-grid';
+import { Row, Col } from 'react-flexbox-grid';
 
 import { toast } from 'react-toastify';
 
@@ -18,14 +18,15 @@ class ChartSurvey extends React.Component {
 
     state = {
         analytics: [],
+        loggedUser : null
     };
 
 
 
     fetchAnalytics = async () => {
-        
-        const loggedUser = JSON.parse(localStorage.getItem('user'));
 
+        const loggedUser = JSON.parse(localStorage.getItem('user'));
+        
         try {
             let analyticsSurvey = await client.get(`/api/analytic/survey/response`, {
                 headers: {
@@ -94,40 +95,57 @@ class ChartSurvey extends React.Component {
     }
 
     componentDidMount = async () => {
+        const loggedUser = JSON.parse(localStorage.getItem('user'));
+        if (loggedUser.user.RoleId === 1) {
 
-        var analyticsSurvey = await this.fetchAnalytics();
-        var analytics = analyticsSurvey["data"]["surveyAnalytics"];
 
-        this.setState({ analytics: analytics });
+            var analyticsSurvey = await this.fetchAnalytics();
+            var analytics = analyticsSurvey["data"]["surveyAnalytics"];
 
-        analytics.map((analytic, index) => (
+            this.setState({ analytics: analytics });
 
-            this.renderChart(analytic, index)
+            analytics.map((analytic, index) => (
 
-        ))
+                this.renderChart(analytic, index)
 
+            ))
+
+        }
     }
 
 
 
     render() {
+        const loggedUser = JSON.parse(localStorage.getItem('user'));
+        if (loggedUser.user.RoleId === 1) {
+            var analytics = this.state.analytics;
 
-        var analytics = this.state.analytics;
+            return (
+                <div>
+                    <Row>
+                        <Col xs={12}>
+                            <h3>Statistiques sur vos sondages</h3>
+                        </Col>
+                    </Row>
 
-        return (analytics.map((result, index) => (
-          
-                
-                <Col xs={12} md={6} key={index} >
-                
-                    <Canvas id={"surveyChart" + index} key={index} />
-                        
-                </Col>
-        
-            
-        ))
+                    <Row>
+                        {analytics.map((result, index) => (
 
-        )
 
+                            <Col xs={12} md={6} key={index} >
+
+                                <Canvas id={"surveyChart" + index} key={index} />
+
+                            </Col>
+
+
+                        ))}
+                    </Row>
+                </div>
+            )
+        } else {
+            return false
+        }
     }
 }
 

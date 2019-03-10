@@ -4,10 +4,13 @@ import { Link, withRouter } from 'react-router-dom';
 import styled from 'styled-components';
 import moment from 'moment';
 import PropTypes from 'prop-types';
+import Select from 'react-select';
+
 
 import client from '../../api';
 import Button from '../Buttons/Button';
 import { UserContext } from '../../contexts';
+
 
 const Items = styled(Link)`
   position: relative;
@@ -65,21 +68,33 @@ const Status = styled.div`
 `;
 
 class CreateSurvey extends React.Component {
-  state = {
-    surveys: null,
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      surveys : null,
+      currentPage: 1,
+      items: 9,
+      options: []
+    };
+
+
   };
 
   fetchSurvey = async () => {
     const loggedUser = JSON.parse(localStorage.getItem('user'));
-    const wantedPage = 1;
+    const wantedPage = this.state.currentPage;
     try {
-      let surveys = await client.get(`/api/surveys?page=${wantedPage}&open=true`, {
+      let surveys = await client.get(`/api/surveys?page=${wantedPage}`, {
         headers: {
           Authorization: `Bearer ${loggedUser.token}`,
           'Content-Type': 'application/json',
         },
       });
 
+      this.setState({ currentPage: surveys["data"].currentPageNumber });
+      this.setState({ items: surveys["data"].count })
       return surveys
 
     } catch (err) {
@@ -87,11 +102,44 @@ class CreateSurvey extends React.Component {
     }
   };
 
+  async handleSelect(page) {
+    console.log('handle select', page.value);
+    this.setState({ currentPage: page.value });
+
+    const surveys = await this.fetchSurvey(this.state.currentPage || 1);
+    
+    let numberMaxOfPages = surveys["data"].count;
+    console.log(numberMaxOfPages)
+    const options = []
+    for (let index = 0; index < numberMaxOfPages; index++) {
+      options.push({value: index + 1, label: index + 1});
+    
+    }
+
+    this.setState ({
+      options,
+      surveys
+    })
+  }
+
   componentDidMount = async () => {
-    const surveys = await this.fetchSurvey();
+    const surveys = await this.fetchSurvey(this.state.currentPage || 1);
 
+    let numberMaxOfPages = surveys["data"].count;
+    console.log(numberMaxOfPages)
+    const options = []
+    for (let index = 0; index < numberMaxOfPages; index++) {
+      options.push({value: index + 1, label: index + 1});
+    
+    }
 
-    this.setState({ surveys });
+    this.setState ({
+      options,
+      surveys
+    })
+   
+    console.log(this.state.options)
+    console.log(this.state.surveys)
   };
 
   getStatus = (survey, type) => {
@@ -111,6 +159,10 @@ class CreateSurvey extends React.Component {
   render() {
     const { surveys } = this.state;
     const { history } = this.props;
+    const { options } = this.state;
+    const { currentPage } = this.state;
+    
+ 
 
     return (
       <UserContext.Consumer>
@@ -128,6 +180,15 @@ class CreateSurvey extends React.Component {
                   </Col>
                 </Row>
               </Col>
+
+
+              <Select
+                value={currentPage}
+                onChange={this.handleSelect.bind(this)}
+                options={options}
+                />
+
+
 
               {user.RoleId === 1 && (
                 <Col xs={6} sm={3} md={2}>
@@ -177,6 +238,9 @@ class CreateSurvey extends React.Component {
 
               ))}
             </div>
+
+
+
           </div>
         )}
 

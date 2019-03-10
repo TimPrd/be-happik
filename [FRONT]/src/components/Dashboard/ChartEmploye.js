@@ -71,7 +71,7 @@ class ChartEmploye extends React.Component {
       },
       options: {
         responsive: true,
-        aspectRatio: 1,
+        aspectRatio: 2,
         title: {
           display: true,
           text: 'Satisfaction de vos collaborateurs',

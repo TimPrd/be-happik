@@ -67,7 +67,7 @@ class GlobalInfo extends React.Component {
   fetchData = async () => {
 
     const loggedUser = JSON.parse(localStorage.getItem('user'));
-
+    console.log(loggedUser);
     try {
       let globalInfos = await client.get(`/api/analytic/count`, {
         headers: {
@@ -76,7 +76,7 @@ class GlobalInfo extends React.Component {
         },
       });
 
-      return globalInfos;
+     return globalInfos
 
     } catch (error) {
       toast.error('error' + error, {
@@ -86,24 +86,29 @@ class GlobalInfo extends React.Component {
   };
 
   componentDidMount = async () => {
+    const loggedUser = JSON.parse(localStorage.getItem('user'));
+    if (loggedUser.user.RoleId === "1") {
 
-    var globalInfos = await this.fetchData();
 
-    this.setState({
-      collaborator: globalInfos.data.collaborators,
-      surveysDone: globalInfos.data.surveysDone,
-      teams: globalInfos.data.teams
-    });
+      var globalInfos = await this.fetchData();
 
+      this.setState({
+        collaborator: globalInfos.data.collaborators,
+        surveysDone: globalInfos.data.surveysDone,
+        teams: globalInfos.data.teams
+      });
+    }
   }
 
 
   render() {
-
+    const loggedUser = JSON.parse(localStorage.getItem('user'));
+    if (loggedUser.user.RoleId === "1") {
     const surveysDone = this.state.surveysDone;
     const teams = this.state.teams;
     const collaborators = this.state.collaborator
 
+ 
 
     return (
       <div>
@@ -159,6 +164,10 @@ class GlobalInfo extends React.Component {
       </div>
 
     )
+
+    } else {
+      return false
+    }
   }
 
 }
