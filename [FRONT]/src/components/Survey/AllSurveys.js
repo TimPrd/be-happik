@@ -67,13 +67,14 @@ const Status = styled.div`
   }
 `;
 
+
 class CreateSurvey extends React.Component {
 
   constructor(props) {
     super(props);
 
     this.state = {
-      surveys : null,
+      surveys: null,
       currentPage: 1,
       items: 9,
       options: []
@@ -82,9 +83,9 @@ class CreateSurvey extends React.Component {
 
   };
 
-  fetchSurvey = async () => {
+  fetchSurvey = async (currentPage) => {
     const loggedUser = JSON.parse(localStorage.getItem('user'));
-    const wantedPage = this.state.currentPage;
+    const wantedPage = currentPage || 1;
     try {
       let surveys = await client.get(`/api/surveys?page=${wantedPage}`, {
         headers: {
@@ -93,7 +94,7 @@ class CreateSurvey extends React.Component {
         },
       });
 
-      this.setState({ currentPage: surveys["data"].currentPageNumber });
+      this.setState({ currentPage: surveys["data"].current });
       this.setState({ items: surveys["data"].count })
       return surveys
 
@@ -103,43 +104,35 @@ class CreateSurvey extends React.Component {
   };
 
   async handleSelect(page) {
-    console.log('handle select', page.value);
-    this.setState({ currentPage: page.value });
+    console.log('début');
+    const currentPage = page.value;
+    const surveys = await this.fetchSurvey(currentPage);
 
-    const surveys = await this.fetchSurvey(this.state.currentPage || 1);
-    
-    let numberMaxOfPages = surveys["data"].count;
-    console.log(numberMaxOfPages)
-    const options = []
-    for (let index = 0; index < numberMaxOfPages; index++) {
-      options.push({value: index + 1, label: index + 1});
-    
-    }
+    console.log('mise à jour liste');
 
-    this.setState ({
-      options,
-      surveys
+    this.setState({
+      surveys,
+      currentPage
     })
   }
 
+
+
   componentDidMount = async () => {
     const surveys = await this.fetchSurvey(this.state.currentPage || 1);
+    let numberMaxOfPages = surveys["data"].pages;
 
-    let numberMaxOfPages = surveys["data"].count;
-    console.log(numberMaxOfPages)
     const options = []
-    for (let index = 0; index < numberMaxOfPages; index++) {
-      options.push({value: index + 1, label: index + 1});
-    
+    for (let index = 1; index < numberMaxOfPages; index++) {
+      options.push({ value: index, label: index });
+
     }
 
-    this.setState ({
+    this.setState({
       options,
       surveys
     })
-   
-    console.log(this.state.options)
-    console.log(this.state.surveys)
+
   };
 
   getStatus = (survey, type) => {
@@ -161,8 +154,8 @@ class CreateSurvey extends React.Component {
     const { history } = this.props;
     const { options } = this.state;
     const { currentPage } = this.state;
-    
- 
+    console.log('here' + currentPage)
+
 
     return (
       <UserContext.Consumer>
@@ -181,21 +174,26 @@ class CreateSurvey extends React.Component {
                 </Row>
               </Col>
 
-
-              <Select
-                value={currentPage}
-                onChange={this.handleSelect.bind(this)}
-                options={options}
-                />
-
-
-
               {user.RoleId === 1 && (
                 <Col xs={6} sm={3} md={2}>
                   <Button label="Créer un sondage" handleClick={() => history.push('/survey/create')} type="submit" />
                 </Col>
               )}
             </Row>
+
+            <Row>
+                <Col xsOffset={9} xs={3} mdOffset={10} md={2}>
+                  <Select
+                    value={currentPage}
+                    onChange={this.handleSelect.bind(this)}
+                    options={options}
+                    isSearchable={false}
+                    isMulti={false}
+                    placeholder={currentPage}
+                  />
+                </Col>
+              </Row>
+
             <div className={"margin-up"}>
               {surveys && surveys.data['surveys'].map((survey, index) => (
 
