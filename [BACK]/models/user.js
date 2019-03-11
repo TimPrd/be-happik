@@ -7,7 +7,8 @@ module.exports = (sequelize, DataTypes) => {
     birthday: DataTypes.DATE,
     avatar: DataTypes.STRING,
     password: DataTypes.STRING,
-
+    isRegistered: DataTypes.BOOLEAN,
+    lastMood: DataTypes.DATE
   }, {});
   User.associate = function(models) {
       User.belongsTo(models.Role);
