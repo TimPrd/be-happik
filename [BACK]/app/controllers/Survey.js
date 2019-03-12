@@ -299,7 +299,8 @@ exports.getAllSurveys = async function (req, res) {
                     Array.from(srv, x => x.SurveyId)
             },
             offset: offset,
-            $sort: {id: 1}
+            $sort: {id: 1},
+            //include:[{model: models.User}]
         });
         const count = surveys.length;
         const pages = Math.ceil(count / limit);
@@ -362,6 +363,7 @@ exports.getSurvey = function (req, res) {
                         includes: [
                             {
                                 model: models.User
+
                             }
                         ]
                     }
@@ -374,7 +376,7 @@ exports.getSurvey = function (req, res) {
 
             const Author = await models.User.find({
                 where: {
-                    RoleId: 0,
+                    RoleId: 1,
                     id: userSurvey.Survey.authorId
                 },
                 attributes: ['firstName', 'lastName']
@@ -618,7 +620,9 @@ exports.postAnswers = function (req, res) {
             //var sockets = req.app.get('usersSocket');
             //sockets[1/*user.id*/]
             //.emit('hi!', "important notification message");
-
+            models.Survey.update({
+                status: 'done'
+            }, {where: {id: SurveyId}});
             userSurvey.update({
                 isAnswered: true
             });

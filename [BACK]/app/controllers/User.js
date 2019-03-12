@@ -309,7 +309,6 @@ exports.me = function (req, res, next) {
         if (err) {
             return res.status(500).json(err);
         }
-
         if (user) {
             return res.status(200).send(user);
         } else {

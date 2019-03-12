@@ -49,12 +49,15 @@ exports.create = async function (req, res) {
                                 mood: req.body.mood,
                                 UserId: user.id,
                                 createdAt: new Date(date)
-                            }
+                            },
                     });
+                    await models.User.update({
+                        lastMood: new Date(date)
+                    }, {where: {id: user.id}});
                     return res.status(200).send(mood);
                 }
             } else {
-                return res.status(401).json({msg:"You are not authorize"});
+                return res.status(401).json({msg: "You are not authorize"});
             }
         }
     )
