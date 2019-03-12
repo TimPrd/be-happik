@@ -45,7 +45,7 @@ class Head extends React.Component {
                     "Un nouveau sondage est disponible " : ""}
                 <FontAwesomeIcon
                     icon="bell"
-                    color={this.state.notif ? "red" : "grey"}
+                    color={sondageName ? "red" : "grey"}
                     size="lg"
                 />
 

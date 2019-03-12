@@ -38,6 +38,10 @@ module.exports = {
             isRegistered:{
                 type: Sequelize.BOOLEAN,
                 defaultValue: false
+            },
+            lastMood:{
+                type: Sequelize.DATE,
+                defaultValue: new Date(Date.now() - 86400000)
             }
         });
     },

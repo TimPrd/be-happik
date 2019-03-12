@@ -16,6 +16,7 @@ import ChronoIcon from '../assets/img/icons/Icon-Clock.svg';
 import WarningIcon from '../assets/img/icons/Icon-NotifWarning.svg';
 import { UserContext } from '../contexts';
 import ChartSurvey from '../components/Dashboard/ChartSurvey';
+import MoodForm from "../components/MoodForm";
 
 
 const HeadTitle = styled.h1`
@@ -54,11 +55,12 @@ const Dashboard = () => (
     {user => (
       <Layout>
         <Grid fluid>
+          { new Date(`${user.lastMood}`).toDateString() !== new Date().toDateString() ? <MoodForm/> : ""}
+
           <HeadTitle>
             Bienvenue &nbsp;
             {`${user.firstName} ${user.lastName}`}
           </HeadTitle>
-
           <Row>
             <Col xs={12} md={4}>
               <ActionButton
