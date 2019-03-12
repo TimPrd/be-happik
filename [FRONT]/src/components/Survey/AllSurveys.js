@@ -96,6 +96,7 @@ class CreateSurvey extends React.Component {
 
       this.setState({ currentPage: surveys["data"].current });
       this.setState({ items: surveys["data"].count })
+      
       return surveys
 
     } catch (err) {
@@ -123,8 +124,9 @@ class CreateSurvey extends React.Component {
     let numberMaxOfPages = surveys["data"].pages;
 
     const options = []
-    for (let index = 1; index < numberMaxOfPages; index++) {
-      options.push({ value: index, label: index });
+    for (let index = 0; index < numberMaxOfPages; index++) {
+
+      options.push({ value: index + 1, label: index  + 1 });
 
     }
 
@@ -150,12 +152,11 @@ class CreateSurvey extends React.Component {
   };
 
   render() {
+
     const { surveys } = this.state;
     const { history } = this.props;
     const { options } = this.state;
     const { currentPage } = this.state;
-    console.log('here' + currentPage)
-
 
     return (
       <UserContext.Consumer>
@@ -183,6 +184,7 @@ class CreateSurvey extends React.Component {
 
             <Row>
                 <Col xsOffset={9} xs={3} mdOffset={10} md={2}>
+          
                   <Select
                     value={currentPage}
                     onChange={this.handleSelect.bind(this)}
@@ -191,6 +193,7 @@ class CreateSurvey extends React.Component {
                     isMulti={false}
                     placeholder={currentPage}
                   />
+                  
                 </Col>
               </Row>
 
