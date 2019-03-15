@@ -1,10 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
 import Chart from 'chart.js';
+import client from '../../api';
 
 import Theme from '../../utils/Theme';
 
-// import PropTypes from 'prop-types';
 
 const Canvas = styled.canvas`
 `;
@@ -24,48 +24,69 @@ class ChartEmploye extends React.Component {
     super(props);
 
     this.canvasRef = React.createRef();
+
+    
   }
 
-  componentDidMount() {
-    const theHelp = Chart.helpers;
-    const ctx = document.getElementById('myChart');// this.canvasRef;
-    Chart.defaults.global.legend.labels.usePointStyle = true;
-    // Chart.defaults.global.ticks.= '50px';
+  state = {
+    analytic: [],
+    status: null
+  };
+
+  fetchAnalytics = async () => {
+
+    const loggedUser = JSON.parse(localStorage.getItem('user'));
+
+    try {
+      let analyticsMood = await client.get(`/api/analytic/mood`, {
+        headers: {
+          Authorization: `Bearer ${loggedUser.token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      return analyticsMood;
+
+    } catch (error) {
+      this.setState({ status: false })
+    }
+  };
+
+  renderChart(analytic, ctx) {
+    
+
+    console.log(analytic)
+
 
     return new Chart(ctx, {
       type: 'bar',
       data: {
-        labels: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'],
+        labels: ['Très insatisfait', 'Insatisfait', 'Indifférent', 'Satisfait', 'Très satisfait'],
         datasets: [
           {
-            label: 'Insatisfait',
-            data: [4, 8, 54, 24, 66, 28, 77, 29],
+            label: 'Très Insatisfait',
+            data: [analytic[0], 0, 0, 0, 0],
             backgroundColor: Theme.colors.orange73,
           },
           {
-            label: 'Satisfait',
-            data: [48, 45, 50, 69, 18, 30, 47, 27],
+            label: 'Insatisfait',
+            data: [0, analytic[25], 0, 0, 0],
             backgroundColor: Theme.colors.bluefe,
           },
           {
             label: 'Indifférent',
-            data: [40, 43, 37, 94, 31, 15, 61, 91],
+            data: [0, 0, analytic[50], 0, 0],
             backgroundColor: Theme.colors.greybe,
           },
           {
-            label: 'Très insatisfait',
-            data: [8, 59, 62, 61, 17, 83, 97, 18],
+            label: 'Satisfait',
+            data: [0, 0, 0, analytic[75], 0],
             backgroundColor: '#FAEBCC',
           },
           {
             label: 'Très satisfait',
-            data: [75, 59, 18, 23, 35, 60, 40, 47],
-            backgroundColor: Theme.colors.rose85,
-            // pointStyle: 'rectRounded',
-            borderWidth: 1,
-            pointStyle: 'rectRounded',
-            pointRadius: 5,
-            pointBorderColor: 'rgb(0, 0, 0)',
+            data: [0, 0, 0, 0, analytic[100]],
+            backgroundColor: Theme.colors.rose85
           },
         ],
       },
@@ -74,7 +95,7 @@ class ChartEmploye extends React.Component {
         aspectRatio: 2,
         title: {
           display: true,
-          text: 'Satisfaction de vos collaborateurs',
+          text: ['Satisfaction de vos collaborateurs sur 7 jours'],
           fontSize: Theme.custom.subtitle,
           fontColor: Theme.colors.grey5c,
           fontStyle: 'normal',
@@ -87,7 +108,7 @@ class ChartEmploye extends React.Component {
             stacked: true,
             maxBarThickness: 50,
             gridLines: {
-              display: false,
+              display: true,
               drawBorder: false,
             },
           }],
@@ -95,7 +116,7 @@ class ChartEmploye extends React.Component {
             stacked: true,
             ticks: {
               beginAtZero: true,
-              max: 400,
+              max: 140,
             },
             gridLines: {
               drawBorder: false,
@@ -111,53 +132,59 @@ class ChartEmploye extends React.Component {
           },
         },
         legend: {
-          display: true,
-          reverse: true,
-          labels: {
-            fontSize: Theme.custom.bigtext,
-            fontColor: Theme.colors.grey5c,
-            fontFamily: Theme.custom.font,
-
-            generateLabels(chart) {
-              const { data } = chart;
-              if (data.labels.length && data.datasets.length) {
-                return data.datasets.map((datasets, i) => {
-                  const ds = data.datasets[0];
-                  const { getValueAtIndexOrDefault } = theHelp;
-                  const arcOpts = chart.options.elements.arc;
-                  const fill = datasets.backgroundColor
-                    ? datasets.backgroundColor
-                    : getValueAtIndexOrDefault(ds.backgroundColor, i, arcOpts.backgroundColor);
-
-                  return {
-                    text: datasets.label,
-                    fillStyle: fill,
-                    strokeStyle: fill,
-                    lineWidth: 0,
-                    index: i,
-                    pointStyle: 'rectRounded',
-                  };
-                });
-              }
-              return [];
-            },
-          },
+          display: false,
         },
       },
     });
+
+
+    
+  }
+
+  componentDidMount() {
+    var mock = [
+      {
+        "data" : {
+            "0": 36,
+            "25" : 45,
+            "50" : 56,
+            "75" : 120,
+            "100" : 12
+        },
+
+        "date" : null
+
+      }
+    ]
+    const ctx = document.getElementById('myChart');
+    //var analyticsMood = await this.fetchAnalytics();
+
+    var analyticsMood = mock[0]["data"]
+  
+    console.log(analyticsMood);
+    if (this.state.status !== false) {
+
+      var analytic = analyticsMood;
+
+      this.setState({ analyticsMood });
+
+
+     this.renderChart(analytic, ctx)
+      
+    }
+
+
   }
 
   render() {
     return (
       <Container>
-        <Canvas id="myChart" ref={this.canvasRef} />
+        <Canvas id="myChart" />
       </Container>
     );
   }
 }
 
-// DashboardInfos.propTypes = {
-//   dataInfos: PropTypes.arrayOf(PropTypes.object).isRequired,
-// };
+
 
 export default ChartEmploye;

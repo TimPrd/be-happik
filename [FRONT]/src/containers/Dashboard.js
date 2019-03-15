@@ -58,11 +58,6 @@ const Dashboard = () => (
         <Grid>
           { new Date(`${user.lastMood}`).toDateString() !== new Date().toDateString() ? <MoodForm/> : ""}
 
-          <HeadTitle>
-            Bienvenue &nbsp;
-            {`${user.firstName} ${user.lastName}`}
-          </HeadTitle>
-
           <Row>
             <Col xs={12}>
               <HeadTitle>

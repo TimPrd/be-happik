@@ -138,7 +138,7 @@ class ReplySurvey extends React.Component {
               initialValues={{ questions: survey.questions || '' }}
               onSubmit={async (values) => {
                 const answers = {answers : values.questions};
-
+                console.log(answers);
                 try {
                   const { match } = this.props;
                   const loggedUser = JSON.parse(localStorage.getItem('user'));

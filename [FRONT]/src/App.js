@@ -17,7 +17,7 @@ import RegisterPage from './containers/RegisterPage';
 import PrivateRoute from './components/PrivateRoute';
 import PublicRoute from './components/PublicRoute';
 //import EmployeeRoute from './components/EmployeeRoute';
-import ManagerRoute from './components/ManagerRoute';
+//import ManagerRoute from './components/ManagerRoute';
 import Initiator from './components/Initiator';
 import AllSurveys from './containers/Survey/All';
 import CreateSurveyPage from './containers/Survey/Create';

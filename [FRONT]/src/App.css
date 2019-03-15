@@ -22,6 +22,18 @@
   color: #61dafb;
 }
 
+.mood-form {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-out {
+  right: -700px;
+  transition-duration: 2s;
+  opacity: 0;
+
+}
 
 @media screen and (max-width: 991px) {
 
@@ -48,7 +60,6 @@
   .app__header, .app__container {
     width: 100vw;
   }
-
 
   
 }
