@@ -54,15 +54,20 @@ const Dashboard = () => (
   <UserContext.Consumer>
     {user => (
       <Layout>
-        <Grid fluid>
+
+        <Grid>
           { new Date(`${user.lastMood}`).toDateString() !== new Date().toDateString() ? <MoodForm/> : ""}
 
-          <HeadTitle>
-            Bienvenue &nbsp;
-            {`${user.firstName} ${user.lastName}`}
-          </HeadTitle>
           <Row>
-            <Col xs={12} md={4}>
+            <Col xs={12}>
+              <HeadTitle>
+                Bienvenue &nbsp;
+                {`${user.firstName} ${user.lastName}`}
+              </HeadTitle>
+            </Col>
+          </Row>
+          <Row>
+            <Col xs={12} lg={4}>
               <ActionButton
                 icon={PlusIcon}
                 title="Créer un sondage"
@@ -72,7 +77,7 @@ const Dashboard = () => (
               />
             </Col>
 
-            <Col xs={12} md={4}>
+            <Col xs={12} lg={4}>
               <ActionButton
                 icon={SurveyIcon}
                 title="Consulter les sondages"
@@ -82,7 +87,7 @@ const Dashboard = () => (
               />
             </Col>
 
-            <Col xs={12} md={4}>
+            <Col xs={12} lg={4}>
               <ActionButton
                 icon={UserIcon}
                 title="Gestion des collaborateurs"
@@ -103,14 +108,9 @@ const Dashboard = () => (
             </Col>
           </Row>
 
-          <Row>
-            <Col xs={12}>
-              <h3>Statistiques sur vos sondages</h3>
-            </Col>
             <ChartSurvey></ChartSurvey>
-
-          </Row>
-
+        
+       
         </Grid>
       </Layout>
     )}

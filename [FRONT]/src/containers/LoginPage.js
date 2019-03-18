@@ -159,7 +159,7 @@ const LoginPage = ({ history }) => (
 
               localStorage.setItem('user', JSON.stringify(response.data));
 
-              history.push('/');
+              window.location.href = "/"
             } catch (error) {
               toast.error('error', {
                 position: toast.POSITION.TOP_RIGHT,

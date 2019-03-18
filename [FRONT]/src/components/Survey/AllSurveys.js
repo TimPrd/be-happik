@@ -4,17 +4,20 @@ import { Link, withRouter } from 'react-router-dom';
 import styled from 'styled-components';
 import moment from 'moment';
 import PropTypes from 'prop-types';
+import Select from 'react-select';
+
 
 import client from '../../api';
 import Button from '../Buttons/Button';
 import { UserContext } from '../../contexts';
 
+
 const Items = styled(Link)`
+  position: relative;
   width: 100%;
   min-height: ${props => props.theme.height.xlHeight}px;
   display: flex;
   flex-wrap:wrap;
-  justify-content: center;
   align-items: center;
   border-bottom: 3px solid #f1f1f3;
   font-size: ${props => props.theme.custom.bigtext}px;
@@ -41,6 +44,9 @@ const Title = styled.h3`
 `;
 
 const Status = styled.div`
+  position: absolute;
+  right: 0;
+  top: 10px;
   width: 70px;
   height: ${props => props.theme.height.xsHeight}px;
   display: flex;
@@ -61,22 +67,36 @@ const Status = styled.div`
   }
 `;
 
+
 class CreateSurvey extends React.Component {
-  state = {
-    surveys: null,
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      surveys: null,
+      currentPage: 1,
+      items: 9,
+      options: []
+    };
+
+
   };
 
-  fetchSurvey = async () => {
+  fetchSurvey = async (currentPage) => {
     const loggedUser = JSON.parse(localStorage.getItem('user'));
-    const wantedPage = 1;
+    const wantedPage = currentPage || 1;
     try {
-      let surveys = await client.get(`/api/surveys?page=${wantedPage}&open=true`, {
+      let surveys = await client.get(`/api/surveys?page=${wantedPage}`, {
         headers: {
           Authorization: `Bearer ${loggedUser.token}`,
           'Content-Type': 'application/json',
         },
       });
 
+      this.setState({ currentPage: surveys["data"].current });
+      this.setState({ items: surveys["data"].count })
+      
       return surveys
 
     } catch (err) {
@@ -84,11 +104,37 @@ class CreateSurvey extends React.Component {
     }
   };
 
+  async handleSelect(page) {
+    console.log('début');
+    const currentPage = page.value;
+    const surveys = await this.fetchSurvey(currentPage);
+
+    console.log('mise à jour liste');
+
+    this.setState({
+      surveys,
+      currentPage
+    })
+  }
+
+
+
   componentDidMount = async () => {
-    const surveys = await this.fetchSurvey();
+    const surveys = await this.fetchSurvey(this.state.currentPage || 1);
+    let numberMaxOfPages = surveys["data"].pages;
 
+    const options = []
+    for (let index = 0; index < numberMaxOfPages; index++) {
 
-    this.setState({ surveys });
+      options.push({ value: index + 1, label: index  + 1 });
+
+    }
+
+    this.setState({
+      options,
+      surveys
+    })
+
   };
 
   getStatus = (survey, type) => {
@@ -106,15 +152,18 @@ class CreateSurvey extends React.Component {
   };
 
   render() {
+
     const { surveys } = this.state;
     const { history } = this.props;
+    const { options } = this.state;
+    const { currentPage } = this.state;
 
     return (
       <UserContext.Consumer>
         {user => (
           <div>
             <Row>
-              <Col xs={6} sm={10}>
+              <Col xs={6} sm={9} md={10}>
                 <Row start="xs">
                   <Col xs={12}>
                     <PageTitle>Liste des sondages</PageTitle>
@@ -127,49 +176,72 @@ class CreateSurvey extends React.Component {
               </Col>
 
               {user.RoleId === 1 && (
-                <Col xs={6} sm={2}>
+                <Col xs={6} sm={3} md={2}>
                   <Button label="Créer un sondage" handleClick={() => history.push('/survey/create')} type="submit" />
                 </Col>
               )}
             </Row>
 
-            {surveys && surveys.data['surveys'].map((survey, index) => (
-
-              <Row key={index.toString()}>
-            
-                  <Items to={survey.status === 'done'? `/survey/${survey.id}/answers` : `/survey/reply/${survey.id}`}>
-               
-                  <Col xs={10} sm={10} md={6}>
-                    <Title>{survey.title}</Title>
-
-                  </Col>
-                  <Col xs={2} sm={2} md={2}>
-                    <Status className={this.getStatus(survey, 'class')}>
-                      {this.getStatus(survey, 'noClass')}
-                      </Status>
-                  </Col>
-                  <Col xs={12} sm={4} md={2}>
-                    <p>
-                      Auteur :&nbsp;
-                        {survey.author}
-                    </p>
-                  </Col>
-                  <Col xs={12} sm={8} md={2}>
-                    <Row>
-                      <Col xs={12} sm={6} md={12}>
-                        Création : &nbsp;
-                        {moment(survey.createdAt).format('D MMMM YYYY')}
-                      </Col>
-                      <Col xs={12} sm={6} md={12}>
-                        Expire : &nbsp;
-                        {moment(survey.endDate).format('D MMMM YYYY')}
-                      </Col>
-                    </Row>
-                  </Col>
-                </Items>
+            <Row>
+                <Col xsOffset={9} xs={3} mdOffset={10} md={2}>
+          
+                  <Select
+                    value={currentPage}
+                    onChange={this.handleSelect.bind(this)}
+                    options={options}
+                    isSearchable={false}
+                    isMulti={false}
+                    placeholder={currentPage}
+                  />
+                  
+                </Col>
               </Row>
 
-            ))}
+            <div className={"margin-up"}>
+              {surveys && surveys.data['surveys'].map((survey, index) => (
+
+                <Row key={index.toString()}>
+                  <Col xs={12}>
+                    <Items to={survey.status === 'done' ? `/survey/${survey.id}/answers` : `/survey/reply/${survey.id}`}>
+
+                      <Col xs={10} sm={10} md={6}>
+                        <Title>{survey.title}</Title>
+
+                        <Status className={this.getStatus(survey, 'class')}>
+                          {this.getStatus(survey, 'noClass')}
+                        </Status>
+
+                      </Col>
+
+
+
+                      <Col xs={12} sm={4} md={2}>
+                        <p>
+                          Auteur :&nbsp;
+                        {survey.author}
+                        </p>
+                      </Col>
+                      <Col xs={12} sm={8} md={2}>
+                        <Row>
+                          <Col xs={12} sm={6} md={12}>
+                            Création : &nbsp;
+                        {moment(survey.createdAt).format('D MMMM YYYY')}
+                          </Col>
+                          <Col xs={12} sm={6} md={12}>
+                            Expire : &nbsp;
+                        {moment(survey.endDate).format('D MMMM YYYY')}
+                          </Col>
+                        </Row>
+                      </Col>
+                    </Items>
+                  </Col>
+                </Row>
+
+              ))}
+            </div>
+
+
+
           </div>
         )}
 

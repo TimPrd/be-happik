@@ -2,13 +2,14 @@
 import React from 'react';
 import { Col, Row } from 'react-flexbox-grid';
 import styled, { keyframes } from 'styled-components';
-
+import { Form, Formik } from 'formik';
+import Button from './Buttons/Button';
 import moment from 'moment';
 
 import client from '../api';
 
-import {allMoods} from "./Survey/surveyMock";
-import {toast} from "react-toastify";
+import { allMoods } from "./Survey/surveyMock";
+import { toast } from "react-toastify";
 
 const pulse = keyframes`
   0% {
@@ -23,6 +24,8 @@ const pulse = keyframes`
 `;
 
 const Pulse = styled.div`
+  display: inline-block;
+  margin-right: 20px;
   width: 8px;
   height: 8px;
   border-radius: 50%;
@@ -33,17 +36,20 @@ const Pulse = styled.div`
 
 const Title = styled.h3`
   margin: 0;
+  padding: 15px;
   font-weight: 300;
 `;
 
 const AnswerContainer = styled.div`
+  position : absolute;
+  right: 10px;
+  top: 80px;
+  width: 600px;
   min-height: 110px;
   box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.04);
   text-align: left;
-  padding:
-    ${props => props.theme.custom.text}px
-    ${props => props.theme.custom.subtitle}px;
-  margin: ${props => props.theme.custom.subtitle}px 0;
+  background-color: #ffffff;
+  padding: 0 15px;
 `;
 
 const ChoiceContainer = styled.div`
@@ -96,82 +102,143 @@ const Icon = styled.img`
 `;
 
 class MoodForm extends React.Component {
-    state = {
-        moods: allMoods,
-    };
+  state = {
+    moods: allMoods,
+    moodScore: [],
+    isHidden: false
+  };
 
-    componentDidMount = async () => {
+  toggleHidden () {
+    this.setState({
+      isHidden: !this.state.isHidden
+    })
+  }
 
-    };
+  postMood = async (MoodScore) => {
+    try {
+      const loggedUser = JSON.parse(localStorage.getItem('user'));
+      const body = { mood: 100 /*MoodScore*/, date: moment().format('YYYY-MM-DD') };
+      const response = await client.post(`/api/user/${loggedUser.id}/mood`, body, {
+        headers: {
+          Authorization: `Bearer ${loggedUser.token}`,
+          'Content-Type': 'application/json',
+        },
+      });
 
-    postMood = async (/*MoodScore*/) => {
-        try {
-            const loggedUser = JSON.parse(localStorage.getItem('user'));
-            const body = {mood: 100 /*MoodScore*/, date: moment().format('YYYY-MM-DD')};
-            const response = await client.post(`/api/user/${loggedUser.id}/mood`, body, {
-                headers: {
-                    Authorization: `Bearer ${loggedUser.token}`,
-                    'Content-Type': 'application/json',
-                },
-            });
+      this.toggleHidden.bind(this)
 
-            this.closeModal();
-
-            toast.success(response.data.msg, {
-                position: toast.POSITION.TOP_RIGHT,
-            });
-        } catch (error) {
-            toast.error('error', {
-                position: toast.POSITION.TOP_RIGHT,
-            });
-        }
-    };
-
-    render() {
-        const { moods } = this.state;
-        return (
-                <AnswerContainer /*key={index.toString()}*/>
-                    <Row start="xs">
-                        <Col md={6}>
-                            <Title><Pulse/>Quelle est votre humeur du jour ?</Title>
-                        </Col>
-                    </Row>
-
-                    <Row around="xs">
-                        {moods.map((mood, newIndex) => {
-                            /*const isChecked = values.questions
-                                && values.questions[index]
-                                && values.questions[index].isChecked
-                                && values.questions[index].mood === mood.mood;
-*/
-                            return (
-                                <Col xs={2} key={newIndex.toString()}>
-                                    <ChoiceContainer>
-                                        <input
-                                            name={`question.${newIndex}`}
-                                            type="checkbox"
-                                            //id={`checkbox_${index}${newIndex}`}
-                                            //onClick={e => arrayHelpers.replace(index, {
-                                            //   ...mood,
-                                            //    isChecked: e.target.checked,
-                                            //})}
-                                            //onChange={handleChange}
-                                            //checked={isChecked}
-                                        />
-                                        <Label htmlFor={`checkbox_` + /*index*/ + `${newIndex}`}>
-                                            <Icon src={mood.icon} alt="poll answer" />
-                                            <ChoiceP>{mood.title}</ChoiceP>
-                                        </Label>
-                                    </ChoiceContainer>
-                                </Col>
-                            );
-                        })}
-                    </Row>
-                </AnswerContainer>
-
-
-        );
+      toast.success(response.data.msg, {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    } catch (error) {
+      toast.error('error', {
+        position: toast.POSITION.TOP_RIGHT,
+      });
     }
+  };
+
+  render() {
+    const { moods } = this.state;
+    const { moodScore } = this.state;
+    const { isHidden } = this.state;
+
+    return (
+     
+      <div>
+  
+        <Formik 
+          initialValues={{ moods: moods || '' }}
+          onSubmit={async (values) => {
+
+            console.log(moodScore);
+
+             try {
+               const loggedUser = JSON.parse(localStorage.getItem('user')); 
+             
+               const response = await client.post(`/api/user/${loggedUser.user.id}/mood`, moodScore[0], {
+                 headers: {
+                   Authorization: `Bearer ${loggedUser.token}`,
+                   'Content-Type': 'application/json',
+                 },
+               });
+              
+      
+               this.setState({isHidden : !isHidden})
+               
+
+              toast.success(response.data.msg, {
+                 position: toast.POSITION.TOP_RIGHT,
+               });
+
+            
+             } catch (error) {
+               toast.error("error" + error, {
+                 position: toast.POSITION.TOP_RIGHT,
+               });
+             }
+ 
+          }}
+
+
+
+          render={({ values, handleChange, handleSubmit }) => (
+            <Form >
+              <AnswerContainer className={ isHidden !== false ? "modal-out" : null} /*key={index.toString()}*/>
+                <Title><Pulse />Quelle est votre humeur du jour ?</Title>
+                <Col md={2}>
+
+                </Col>
+
+
+
+                <Row around="xs" className="mood-form">
+                  {moods.map((mood, newIndex) => {
+                    const isChecked = values.questions
+                      && values.moods[newIndex]
+                      && values.moods[newIndex].result === mood.mood;
+
+                    return (
+                      <Col xs={2} key={newIndex.toString()}>
+                        <ChoiceContainer>
+                          <input
+                            name={`mood.${newIndex}`}
+                            type="checkbox"
+                            id={`checkbox_${newIndex}`}
+                            onClick={event => {
+                              moodScore.push({
+                                mood: mood.mood,
+                                date: moment().format('YYYY-MM-DD')
+                              })
+                            }
+                          }
+                            onChange={handleChange}
+                            checked={isChecked}
+                          />
+                          <Label htmlFor={`checkbox_${newIndex}`}>
+                            <Icon src={mood.icon} alt="poll answer" />
+                            <ChoiceP>{mood.title}</ChoiceP>
+                          </Label>
+                        </ChoiceContainer>
+                      </Col>
+                    );
+                  })}
+
+                </Row>
+                <Row around="xs">
+                  <Col xs={4}>
+                    <Button label="Soumettre" handleClick={handleSubmit} type="submit" />
+                  </Col>
+                </Row>
+
+
+              </AnswerContainer>
+            </Form>
+          )}
+        />
+      </div>
+    
+      );
+  }
 }
 
 

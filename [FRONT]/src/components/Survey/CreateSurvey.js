@@ -75,6 +75,14 @@ const Label = styled.label`
   }
 `;
 
+const Title = styled.h1`
+  text-align: left;
+  font-size: ${props => props.theme.custom.subtitle}px;
+  font-weight: 600;
+  line-height: 1;
+  color: #4d4d4d;
+`;
+
 class CreateSurvey extends React.Component {
   state = {
     teams: null,
@@ -100,7 +108,12 @@ class CreateSurvey extends React.Component {
       }
 
       return newdata;
-    } catch (err) {
+    } catch (error) {
+
+      toast.error('error' + error, {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+
       return null;
     }
   };
@@ -117,7 +130,12 @@ class CreateSurvey extends React.Component {
       });
 
       return teams.data.msg === 'You are not authorize' ? null : teams.data.map(team => ({ value: team.id, label: team.teamName }));
-    } catch (err) {
+    } catch (error) {
+
+      toast.error('error' + error, {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+
       return null;
     }
   };
@@ -171,6 +189,10 @@ class CreateSurvey extends React.Component {
 
               try {
                 await client.post('/api/survey/validate', data);
+                
+                toast.success('Votre sondage a été envoyé  !', {
+                  position: toast.POSITION.TOP_RIGHT,
+                });
 
                 history.push('/');
               } catch (error) {
@@ -183,129 +205,134 @@ class CreateSurvey extends React.Component {
               // , handleBlur, errors, touched,
               handleChange, handleSubmit, values, setFieldValue,
             }) => (
-              <Row>
-                <Col xs={12}>
-                  <form onSubmit={handleSubmit}>
-                    <Container>
-                      <Col xs={12} mdOffset={3} md={6}>
-                        <Label className="column_direction" htmlFor="title">
-                          <span>
-                            Titre du sondage
+
+
+
+                <form onSubmit={handleSubmit}>
+                  <Row>
+                    <Col xs={6} md={10}>
+                      <Title>Création de sondage</Title>
+                    </Col>
+                    <Col xs={6} md={2}>
+                      <Submitbutton type="submit">Soumettre le sondage</Submitbutton>
+                    </Col>
+                  </Row>
+
+                  <Container>
+                    <Col xs={12} mdOffset={3} md={6}>
+                      <Label className="column_direction" htmlFor="title">
+                        <span>
+                          Titre du sondage
                           </span>
 
-                          <Input
-                            id="title"
-                            name="title"
-                            type="text"
-                            placeholder="mon super sondage"
-                            onChange={handleChange}
-                          />
-                        </Label>
-                      </Col>
-                    </Container>
+                        <Input
+                          id="title"
+                          name="title"
+                          type="text"
+                          placeholder="mon super sondage"
+                          onChange={handleChange}
+                        />
+                      </Label>
+                    </Col>
+                  </Container>
 
-                    <Container>
-                      <Col xs={12} mdOffset={3} md={6}>
-                        <SelectContainer>
-                          <span>
-                            Sélectionner une ou plusieurs équipes
+                  <Container>
+                    <Col xs={12} mdOffset={3} md={6}>
+                      <SelectContainer>
+                        <span>
+                          Sélectionner une ou plusieurs équipes
                           </span>
 
-                          <Select
-                            options={teams}
-                            closeMenuOnSelect={false}
-                            isMulti
-                            onChange={option => setFieldValue('teams', option)}
-                            name="teams"
-                            // styles={colourStyles}
-                          />
-                        </SelectContainer>
-                      </Col>
-                    </Container>
+                        <Select
+                          options={teams}
+                          closeMenuOnSelect={false}
+                          isMulti
+                          onChange={option => setFieldValue('teams', option)}
+                          name="teams"
+                        // styles={colourStyles}
+                        />
+                      </SelectContainer>
+                    </Col>
+                  </Container>
 
-                    <Container>
-                      <Col xs={12} md={6}>
-                        <h3>Questions prédéfinies</h3>
+                  <Container>
+                    <Col xs={12} md={6}>
+                      <h3>Questions prédéfinies</h3>
 
-                        <QuestionsPart1>
-                          <FieldArray
-                            name="predefined_questions"
-                            render={arrayHelpers => (
-                              <Row>
-                                {values.predefined_questions.map((question, index) => (
-                                  <Col xs={12} key={index.toString()}>
-                                    <PredefQuestion>
-                                      <Label>
-                                        <span>
-                                          {question.question}
-                                        </span>
-
-                                        <input
-                                          type="checkbox"
-                                          name={`predefined_questions.${index}`}
-                                          onClick={e => arrayHelpers.replace(index, {
-                                            ...question,
-                                            isChecked: e.target.checked,
-                                          })}
-                                        />
-                                      </Label>
-                                    </PredefQuestion>
-                                  </Col>
-                                ))}
-                              </Row>
-                            )}
-                          />
-                        </QuestionsPart1>
-                      </Col>
-
-                      <Col xs={12} md={6}>
-                        <h3>Questions personnalisées</h3>
-
+                      <QuestionsPart1>
                         <FieldArray
-                          name="questions"
+                          name="predefined_questions"
                           render={arrayHelpers => (
-                            <Row end="xs">
-                              <Col xs={6}>
-                                <Submitbutton type="button" onClick={() => arrayHelpers.push('')}>Ajouter une question</Submitbutton>
-                              </Col>
+                            <Row>
+                              {values.predefined_questions.map((question, index) => (
+                                <Col xs={12} key={index.toString()}>
+                                  <PredefQuestion>
+                                    <Label>
+                                      <span>
+                                        {question.question}
+                                      </span>
 
-                              {values.questions && values.questions.length > 0 && (
-                                <Col xs={12}>
-                                  {values.questions.map((question, index) => (
-                                    <Row key={index.toString()}>
-                                      <Col xs={12}>
-                                        <Label className="column_direction">
-                                          <span>
-                                            Énoncé de la question
-                                          </span>
-                                          <Input
-                                            type="text"
-                                            name={`questions.${index}`}
-                                            value={question}
-                                            placeholder="Votre question ..."
-                                            onChange={handleChange}
-                                          />
-                                        </Label>
-                                      </Col>
-                                    </Row>
-                                  ))}
+                                      <input
+                                        type="checkbox"
+                                        name={`predefined_questions.${index}`}
+                                        onClick={e => arrayHelpers.replace(index, {
+                                          ...question,
+                                          isChecked: e.target.checked,
+                                        })}
+                                      />
+                                    </Label>
+                                  </PredefQuestion>
                                 </Col>
-                              )}
+                              ))}
                             </Row>
                           )}
                         />
-                      </Col>
-                    </Container>
+                      </QuestionsPart1>
+                    </Col>
 
-                    <Row>
-                      <Col mdOffset={7} xs={6} md={2}>
-                        <Submitbutton type="submit">Submit</Submitbutton>
-                      </Col>
-                    </Row>
-                  </form>
-                </Col>
-              </Row>
-            )}
+                    <Col xs={12} md={6}>
+                      <h3>Questions personnalisées</h3>
+
+                      <FieldArray
+                        name="questions"
+                        render={arrayHelpers => (
+                          <Row end="xs">
+                            <Col xs={6}>
+                              <Submitbutton type="button" onClick={() => arrayHelpers.push('')}>Ajouter une question</Submitbutton>
+                            </Col>
+
+                            {values.questions && values.questions.length > 0 && (
+                              <Col xs={12}>
+                                {values.questions.map((question, index) => (
+                                  <Row key={index.toString()}>
+                                    <Col xs={12}>
+                                      <Label className="column_direction">
+                                        <span>
+                                          Énoncé de la question
+                                          </span>
+                                        <Input
+                                          type="text"
+                                          name={`questions.${index}`}
+                                          value={question}
+                                          placeholder="Votre question ..."
+                                          onChange={handleChange}
+                                        />
+                                      </Label>
+                                    </Col>
+                                  </Row>
+                                ))}
+                              </Col>
+                            )}
+                          </Row>
+                        )}
+                      />
+                    </Col>
+                  </Container>
+
+
+                </form>
+
+              )}
           />
         )}
       </div>

@@ -3,24 +3,12 @@ import styled from 'styled-components';
 import Chart from 'chart.js';
 import client from '../../api';
 import Theme from '../../utils/Theme';
-import { Col } from 'react-flexbox-grid';
-
-import { toast } from 'react-toastify';
+import { Row, Col } from 'react-flexbox-grid';
 
 const Canvas = styled.canvas`
   width: 100%;
   height: 100%;
-`;
-
-
-const Container = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.04);
-  padding: 10px;
-  margin: 10px;
-  box-sizing: border-box;
+  padding: 20px;
 `;
 
 
@@ -28,12 +16,13 @@ class ChartSurvey extends React.Component {
 
     state = {
         analytics: [],
+        status: null
     };
 
 
 
     fetchAnalytics = async () => {
-        
+
         const loggedUser = JSON.parse(localStorage.getItem('user'));
 
         try {
@@ -47,9 +36,7 @@ class ChartSurvey extends React.Component {
             return analyticsSurvey;
 
         } catch (error) {
-            toast.error('error' + error, {
-                position: toast.POSITION.TOP_RIGHT,
-            });
+            this.setState({ status: false })
         }
     };
 
@@ -74,6 +61,7 @@ class ChartSurvey extends React.Component {
             },
             options: {
                 responsive: true,
+                aspectRatio: 1,
                 animation: {
                     animateRotate: true,
                     animateScale: true
@@ -105,35 +93,59 @@ class ChartSurvey extends React.Component {
     componentDidMount = async () => {
 
         var analyticsSurvey = await this.fetchAnalytics();
+        if (this.state.status !== false) {
+
         var analytics = analyticsSurvey["data"]["surveyAnalytics"];
+      
+            this.setState({ analytics: analytics });
 
-        this.setState({ analytics: analytics });
+            analytics.map((analytic, index) => (
 
-        analytics.map((analytic, index) => (
+                this.renderChart(analytic, index)
 
-            this.renderChart(analytic, index)
-
-        ))
+            ))
+        }
 
     }
 
 
 
+
     render() {
 
-        var analytics = this.state.analytics;
+        if (this.state.status !== false) {
 
-        return (analytics.map((result, index) => (
+            var analytics = this.state.analytics;
 
-            <Col xs={12} md={6} key={index} >
-                <Container>
-                    <Canvas id={"surveyChart" + index} key={index} />
-                </Container>
-            </Col>
-        ))
+            return (
+                <div>
+                    <Row>
+                        <Col xs={12}>
+                            <h3>Statistiques sur vos sondages</h3>
+                        </Col>
+                    </Row>
 
-        )
+                    <Row>
+                        {analytics.map((result, index) => (
 
+
+                            <Col xs={12} md={6} key={index} >
+
+                                <Canvas id={"surveyChart" + index} key={index} />
+
+                            </Col>
+
+
+                        ))}
+                    </Row>
+                </div>
+            )
+
+        } else {
+
+            return false
+
+        }
     }
 }
 

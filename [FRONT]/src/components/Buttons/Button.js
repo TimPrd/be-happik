@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import PropTypes from 'prop-types';
 
 const ButtonComp = styled.button`
-  width: 100%;
+  width: 140px;
   height: 36px;
   border-radius: 100px;
   border: none;
