@@ -13,7 +13,7 @@
     "react-flexbox-grid": "^2.1.2",
     "react-modal": "^3.8.1",
     "react-router-dom": "^4.3.1",
-    "react-scripts": "^2.1.5",
+    "react-scripts": "^3.3.0",
     "react-select": "^2.3.0",
     "react-toastify": "^4.5.2",
     "socket.io-client": "^2.2.0",
